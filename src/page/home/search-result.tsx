@@ -10,7 +10,7 @@ import { SectionHeader } from '@/shared/ui/section-header';
 import { PageSpinner } from '@/shared/ui/spinner';
 
 const RESULT_LIMIT = 30;
-const RESULT_GRID_STYLE = 'grid gap-3 lg:grid-cols-2';
+const RESULT_GRID_STYLE = 'grid gap-3 sm:grid-cols-2 xl:grid-cols-3';
 
 function ResultCount({ count }: { count: number }) {
   return <span className="ml-1 text-base font-normal text-fg-subtle tabular-nums">{count}</span>;
@@ -29,7 +29,7 @@ export function SearchResult({ query }: { query: string }) {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {setlistItems.length > 0 && (
         <section>
           <SectionHeader icon={<ListMusic />} title={<>曲目单<ResultCount count={setlistItems.length} /></>} />

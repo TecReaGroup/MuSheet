@@ -19,17 +19,17 @@ export function ContinueCard() {
     <button
       type="button"
       onClick={() => navigate(viewerPath(part.id, undefined, lastViewed.page))}
-      className="group mt-4 flex w-full items-center gap-4 rounded-card border border-score-soft-2 bg-linear-to-br from-score-soft to-surface p-3 pr-4 text-left transition-shadow hover:shadow-[0_2px_12px_rgb(0_0_0/0.06)]"
+      className="group mb-4 flex w-full items-center gap-4 rounded-panel bg-linear-to-br from-score-solid-from to-score-solid-to p-3 pr-4 text-left text-white shadow-lift transition-shadow hover:shadow-float sm:p-4 sm:pr-5"
     >
-      <PartThumbnail pdf={part} className="h-18 w-13.5 shadow-sm" />
+      <PartThumbnail pdf={part} className="h-20 w-15 shadow-lift ring-2 ring-white/25" />
       <div className="min-w-0 flex-1">
-        <div className="text-xs font-semibold text-score">继续演奏</div>
-        <div className="mt-1 truncate text-base font-semibold text-fg">{data.score.title}</div>
-        <div className="mt-0.5 truncate text-[13px] text-fg-quiet tabular-nums">
+        <div className="text-xs font-semibold tracking-wide text-white/75">继续演奏</div>
+        <div className="mt-1 truncate text-lg font-semibold">{data.score.title}</div>
+        <div className="mt-0.5 truncate text-[13px] text-white/75 tabular-nums">
           {partLabel(part)} · 第 {lastViewed.page} / {part.pageCount} 页
         </div>
       </div>
-      <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-score text-white shadow-[0_4px_12px_rgb(37_99_235/0.35)] transition-transform group-hover:scale-105 dark:text-zinc-950">
+      <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-white text-score-solid-to shadow-lift transition-transform group-hover:scale-105">
         <Play className="ml-0.5 size-5" fill="currentColor" />
       </span>
     </button>

@@ -36,12 +36,12 @@ function removePartWithUndo(score: ScoreDetail, part: PartView) {
 function PartRow({ score, part, dragHandle }: { score: ScoreDetail; part: PartView; dragHandle: ReactNode }) {
   const navigate = useNavigate();
   return (
-    <div className="flex items-center gap-2 rounded-card border border-border bg-surface py-2.5 pl-1 pr-1.5 transition-shadow hover:shadow-[0_2px_12px_rgb(0_0_0/0.05)]">
+    <div className="flex items-center gap-2 rounded-panel border border-border bg-surface py-2.5 pl-1 pr-1.5 shadow-card transition-shadow hover:shadow-lift">
       {dragHandle}
       <button type="button" onClick={() => navigate(`/view/${part.id}`)} className="flex min-w-0 flex-1 items-center gap-3 rounded-tag text-left">
         <PartThumbnail pdf={part} />
         <span className="min-w-0 flex-1">
-          <span className="block truncate text-base font-semibold text-fg">{partLabel(part)}</span>
+          <span className="block truncate text-[15px] font-semibold text-fg">{partLabel(part)}</span>
           <span className="mt-0.5 block text-xs text-fg-subtle tabular-nums">{part.pageCount} 页</span>
         </span>
       </button>
@@ -97,7 +97,7 @@ export function ScoreDetailPage() {
       />
 
       {score.parts[0] && (
-        <Button variant="primary" size="lg" className="mb-8 w-full sm:w-auto sm:min-w-48" onClick={() => navigate(`/view/${score.parts[0]!.id}`)}>
+        <Button variant="primary" size="lg" className="mb-10 w-full sm:w-auto sm:min-w-48" onClick={() => navigate(`/view/${score.parts[0]!.id}`)}>
           <Play fill="currentColor" />
           开始阅读
         </Button>
@@ -121,7 +121,7 @@ export function ScoreDetailPage() {
           )}
       </section>
 
-      <section className="mt-8">
+      <section className="mt-10">
         <SectionHeader icon={<ListMusic />} title="所在曲目单" />
         {score.setlists.length === 0
           ? <p className="text-sm text-fg-quiet">尚未加入任何曲目单，可在右上角「更多操作」中加入。</p>

@@ -3,13 +3,13 @@ import type { ButtonHTMLAttributes, ReactNode } from 'react';
 import { cn } from '../lib/class-name';
 
 const buttonStyle = cva(
-  'inline-flex shrink-0 select-none items-center justify-center gap-2 whitespace-nowrap rounded-card font-semibold transition-[background-color,color,filter,box-shadow] disabled:pointer-events-none disabled:opacity-45 [&_svg]:size-[1.15em] [&_svg]:shrink-0',
+  'inline-flex shrink-0 select-none items-center justify-center gap-2 whitespace-nowrap rounded-card font-semibold transition-[background-color,color,filter,box-shadow,scale] active:scale-[0.98] disabled:pointer-events-none disabled:opacity-45 [&_svg]:size-[1.15em] [&_svg]:shrink-0',
   {
     variants: {
       variant: {
-        primary: 'bg-score text-white shadow-[0_1px_2px_rgb(37_99_235/0.25)] hover:bg-score-strong dark:text-zinc-950',
-        setlist: 'bg-setlist text-white shadow-[0_1px_2px_rgb(5_150_105/0.25)] hover:bg-setlist-strong dark:text-zinc-950',
-        secondary: 'border border-border bg-surface text-fg hover:bg-muted',
+        primary: 'bg-score text-on-accent shadow-card hover:bg-score-strong',
+        setlist: 'bg-setlist text-on-accent shadow-card hover:bg-setlist-strong',
+        secondary: 'border border-border bg-surface text-fg shadow-card hover:bg-muted',
         ghost: 'text-fg-muted hover:bg-muted hover:text-fg',
         danger: 'bg-danger-soft text-danger hover:brightness-95',
       },

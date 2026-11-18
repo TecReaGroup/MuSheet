@@ -10,9 +10,9 @@ interface RecentShelfProps {
 
 export function RecentShelf({ icon, title, moreTo, children }: RecentShelfProps) {
   return (
-    <section className="mt-6">
+    <section className="mt-8">
       <SectionHeader icon={icon} title={title} moreTo={moreTo} />
-      <div className="grid gap-3 lg:grid-cols-2">{children}</div>
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">{children}</div>
     </section>
   );
 }

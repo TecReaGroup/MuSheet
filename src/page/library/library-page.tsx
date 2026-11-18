@@ -22,7 +22,7 @@ import { ScoreActionsMenu } from './score-actions-menu';
 import { SetlistActionsMenu } from './setlist-actions-menu';
 
 const SEARCH_DEBOUNCE_MS = 200;
-const GRID_STYLE = 'grid gap-3 lg:grid-cols-2';
+const GRID_STYLE = 'grid gap-3 sm:grid-cols-2 xl:grid-cols-3';
 
 function ScoreGridItem({ score }: { score: ScoreSummary }) {
   const navigate = useNavigate();
@@ -102,18 +102,21 @@ export function LibraryPage() {
           ? <Button variant="primary" className="max-sm:w-11 max-sm:px-0" onClick={() => openImport()}><FileUp /><span className="hidden sm:inline">导入乐谱</span></Button>
           : <Button variant="setlist" className="max-sm:w-11 max-sm:px-0" onClick={() => openCreateSetlist()}><ListPlus /><span className="hidden sm:inline">新建曲目单</span></Button>}
       >
-        <TabSwitch
-          label="内容类型"
+        <div className="flex flex-col gap-3 sm:flex-row">
+          <TabSwitch
+            className="sm:w-60 sm:shrink-0"
+            label="内容类型"
           value={collection}
-          onChange={value => setSearchParams(value === 'setlist' ? { tab: 'setlist' } : {}, { replace: true })}
-          options={[
-            { value: 'setlist', label: '曲目单', icon: <ListMusic />, tone: 'setlist' },
-            { value: 'score', label: '乐曲', icon: <Music />, tone: 'score' },
-          ]}
-        />
-        <div className="mt-3 flex gap-2">
-          <SearchField className="flex-1" value={query} onChange={setQuery} placeholder={collection === 'score' ? '搜索乐曲或作曲' : '搜索曲目单'} />
-          <SortMenu state={sortState} onSelect={sort => selectSort(collection, sort)} />
+            onChange={value => setSearchParams(value === 'setlist' ? { tab: 'setlist' } : {}, { replace: true })}
+            options={[
+              { value: 'setlist', label: '曲目单', icon: <ListMusic />, tone: 'setlist' },
+              { value: 'score', label: '乐曲', icon: <Music />, tone: 'score' },
+            ]}
+          />
+          <div className="flex flex-1 gap-2">
+            <SearchField className="flex-1" value={query} onChange={setQuery} placeholder={collection === 'score' ? '搜索乐曲或作曲' : '搜索曲目单'} />
+            <SortMenu state={sortState} onSelect={sort => selectSort(collection, sort)} />
+          </div>
         </div>
       </PageHeader>
       {collection === 'score' ? <ScoreCollection query={debouncedQuery} /> : <SetlistCollection query={debouncedQuery} />}

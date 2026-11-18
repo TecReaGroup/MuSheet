@@ -3,7 +3,7 @@ import { cn } from '../lib/class-name';
 
 const SELECT_CHEVRON = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`;
 
-const CONTROL_STYLE ='w-full rounded-card border border-border bg-surface px-3 text-[15px] text-fg outline-none transition-colors placeholder:text-fg-subtle focus:border-focus focus:ring-1 focus:ring-focus disabled:opacity-50';
+const CONTROL_STYLE = 'w-full rounded-card border border-border bg-surface px-3 text-[15px] text-fg outline-none transition-[border-color,box-shadow] placeholder:text-fg-subtle focus:border-focus focus:ring-3 focus:ring-focus/25 disabled:opacity-50';
 
 export function Field({ label, children, className }: { label: string; children: ReactNode; className?: string }) {
   return (

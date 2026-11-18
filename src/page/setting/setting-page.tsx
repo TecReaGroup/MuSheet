@@ -19,7 +19,7 @@ export function SettingPage() {
   const { update } = preference;
 
   return (
-    <>
+    <div className="max-w-2xl">
       <PageHeader title="设置" />
 
       <SettingGroup title="外观">
@@ -79,6 +79,6 @@ export function SettingPage() {
           <p className="mt-3 max-w-sm text-[13px] text-fg-subtle">为乐手打造的数字乐谱阅读器</p>
         </div>
       </SettingGroup>
-    </>
+    </div>
   );
 }

@@ -1,28 +1,25 @@
-import { ListMusic, Music } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 import { Link } from 'react-router';
-import { cn } from '../lib/class-name';
+import { IconTile } from './icon-tile';
 
-const KIND_STYLE = {
-  score: { icon: Music, label: '乐曲', className: 'border-score-soft-2 bg-score-soft text-score' },
-  setlist: { icon: ListMusic, label: '曲目单', className: 'border-setlist-soft-2 bg-setlist-soft text-setlist' },
-};
+const KIND_LABEL = { score: '乐曲', setlist: '曲目单' };
 
 interface StatCardProps {
-  kind: keyof typeof KIND_STYLE;
+  kind: keyof typeof KIND_LABEL;
   count: number | undefined;
   to: string;
 }
 
-/** Tinted count tile that links to the matching library tab. */
+/** Count tile that links to the matching library tab. */
 export function StatCard({ kind, count, to }: StatCardProps) {
-  const { icon: Icon, label, className } = KIND_STYLE[kind];
   return (
-    <Link to={to} className={cn('block rounded-card border p-4 transition-[filter] hover:brightness-[0.98]', className)}>
-      <span className="flex items-center gap-2 text-sm">
-        <Icon className="size-5" />
-        {label}
+    <Link to={to} className="group flex items-center gap-3 rounded-panel border border-border bg-surface p-3 shadow-card transition-shadow hover:shadow-lift sm:p-4">
+      <IconTile kind={kind} className="size-11" />
+      <span className="min-w-0 flex-1">
+        <span className="block text-2xl font-semibold leading-none text-fg tabular-nums">{count ?? '–'}</span>
+        <span className="mt-1 block text-[13px] text-fg-quiet">{KIND_LABEL[kind]}</span>
       </span>
-      <span className="mt-2 block text-2xl text-fg tabular-nums">{count ?? '–'}</span>
+      <ChevronRight className="size-5 shrink-0 text-fg-faint transition-[translate,color] group-hover:translate-x-0.5 group-hover:text-fg-quiet" />
     </Link>
   );
 }

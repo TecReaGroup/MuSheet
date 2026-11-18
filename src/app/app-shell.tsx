@@ -14,17 +14,23 @@ const NAV_ITEMS = [
 function SidebarNav() {
   const openImport = useImportDialogStore(state => state.open);
   return (
-    <aside className="fixed inset-y-0 left-0 z-30 hidden w-60 flex-col border-r border-border bg-surface px-3 pb-5 pt-7 md:flex">
+    <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 flex-col border-r border-border bg-canvas px-4 pb-6 pt-7 md:flex">
       <Logo className="px-2" />
-      <nav className="mt-8 space-y-1">
+      <Button variant="primary" className="mt-8 w-full" onClick={() => openImport()}>
+        <FileUp />
+        导入乐谱
+      </Button>
+      <nav className="mt-6 space-y-1">
         {NAV_ITEMS.map(({ to, label, icon: Icon, end }) => (
           <NavLink
             key={to}
             to={to}
             end={end}
             className={({ isActive }) => cn(
-              'flex items-center gap-3 rounded-card px-3 py-2.5 text-[15px] font-medium transition-colors',
-              isActive ? 'bg-score-soft font-semibold text-score' : 'text-fg-quiet hover:bg-muted hover:text-fg',
+              'flex items-center gap-3 rounded-card px-3 py-2.5 text-[15px] font-medium transition-[background-color,color,box-shadow]',
+              isActive
+                ? 'bg-surface text-fg shadow-card ring-1 ring-border [&_svg]:text-score'
+                : 'text-fg-muted hover:bg-muted hover:text-fg',
             )}
           >
             <Icon className="size-5" />
@@ -32,17 +38,14 @@ function SidebarNav() {
           </NavLink>
         ))}
       </nav>
-      <Button variant="primary" className="mt-auto w-full" onClick={() => openImport()}>
-        <FileUp />
-        导入乐谱
-      </Button>
+      <p className="mt-auto px-3 text-xs text-fg-subtle tabular-nums">MuSheet {__APP_VERSION__}</p>
     </aside>
   );
 }
 
 function BottomNav() {
   return (
-    <nav className="pb-safe fixed inset-x-0 bottom-0 z-30 border-t border-border bg-surface md:hidden">
+    <nav className="pb-safe fixed inset-x-0 bottom-0 z-30 border-t border-border bg-surface/85 backdrop-blur-lg md:hidden">
       <div className="flex">
         {NAV_ITEMS.map(({ to, label, icon: Icon, end }) => (
           <NavLink
@@ -56,7 +59,9 @@ function BottomNav() {
           >
             {({ isActive }) => (
               <>
-                <Icon className="size-6" strokeWidth={isActive ? 2.25 : 2} />
+                <span className={cn('flex h-8 w-14 items-center justify-center rounded-full transition-colors', isActive && 'bg-score-soft')}>
+                  <Icon className="size-[22px]" strokeWidth={isActive ? 2.25 : 2} />
+                </span>
                 {label}
               </>
             )}
@@ -71,8 +76,8 @@ export function AppShell() {
   return (
     <div className="min-h-full">
       <SidebarNav />
-      <main className="overflow-x-clip pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-10 md:pl-60">
-        <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+      <main className="overflow-x-clip pb-[calc(6rem+env(safe-area-inset-bottom))] md:pb-12 md:pl-64">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-10">
           <Outlet />
         </div>
       </main>

@@ -27,7 +27,7 @@ function LibraryStats() {
   const scores = useScoreList({ sort: 'created', order: 'desc' });
   const setlists = useSetlistList({ sort: 'created', order: 'desc' });
   return (
-    <div className="grid grid-cols-2 gap-3">
+    <div className="grid grid-cols-2 gap-3 sm:gap-4">
       <StatCard kind="score" count={scores.data?.length} to="/library" />
       <StatCard kind="setlist" count={setlists.data?.length} to="/library?tab=setlist" />
     </div>
@@ -60,8 +60,8 @@ function RecentContent() {
 
   return (
     <>
-      <LibraryStats />
       <ContinueCard />
+      <LibraryStats />
       {setlistItems.length > 0 && (
         <RecentShelf icon={<ListMusic />} title="最近曲目单" moreTo="/library?tab=setlist">
           {setlistItems.map(setlist => <SetlistCard key={setlist.id} setlist={setlist} onOpen={() => navigate(`/setlist/${setlist.id}`)} />)}
@@ -80,15 +80,12 @@ export function HomePage() {
 
   return (
     <>
-      <header className="band band-hero pb-10 pt-[calc(1rem+env(safe-area-inset-top))] md:pb-12 md:pt-10">
+      <header className="mb-6 pt-[calc(1.25rem+env(safe-area-inset-top))] md:pt-10">
         <Wordmark className="md:hidden" />
-        <h1 className="hidden text-[30px] font-semibold leading-tight text-fg-title md:block">今天演奏什么？</h1>
-        <SearchField className="mt-4 h-12 border-transparent shadow-[0_1px_3px_rgb(0_0_0/0.06)]" value={query} onChange={setQuery} placeholder="搜索乐曲、作曲者或曲目单" />
+        <h1 className="hidden text-[32px] font-bold leading-tight tracking-tight text-fg-title md:block">今天演奏什么？</h1>
+        <SearchField className="mt-5 h-12 md:max-w-xl" value={query} onChange={setQuery} placeholder="搜索乐曲、作曲者或曲目单" />
       </header>
-      {/* Content sheet overlaps the hero so its rounded top shows the gradient behind it. */}
-      <div className="relative -mx-4 -mt-6 min-h-[calc(100dvh-14rem)] rounded-t-panel bg-linear-to-b from-surface to-canvas px-4 pb-6 pt-5 shadow-[0_8px_30px_rgb(0_0_0/0.12)] sm:mx-0 sm:rounded-panel sm:px-6 sm:pt-6">
-        {debouncedQuery ? <SearchResult query={debouncedQuery} /> : <RecentContent />}
-      </div>
+      {debouncedQuery ? <SearchResult query={debouncedQuery} /> : <RecentContent />}
     </>
   );
 }

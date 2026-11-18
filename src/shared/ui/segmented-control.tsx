@@ -17,7 +17,7 @@ interface SegmentedControlProps<T extends string> {
 
 export function SegmentedControl<T extends string>({ value, options, onChange, label, className }: SegmentedControlProps<T>) {
   return (
-    <div role="radiogroup" aria-label={label} className={cn('inline-flex rounded-tag bg-muted p-1', className)}>
+    <div role="radiogroup" aria-label={label} className={cn('inline-flex rounded-card bg-muted p-1', className)}>
       {options.map(option => {
         const selected = option.value === value;
         return (
@@ -28,8 +28,8 @@ export function SegmentedControl<T extends string>({ value, options, onChange, l
             aria-checked={selected}
             onClick={() => onChange(option.value)}
             className={cn(
-              'flex flex-1 items-center justify-center gap-1.5 whitespace-nowrap rounded-md px-3 py-1 text-sm font-medium transition-all [&_svg]:size-4',
-              selected ? 'bg-surface text-fg shadow-[0_1px_2px_rgb(0_0_0/0.12)] dark:bg-surface-raised' : 'text-fg-muted hover:text-fg',
+              'flex flex-1 items-center justify-center gap-1.5 whitespace-nowrap rounded-tag px-3 py-1.5 text-sm font-medium transition-all [&_svg]:size-4',
+              selected ? 'bg-surface text-fg shadow-card dark:bg-surface-raised' : 'text-fg-muted hover:text-fg',
             )}
           >
             {option.icon}

@@ -27,6 +27,7 @@
   --brand-from: #3b82f6;
   --brand-via: #14b8a6;
   --brand-to: #10b981;
+  --on-accent: #ffffff;
   --focus: #60a5fa;
   --surface: #ffffff;
   --surface-raised: #ffffff;
@@ -43,9 +44,6 @@
   --danger: #dc2626;
   --danger-soft: #fef2f2;
   --overlay: rgb(0 0 0 / 0.5);
-  --hero-from: #dbeafe;
-  --hero-via: #ccfbf1;
-  --hero-to: #d1fae5;
   color-scheme: light;
 }
 
@@ -67,6 +65,7 @@
   --brand-from: #60a5fa;
   --brand-via: #2dd4bf;
   --brand-to: #34d399;
+  --on-accent: #09090b;
   --focus: #3b82f6;
   --surface: #18181b;
   --surface-raised: #27272a;
@@ -83,9 +82,6 @@
   --danger: #f87171;
   --danger-soft: #450a0a;
   --overlay: rgb(0 0 0 / 0.6);
-  --hero-from: #0b1e3f;
-  --hero-via: #052e2b;
-  --hero-to: #022c22;
   color-scheme: dark;
 }
 
@@ -110,6 +106,7 @@
   --color-brand-from: var(--brand-from);
   --color-brand-via: var(--brand-via);
   --color-brand-to: var(--brand-to);
+  --color-on-accent: var(--on-accent);
   --color-focus: var(--focus);
   --color-surface: var(--surface);
   --color-surface-raised: var(--surface-raised);
@@ -126,9 +123,6 @@
   --color-danger: var(--danger);
   --color-danger-soft: var(--danger-soft);
   --color-overlay: var(--overlay);
-  --color-hero-from: var(--hero-from);
-  --color-hero-via: var(--hero-via);
-  --color-hero-to: var(--hero-to);
 
   --radius-tag: 8px;
   --radius-card: 12px;
@@ -136,7 +130,9 @@
   --radius-sheet: 24px;
   --radius-modal: 28px;
 
-  --shadow-float: 0 8px 30px rgb(0 0 0 / 0.12);
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.04), 0 1px 3px rgb(0 0 0 / 0.05);
+  --shadow-lift: 0 2px 4px rgb(0 0 0 / 0.04), 0 8px 24px rgb(0 0 0 / 0.08);
+  --shadow-float: 0 12px 40px rgb(0 0 0 / 0.16);
 }
 
 @layer base {
@@ -164,43 +160,6 @@
   :focus-visible {
     @apply outline-2 outline-offset-2 outline-focus;
   }
-}
-
-/*
- * Header band whose background spans the whole viewport width while its content stays in the
- * page column. A pseudo-element is used instead of restructuring every page out of the shell's
- * centered container; the shell clips the horizontal overflow and the sidebar sits above it.
- * Fill is set through --band-fill.
- */
-@utility band {
-  position: relative;
-  isolation: isolate;
-  &::before {
-    content: "";
-    position: absolute;
-    z-index: -1;
-    inset-block: 0;
-    left: 50%;
-    width: 100vw;
-    translate: -50% 0;
-    background: var(--band-fill, var(--surface));
-    border-bottom: 1px solid var(--border);
-  }
-}
-
-@utility band-hero {
-  --band-fill: linear-gradient(135deg, var(--hero-from), var(--hero-via), var(--hero-to));
-  &::before {
-    border-bottom-width: 0;
-  }
-}
-
-@utility band-score {
-  --band-fill: linear-gradient(135deg, var(--score-soft), var(--surface) 70%);
-}
-
-@utility band-setlist {
-  --band-fill: linear-gradient(135deg, var(--setlist-soft), var(--surface) 70%);
 }
 
 @utility pb-safe {

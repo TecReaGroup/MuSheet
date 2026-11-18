@@ -9,8 +9,8 @@ const VARIANT_STYLE = {
     setlist: 'rounded-card from-setlist-soft to-setlist-soft-2 text-setlist-icon',
   },
   solid: {
-    score: 'rounded-[14px] from-score-solid-from to-score-solid-to text-white',
-    setlist: 'rounded-[14px] from-setlist-solid-from to-setlist-solid-to text-white',
+    score: 'rounded-panel from-score-solid-from to-score-solid-to text-white shadow-lift',
+    setlist: 'rounded-panel from-setlist-solid-from to-setlist-solid-to text-white shadow-lift',
   },
 };
 

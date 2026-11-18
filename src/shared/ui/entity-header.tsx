@@ -1,14 +1,11 @@
 import { ChevronLeft } from 'lucide-react';
 import type { ReactNode } from 'react';
-import { cn } from '../lib/class-name';
 import { useGoBack } from '../lib/use-go-back';
-import { IconButton } from './button';
+import { Button } from './button';
 import { IconTile } from './icon-tile';
 
-const BAND_STYLE = { score: 'band-score', setlist: 'band-setlist' };
-
 interface EntityHeaderProps {
-  kind: keyof typeof BAND_STYLE;
+  kind: 'score' | 'setlist';
   title: ReactNode;
   subtitle?: ReactNode;
   meta?: ReactNode;
@@ -17,21 +14,26 @@ interface EntityHeaderProps {
   actions?: ReactNode;
 }
 
-/** Detail-page header for one score or setlist: tinted band, solid icon tile, title block. */
+/** Detail-page header for one score or setlist: back link, solid icon tile, title block. */
 export function EntityHeader({ kind, title, subtitle, meta, backTo, actions }: EntityHeaderProps) {
   const goBack = useGoBack(backTo);
   return (
-    <header className={cn('band mb-6 flex items-center gap-3 py-4 md:py-6', BAND_STYLE[kind])}>
-      <IconButton label="返回" onClick={goBack} className="-ml-2.5">
-        <ChevronLeft className="size-6!" />
-      </IconButton>
-      <IconTile kind={kind} variant="solid" className="md:size-14" />
-      <div className="min-w-0 flex-1 pl-0.5">
-        <h1 className="truncate text-lg font-semibold leading-snug text-fg md:text-xl">{title}</h1>
-        {subtitle && <p className="mt-0.5 truncate text-[13px] text-fg-quiet">{subtitle}</p>}
-        {meta && <p className="mt-0.5 truncate text-xs text-fg-subtle tabular-nums">{meta}</p>}
+    <header className="mb-6 pt-[calc(0.75rem+env(safe-area-inset-top))] md:pt-8">
+      <div className="flex items-center justify-between">
+        <Button variant="ghost" size="sm" onClick={goBack} className="-ml-2 gap-1 pl-1.5 text-fg-quiet">
+          <ChevronLeft className="size-5!" />
+          返回
+        </Button>
+        {actions && <div className="-mr-2 flex shrink-0 items-center [&_button]:text-fg-quiet [&_button:hover]:text-fg">{actions}</div>}
       </div>
-      {actions && <div className="flex shrink-0 items-center [&_button]:text-fg-subtle [&_button:hover]:text-fg">{actions}</div>}
+      <div className="mt-4 flex items-center gap-4">
+        <IconTile kind={kind} variant="solid" className="size-14 md:size-16" />
+        <div className="min-w-0 flex-1">
+          <h1 className="truncate text-xl font-bold leading-snug tracking-tight text-fg-title md:text-[26px]">{title}</h1>
+          {subtitle && <p className="mt-0.5 truncate text-sm text-fg-muted">{subtitle}</p>}
+          {meta && <p className="mt-1 truncate text-xs text-fg-quiet tabular-nums">{meta}</p>}
+        </div>
+      </div>
     </header>
   );
 }

@@ -28,7 +28,7 @@ function SetlistRow({ setlist, score, index, dragHandle }: SetlistRowProps) {
   const navigate = useNavigate();
   const firstPart = score.parts[0];
   return (
-    <div className="flex items-center gap-2 rounded-card border border-border bg-surface py-2.5 pl-1 pr-1.5 transition-shadow hover:shadow-[0_2px_12px_rgb(0_0_0/0.05)]">
+    <div className="flex items-center gap-2 rounded-panel border border-border bg-surface py-2.5 pl-1 pr-1.5 shadow-card transition-shadow hover:shadow-lift">
       {dragHandle}
       <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-muted text-[13px] font-semibold text-fg-muted tabular-nums">{index + 1}</span>
       <button
@@ -39,7 +39,7 @@ function SetlistRow({ setlist, score, index, dragHandle }: SetlistRowProps) {
       >
         <PartThumbnail pdf={firstPart} className="h-14 w-10.5" />
         <span className="min-w-0 flex-1">
-          <span className="block truncate text-base font-semibold text-fg">{score.title}</span>
+          <span className="block truncate text-[15px] font-semibold text-fg">{score.title}</span>
           <span className="mt-0.5 block truncate text-[13px] text-fg-quiet">
             {[score.composer, `${score.bpm} BPM`, describeParts(score)].filter(Boolean).join(' · ')}
           </span>
@@ -102,7 +102,7 @@ export function SetlistDetailPage() {
         )}
       />
 
-      <div className="mb-6 flex gap-3">
+      <div className="mb-8 flex gap-3">
         <Button variant="setlist" size="lg" disabled={firstPlayable < 0} onClick={startPerformance} className="flex-1 sm:min-w-48 sm:flex-none">
           <Play fill="currentColor" />
           开始演奏
