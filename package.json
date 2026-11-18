@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "backend": "tsx backend/server.ts",
-    "backend:dev": "tsx watch --clear-screen=false backend/server.ts",
+    "backend:dev": "node --watch --watch-preserve-output --import tsx backend/server.ts",
     "typecheck": "tsc -p tsconfig.json && tsc -p backend/tsconfig.json",
     "build": "npm run typecheck && vite build",
     "preview": "vite preview"
