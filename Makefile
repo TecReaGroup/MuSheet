@@ -2,7 +2,7 @@
 
 install:
 	npm install
-	cp -n .env.example .env || true
+	node -e "const fs = require('fs'); fs.existsSync('.env') || fs.copyFileSync('.env.example', '.env')"
 
 db:
 	docker compose up -d postgres
