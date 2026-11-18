@@ -13,7 +13,7 @@ interface SetlistCardProps {
 export function SetlistCard({ setlist, onOpen, actions, onContextMenu }: SetlistCardProps) {
   return (
     <ListCard
-      leading={<IconTile kind="setlist" className="h-16 w-12" />}
+      leading={<IconTile kind="setlist" />}
       title={setlist.name}
       subtitle={setlist.description || undefined}
       meta={`${setlist.scoreCount} 首乐曲`}

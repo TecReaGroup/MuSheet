@@ -16,13 +16,13 @@ import { Button } from '@/shared/ui/button';
 import { EmptyState } from '@/shared/ui/empty-state';
 import { PageHeader } from '@/shared/ui/page-header';
 import { SearchField } from '@/shared/ui/search-field';
-import { SegmentedControl } from '@/shared/ui/segmented-control';
 import { PageSpinner } from '@/shared/ui/spinner';
+import { TabSwitch } from '@/shared/ui/tab-switch';
 import { ScoreActionsMenu } from './score-actions-menu';
 import { SetlistActionsMenu } from './setlist-actions-menu';
 
 const SEARCH_DEBOUNCE_MS = 200;
-const GRID_STYLE = 'grid gap-2 sm:grid-cols-2 lg:grid-cols-3';
+const GRID_STYLE = 'grid gap-3 lg:grid-cols-2';
 
 function ScoreGridItem({ score }: { score: ScoreSummary }) {
   const navigate = useNavigate();
@@ -58,7 +58,7 @@ function ScoreCollection({ query }: { query: string }) {
   if (!data || data.length === 0) {
     return query
       ? <EmptyState icon={<SearchX />} title="没有匹配的乐曲" />
-      : <EmptyState icon={<Music />} title="还没有乐谱" description="导入 PDF 乐谱，或直接把文件拖进窗口。" action={<Button variant="primary" onClick={() => openImport()}><FileUp />导入乐谱</Button>} />;
+      : <EmptyState icon={<Music />} title="还没有乐谱" description="导入 PDF 乐谱，或直接把文件拖进窗口。" action={<Button variant="primary" className="max-sm:w-11 max-sm:px-0" onClick={() => openImport()}><FileUp />导入乐谱</Button>} />;
   }
   return <div className={GRID_STYLE}>{data.map(score => <ScoreGridItem key={score.id} score={score} />)}</div>;
 }
@@ -80,7 +80,7 @@ function LibraryCounts() {
   const scores = useScoreList({ sort: 'created', order: 'desc' });
   const setlists = useSetlistList({ sort: 'created', order: 'desc' });
   if (!scores.data || !setlists.data) return null;
-  return <>{scores.data.length} 首乐曲 · {setlists.data.length} 个曲目单</>;
+  return <>{setlists.data.length} 个曲目单 · {scores.data.length} 首乐曲</>;
 }
 
 export function LibraryPage() {
@@ -99,25 +99,23 @@ export function LibraryPage() {
         title="曲库"
         subtitle={<LibraryCounts />}
         actions={collection === 'score'
-          ? <Button variant="primary" onClick={() => openImport()}><FileUp /><span className="hidden sm:inline">导入乐谱</span></Button>
-          : <Button variant="setlist" onClick={() => openCreateSetlist()}><ListPlus /><span className="hidden sm:inline">新建曲目单</span></Button>}
-      />
-      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center">
-        <SegmentedControl
+          ? <Button variant="primary" className="max-sm:w-11 max-sm:px-0" onClick={() => openImport()}><FileUp /><span className="hidden sm:inline">导入乐谱</span></Button>
+          : <Button variant="setlist" className="max-sm:w-11 max-sm:px-0" onClick={() => openCreateSetlist()}><ListPlus /><span className="hidden sm:inline">新建曲目单</span></Button>}
+      >
+        <TabSwitch
           label="内容类型"
-          className="sm:w-64"
           value={collection}
           onChange={value => setSearchParams(value === 'setlist' ? { tab: 'setlist' } : {}, { replace: true })}
           options={[
-            { value: 'score', label: '乐曲', icon: <Music /> },
-            { value: 'setlist', label: '曲目单', icon: <ListMusic /> },
+            { value: 'setlist', label: '曲目单', icon: <ListMusic />, tone: 'setlist' },
+            { value: 'score', label: '乐曲', icon: <Music />, tone: 'score' },
           ]}
         />
-        <div className="flex flex-1 gap-2">
+        <div className="mt-3 flex gap-2">
           <SearchField className="flex-1" value={query} onChange={setQuery} placeholder={collection === 'score' ? '搜索乐曲或作曲' : '搜索曲目单'} />
           <SortMenu state={sortState} onSelect={sort => selectSort(collection, sort)} />
         </div>
-      </div>
+      </PageHeader>
       {collection === 'score' ? <ScoreCollection query={debouncedQuery} /> : <SetlistCollection query={debouncedQuery} />}
     </>
   );

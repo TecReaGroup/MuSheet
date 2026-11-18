@@ -12,8 +12,8 @@ import { SetlistFormDialog } from '@/feature/setlist-edit/setlist-form-dialog';
 import { log } from '@/shared/lib/logger';
 import { Button, IconButton } from '@/shared/ui/button';
 import { EmptyState } from '@/shared/ui/empty-state';
+import { EntityHeader } from '@/shared/ui/entity-header';
 import { Menu, MenuContent, MenuItem, MenuSeparator, MenuTrigger } from '@/shared/ui/menu';
-import { PageHeader } from '@/shared/ui/page-header';
 import { SortableList } from '@/shared/ui/sortable-list';
 import { PageSpinner } from '@/shared/ui/spinner';
 
@@ -28,19 +28,19 @@ function SetlistRow({ setlist, score, index, dragHandle }: SetlistRowProps) {
   const navigate = useNavigate();
   const firstPart = score.parts[0];
   return (
-    <div className="flex items-center gap-2 rounded-card border border-border bg-surface p-2 pr-1">
+    <div className="flex items-center gap-2 rounded-card border border-border bg-surface py-2.5 pl-1 pr-1.5 transition-shadow hover:shadow-[0_2px_12px_rgb(0_0_0/0.05)]">
       {dragHandle}
-      <span className="w-6 text-center text-sm font-semibold text-setlist tabular-nums">{index + 1}</span>
+      <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-muted text-[13px] font-semibold text-fg-muted tabular-nums">{index + 1}</span>
       <button
         type="button"
         disabled={!firstPart}
         onClick={() => firstPart && navigate(viewerPath(firstPart.id, { id: setlist.id, index }))}
         className="flex min-w-0 flex-1 items-center gap-3 rounded-tag text-left disabled:opacity-50"
       >
-        <PartThumbnail pdf={firstPart} className="h-12 w-9" />
+        <PartThumbnail pdf={firstPart} className="h-14 w-10.5" />
         <span className="min-w-0 flex-1">
-          <span className="block truncate text-[15px] font-semibold">{score.title}</span>
-          <span className="block truncate text-[13px] text-fg-muted">
+          <span className="block truncate text-base font-semibold text-fg">{score.title}</span>
+          <span className="mt-0.5 block truncate text-[13px] text-fg-quiet">
             {[score.composer, `${score.bpm} BPM`, describeParts(score)].filter(Boolean).join(' · ')}
           </span>
         </span>
@@ -79,10 +79,12 @@ export function SetlistDetailPage() {
 
   return (
     <>
-      <PageHeader
+      <EntityHeader
+        kind="setlist"
         backTo="/library?tab=setlist"
         title={setlist.name}
-        subtitle={setlist.description || `${setlist.scores.length} 首乐曲`}
+        subtitle={setlist.description || undefined}
+        meta={`${setlist.scores.length} 首乐曲`}
         actions={(
           <>
             <IconButton label="编辑" onClick={() => setIsEditing(true)}><Pencil /></IconButton>
@@ -100,8 +102,8 @@ export function SetlistDetailPage() {
         )}
       />
 
-      <div className="mb-6 flex gap-2">
-        <Button variant="setlist" size="lg" disabled={firstPlayable < 0} onClick={startPerformance} className="flex-1 sm:flex-none">
+      <div className="mb-6 flex gap-3">
+        <Button variant="setlist" size="lg" disabled={firstPlayable < 0} onClick={startPerformance} className="flex-1 sm:min-w-48 sm:flex-none">
           <Play fill="currentColor" />
           开始演奏
         </Button>

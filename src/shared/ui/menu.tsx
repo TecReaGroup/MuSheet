@@ -17,7 +17,7 @@ export function MenuContent({ className, align = 'end', sideOffset = 6, ...props
   );
 }
 
-const ITEM_STYLE = 'relative flex cursor-pointer select-none items-center gap-2.5 rounded-tag px-2.5 py-2 text-sm text-fg outline-none data-[highlighted]:bg-muted data-[disabled]:opacity-45 [&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:text-fg-muted';
+const ITEM_STYLE = 'relative flex cursor-pointer select-none items-center gap-2.5 rounded-tag px-2.5 py-2.5 text-sm text-fg outline-none data-[highlighted]:bg-muted data-[disabled]:opacity-45 [&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:text-fg-muted';
 
 type MenuItemProps = ComponentProps<typeof DropdownMenu.Item> & { icon?: ReactNode; tone?: 'default' | 'danger' };
 

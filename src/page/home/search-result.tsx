@@ -1,4 +1,4 @@
-import { SearchX } from 'lucide-react';
+import { ListMusic, Music, SearchX } from 'lucide-react';
 import { useNavigate } from 'react-router';
 import { scoreOpenPath } from '@/entity/score/open-score';
 import { useScoreList } from '@/entity/score/score-api';
@@ -6,9 +6,15 @@ import { ScoreCard } from '@/entity/score/score-card';
 import { useSetlistList } from '@/entity/setlist/setlist-api';
 import { SetlistCard } from '@/entity/setlist/setlist-card';
 import { EmptyState } from '@/shared/ui/empty-state';
+import { SectionHeader } from '@/shared/ui/section-header';
 import { PageSpinner } from '@/shared/ui/spinner';
 
 const RESULT_LIMIT = 30;
+const RESULT_GRID_STYLE = 'grid gap-3 lg:grid-cols-2';
+
+function ResultCount({ count }: { count: number }) {
+  return <span className="ml-1 text-base font-normal text-fg-subtle tabular-nums">{count}</span>;
+}
 
 export function SearchResult({ query }: { query: string }) {
   const navigate = useNavigate();
@@ -23,19 +29,19 @@ export function SearchResult({ query }: { query: string }) {
   }
 
   return (
-    <div className="mt-6 space-y-8">
+    <div className="space-y-6">
       {setlistItems.length > 0 && (
         <section>
-          <h2 className="mb-3 text-[17px] font-semibold">曲目单 <span className="text-fg-subtle tabular-nums">{setlistItems.length}</span></h2>
-          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+          <SectionHeader icon={<ListMusic />} title={<>曲目单<ResultCount count={setlistItems.length} /></>} />
+          <div className={RESULT_GRID_STYLE}>
             {setlistItems.map(setlist => <SetlistCard key={setlist.id} setlist={setlist} onOpen={() => navigate(`/setlist/${setlist.id}`)} />)}
           </div>
         </section>
       )}
       {scoreItems.length > 0 && (
         <section>
-          <h2 className="mb-3 text-[17px] font-semibold">乐曲 <span className="text-fg-subtle tabular-nums">{scoreItems.length}</span></h2>
-          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+          <SectionHeader icon={<Music />} title={<>乐曲<ResultCount count={scoreItems.length} /></>} />
+          <div className={RESULT_GRID_STYLE}>
             {scoreItems.map(score => <ScoreCard key={score.id} score={score} onOpen={() => navigate(scoreOpenPath(score))} />)}
           </div>
         </section>

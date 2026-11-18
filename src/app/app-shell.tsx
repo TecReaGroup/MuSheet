@@ -14,8 +14,8 @@ const NAV_ITEMS = [
 function SidebarNav() {
   const openImport = useImportDialogStore(state => state.open);
   return (
-    <aside className="fixed inset-y-0 left-0 hidden w-60 flex-col border-r border-border bg-surface px-3 pb-5 pt-7 md:flex">
-      <Logo className="px-3 text-[26px]" />
+    <aside className="fixed inset-y-0 left-0 z-30 hidden w-60 flex-col border-r border-border bg-surface px-3 pb-5 pt-7 md:flex">
+      <Logo className="px-2" />
       <nav className="mt-8 space-y-1">
         {NAV_ITEMS.map(({ to, label, icon: Icon, end }) => (
           <NavLink
@@ -24,7 +24,7 @@ function SidebarNav() {
             end={end}
             className={({ isActive }) => cn(
               'flex items-center gap-3 rounded-card px-3 py-2.5 text-[15px] font-medium transition-colors',
-              isActive ? 'bg-score-soft text-score' : 'text-fg-muted hover:bg-muted hover:text-fg',
+              isActive ? 'bg-score-soft font-semibold text-score' : 'text-fg-quiet hover:bg-muted hover:text-fg',
             )}
           >
             <Icon className="size-5" />
@@ -42,7 +42,7 @@ function SidebarNav() {
 
 function BottomNav() {
   return (
-    <nav className="pb-safe fixed inset-x-0 bottom-0 z-30 border-t border-border bg-surface/90 backdrop-blur md:hidden">
+    <nav className="pb-safe fixed inset-x-0 bottom-0 z-30 border-t border-border bg-surface md:hidden">
       <div className="flex">
         {NAV_ITEMS.map(({ to, label, icon: Icon, end }) => (
           <NavLink
@@ -50,12 +50,16 @@ function BottomNav() {
             to={to}
             end={end}
             className={({ isActive }) => cn(
-              'flex flex-1 flex-col items-center gap-1 pb-2 pt-2.5 text-[11px] font-medium',
-              isActive ? 'text-score' : 'text-fg-subtle',
+              'flex flex-1 flex-col items-center gap-1 pb-2 pt-2 text-xs font-medium transition-colors',
+              isActive ? 'text-score' : 'text-fg-quiet',
             )}
           >
-            <Icon className="size-[22px]" />
-            {label}
+            {({ isActive }) => (
+              <>
+                <Icon className="size-6" strokeWidth={isActive ? 2.25 : 2} />
+                {label}
+              </>
+            )}
           </NavLink>
         ))}
       </div>
@@ -67,7 +71,7 @@ export function AppShell() {
   return (
     <div className="min-h-full">
       <SidebarNav />
-      <main className="pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-10 md:pl-60">
+      <main className="overflow-x-clip pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-10 md:pl-60">
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
           <Outlet />
         </div>
