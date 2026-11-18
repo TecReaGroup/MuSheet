@@ -1,0 +1,20 @@
+.PHONY: install db run build typecheck docker
+
+install:
+	npm install
+	cp -n .env.example .env || true
+
+db:
+	docker compose up -d postgres
+
+run: db
+	npx concurrently -k -n web,api -c blue,green "npm run dev" "npm run backend:dev"
+
+typecheck:
+	npm run typecheck
+
+build:
+	npm run build
+
+docker:
+	docker compose up -d --build

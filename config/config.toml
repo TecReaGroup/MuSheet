@@ -1,0 +1,11 @@
+[server]
+port = 8787
+
+[storage]
+# Relative to the project root. Holds pdf/ and thumbnail/ subdirectories.
+data_dir = "data"
+max_upload_mb = 100
+
+[log]
+# Options: "debug" | "info" | "warn" | "error"
+level = "info"
