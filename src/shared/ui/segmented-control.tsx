@@ -29,7 +29,7 @@ export function SegmentedControl<T extends string>({ value, options, onChange, l
             onClick={() => onChange(option.value)}
             className={cn(
               'flex flex-1 items-center justify-center gap-1.5 whitespace-nowrap rounded-tag px-3 py-1.5 text-sm font-medium transition-all [&_svg]:size-4',
-              selected ? 'bg-surface text-fg shadow-card dark:bg-surface-raised' : 'text-fg-muted hover:text-fg',
+              selected ? 'bg-surface text-fg dark:bg-surface-raised' : 'text-fg-muted hover:text-fg',
             )}
           >
             {option.icon}

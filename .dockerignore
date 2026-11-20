@@ -3,7 +3,7 @@
 .vite
 node_modules
 dist
-data
+backend/data
 log
 temp
 doc

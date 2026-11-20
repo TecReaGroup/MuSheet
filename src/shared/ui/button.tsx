@@ -3,13 +3,13 @@ import type { ButtonHTMLAttributes, ReactNode } from 'react';
 import { cn } from '../lib/class-name';
 
 const buttonStyle = cva(
-  'inline-flex shrink-0 select-none items-center justify-center gap-2 whitespace-nowrap rounded-card font-semibold transition-[background-color,color,filter,box-shadow,scale] active:scale-[0.98] disabled:pointer-events-none disabled:opacity-45 [&_svg]:size-[1.15em] [&_svg]:shrink-0',
+  'inline-flex shrink-0 select-none items-center justify-center gap-2 whitespace-nowrap rounded-card font-semibold transition-[background-color,color,filter,box-shadow,scale] active:scale-[0.98] disabled:pointer-events-none disabled:opacity-45 focus-visible:border-focus focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-focus/25 [&_svg]:size-[1.15em] [&_svg]:shrink-0',
   {
     variants: {
       variant: {
-        primary: 'bg-score text-on-accent shadow-card hover:bg-score-strong',
-        setlist: 'bg-setlist text-on-accent shadow-card hover:bg-setlist-strong',
-        secondary: 'border border-border bg-surface text-fg shadow-card hover:bg-muted',
+        primary: 'bg-score text-on-accent hover:bg-score-strong',
+        setlist: 'bg-setlist text-on-accent hover:bg-setlist-strong',
+        secondary: 'border border-border bg-surface text-fg hover:bg-muted',
         ghost: 'text-fg-muted hover:bg-muted hover:text-fg',
         danger: 'bg-danger-soft text-danger hover:brightness-95',
       },
@@ -37,5 +37,5 @@ type IconButtonProps = Omit<ButtonProps, 'size' | 'children' | 'aria-label'> & {
 
 /** Icon-only button; `label` is required so every icon has an accessible name and tooltip. */
 export function IconButton({ label, variant = 'ghost', className, ...props }: IconButtonProps) {
-  return <Button size="icon" variant={variant} aria-label={label} title={label} className={cn('rounded-full', className)} {...props} />;
+  return <Button size="icon" variant={variant} aria-label={label} title={label} className={cn('rounded-full data-[state=open]:bg-muted data-[state=open]:text-fg', className)} {...props} />;
 }

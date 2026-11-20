@@ -4,7 +4,7 @@ export function SettingGroup({ title, children }: { title: string; children: Rea
   return (
     <section className="mb-8">
       <h2 className="mb-2.5 px-1 text-[13px] font-semibold text-fg-quiet">{title}</h2>
-      <div className="divide-y divide-border overflow-hidden rounded-panel border border-border bg-surface shadow-card">{children}</div>
+      <div className="divide-y divide-border overflow-hidden rounded-panel border border-border bg-surface">{children}</div>
     </section>
   );
 }

@@ -36,7 +36,7 @@ function removePartWithUndo(score: ScoreDetail, part: PartView) {
 function PartRow({ score, part, dragHandle }: { score: ScoreDetail; part: PartView; dragHandle: ReactNode }) {
   const navigate = useNavigate();
   return (
-    <div className="flex items-center gap-2 rounded-panel border border-border bg-surface py-2.5 pl-1 pr-1.5 shadow-card transition-shadow hover:shadow-lift">
+    <div className="flex items-center gap-2 rounded-panel border border-border bg-surface py-2.5 pl-1 pr-1.5 transition-colors hover:border-score/30">
       {dragHandle}
       <button type="button" onClick={() => navigate(`/view/${part.id}`)} className="flex min-w-0 flex-1 items-center gap-3 rounded-tag text-left">
         <PartThumbnail pdf={part} />

@@ -1,44 +1,50 @@
-import { FileUp, House, Library, Settings } from 'lucide-react';
+import { House, Library, Settings, type LucideIcon } from 'lucide-react';
 import { NavLink, Outlet } from 'react-router';
-import { useImportDialogStore } from '@/feature/score-import/import-dialog-store';
 import { cn } from '@/shared/lib/class-name';
-import { Button } from '@/shared/ui/button';
-import { Logo } from '@/shared/ui/logo';
+import { Wordmark } from '@/shared/ui/logo';
 
-const NAV_ITEMS = [
+interface NavItem {
+  to: string;
+  label: string;
+  icon: LucideIcon;
+  end: boolean;
+}
+
+const CONTENT_NAV_ITEMS: NavItem[] = [
   { to: '/', label: '首页', icon: House, end: true },
   { to: '/library', label: '曲库', icon: Library, end: false },
-  { to: '/setting', label: '设置', icon: Settings, end: false },
 ];
+const SETTING_NAV_ITEM: NavItem = { to: '/setting', label: '设置', icon: Settings, end: false };
+const NAV_ITEMS = [...CONTENT_NAV_ITEMS, SETTING_NAV_ITEM];
+
+function SidebarLink({ to, label, icon: Icon, end }: NavItem) {
+  return (
+    <NavLink
+      to={to}
+      end={end}
+      className={({ isActive }) => cn(
+        'flex items-center gap-3 rounded-card px-3 py-2.5 text-[15px] font-medium transition-[background-color,color,box-shadow]',
+        isActive
+          ? 'bg-surface text-fg ring-1 ring-border [&_svg]:text-score'
+          : 'text-fg-muted hover:bg-muted hover:text-fg',
+      )}
+    >
+      <Icon className="size-5" />
+      {label}
+    </NavLink>
+  );
+}
 
 function SidebarNav() {
-  const openImport = useImportDialogStore(state => state.open);
   return (
     <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 flex-col border-r border-border bg-canvas px-4 pb-6 pt-7 md:flex">
-      <Logo className="px-2" />
-      <Button variant="primary" className="mt-8 w-full" onClick={() => openImport()}>
-        <FileUp />
-        导入乐谱
-      </Button>
-      <nav className="mt-6 space-y-1">
-        {NAV_ITEMS.map(({ to, label, icon: Icon, end }) => (
-          <NavLink
-            key={to}
-            to={to}
-            end={end}
-            className={({ isActive }) => cn(
-              'flex items-center gap-3 rounded-card px-3 py-2.5 text-[15px] font-medium transition-[background-color,color,box-shadow]',
-              isActive
-                ? 'bg-surface text-fg shadow-card ring-1 ring-border [&_svg]:text-score'
-                : 'text-fg-muted hover:bg-muted hover:text-fg',
-            )}
-          >
-            <Icon className="size-5" />
-            {label}
-          </NavLink>
-        ))}
+      <Wordmark className="px-2 text-[32px]" />
+      <nav className="mt-8 flex flex-1 flex-col gap-1">
+        {CONTENT_NAV_ITEMS.map(item => <SidebarLink key={item.to} {...item} />)}
+        <div className="mt-auto">
+          <SidebarLink {...SETTING_NAV_ITEM} />
+        </div>
       </nav>
-      <p className="mt-auto px-3 text-xs text-fg-subtle tabular-nums">MuSheet {__APP_VERSION__}</p>
     </aside>
   );
 }

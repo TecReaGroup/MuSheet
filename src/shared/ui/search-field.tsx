@@ -10,7 +10,7 @@ interface SearchFieldProps {
 
 export function SearchField({ value, onChange, placeholder, className }: SearchFieldProps) {
   return (
-    <label className={cn('relative flex h-11 items-center rounded-card border border-border bg-surface shadow-card transition-[border-color,box-shadow] focus-within:border-focus focus-within:ring-3 focus-within:ring-focus/25', className)}>
+    <label className={cn('relative flex h-11 items-center rounded-card border border-border bg-surface transition-[border-color,box-shadow] focus-within:border-focus focus-within:ring-3 focus-within:ring-focus/25', className)}>
       <Search className="ml-4 size-5 shrink-0 text-fg-subtle" />
       <input
         type="search"

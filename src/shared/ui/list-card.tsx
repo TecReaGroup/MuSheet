@@ -18,7 +18,7 @@ export function ListCard({ leading, title, subtitle, meta, trailing, onOpen, onC
   return (
     <div
       className={cn(
-        'group relative flex items-center gap-3.5 rounded-panel border border-border bg-surface py-3 pl-3 pr-1 shadow-card transition-[background-color,border-color,box-shadow] hover:border-score/30 hover:shadow-lift active:bg-muted/60',
+        'group relative flex items-center gap-3.5 rounded-panel border border-border bg-surface py-3 pl-3 pr-1 transition-[background-color,border-color] hover:border-score/30 active:bg-muted/60',
         className,
       )}
       onContextMenu={onContextMenu}

@@ -16,10 +16,9 @@
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
     "types": ["vite/client"],
-    "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"],
-      "@contract/*": ["contract/*"]
+      "@/*": ["./src/*"],
+      "@contract/*": ["./contract/*"]
     }
   },
   "include": ["src", "contract"]

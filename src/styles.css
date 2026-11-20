@@ -87,7 +87,8 @@
 
 @theme inline {
   --font-brand: "Righteous", "Inter Variable", sans-serif;
-  --font-sans: "Inter Variable", "PingFang SC", "HarmonyOS Sans SC", "Microsoft YaHei", system-ui, sans-serif;
+  /* Inter first so Latin and digits never fall through to the CJK face; Noto Sans SC is Source Han Sans under its Google name. */
+  --font-sans: "Inter Variable", "Noto Sans SC Variable", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
 
   --color-score: var(--score);
   --color-score-strong: var(--score-strong);
@@ -130,9 +131,8 @@
   --radius-sheet: 24px;
   --radius-modal: 28px;
 
-  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.04), 0 1px 3px rgb(0 0 0 / 0.05);
-  --shadow-lift: 0 2px 4px rgb(0 0 0 / 0.04), 0 8px 24px rgb(0 0 0 / 0.08);
   --shadow-float: 0 12px 40px rgb(0 0 0 / 0.16);
+  --shadow-fab: 0 1px 3px rgb(0 0 0 / 0.08), 0 6px 16px rgb(0 0 0 / 0.12);
 }
 
 @layer base {

@@ -23,7 +23,7 @@ COPY --from=builder /app/dist ./dist
 COPY backend ./backend
 COPY contract ./contract
 COPY config ./config
-RUN mkdir -p data log temp && chown -R node:node data log temp
+RUN mkdir -p backend/data log temp && chown -R node:node backend/data log temp
 
 USER node
 

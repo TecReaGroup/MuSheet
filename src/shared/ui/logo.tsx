@@ -16,16 +16,8 @@ export function AppIcon({ className }: { className?: string }) {
     <img
       src={appIconUrl}
       alt=""
-      className={cn('size-10 shrink-0 rounded-[22%] bg-white shadow-[0_4px_20px_rgb(0_0_0/0.10)] ring-1 ring-black/5', className)}
+      className={cn('size-10 shrink-0 rounded-[22%] bg-white ring-1 ring-black/5', className)}
     />
   );
 }
 
-export function Logo({ className }: { className?: string }) {
-  return (
-    <span className={cn('inline-flex items-center gap-2.5', className)}>
-      <AppIcon className="size-9" />
-      <Wordmark className="text-[28px]" />
-    </span>
-  );
-}

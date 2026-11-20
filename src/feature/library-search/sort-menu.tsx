@@ -1,6 +1,8 @@
 import type { SortKey } from '@contract/api';
-import { ArrowDown, ArrowDownUp, ArrowUp } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
+import { cn } from '@/shared/lib/class-name';
 import { Button } from '@/shared/ui/button';
+import { ListSortAscendingIcon, ListSortDescendingIcon } from '@/shared/ui/list-sort-icon';
 import { Menu, MenuContent, MenuItem, MenuTrigger } from '@/shared/ui/menu';
 import type { SortState } from './sort-store';
 
@@ -15,27 +17,35 @@ interface SortMenuProps {
   onSelect: (sort: SortKey) => void;
 }
 
+/** Fixed-width so the toolbar doesn't jump when the label changes; re-picking the active key flips direction. */
 export function SortMenu({ state, onSelect }: SortMenuProps) {
-  const DirectionIcon = state.order === 'asc' ? ArrowUp : ArrowDown;
+  const DirectionIcon = state.order === 'asc' ? ListSortAscendingIcon : ListSortDescendingIcon;
   return (
     <Menu>
       <MenuTrigger asChild>
-        <Button variant="secondary" className="h-11 px-3" aria-label="排序">
-          <ArrowDownUp />
-          <span className="hidden sm:inline">{SORT_LABELS[state.sort]}</span>
+        <Button
+          variant="secondary"
+          aria-label={`排序：${SORT_LABELS[state.sort]}`}
+          className="group h-11 w-11 px-0 text-[15px] font-medium text-fg-muted hover:text-fg data-[state=open]:bg-muted data-[state=open]:text-fg sm:w-36 sm:justify-start sm:px-3.5 [&_svg]:size-[18px] [&_svg]:text-fg-subtle"
+        >
+          <DirectionIcon />
+          <span className="hidden flex-1 text-left sm:inline">{SORT_LABELS[state.sort]}</span>
+          <ChevronDown className="hidden transition-transform group-data-[state=open]:rotate-180 sm:block" />
         </Button>
       </MenuTrigger>
-      <MenuContent>
-        {(Object.keys(SORT_LABELS) as SortKey[]).map(key => (
-          <MenuItem
-            key={key}
-            onSelect={() => onSelect(key)}
-            icon={key === state.sort ? <DirectionIcon className="text-score!" /> : <span className="size-4" />}
-            className={key === state.sort ? 'font-medium' : undefined}
-          >
-            {SORT_LABELS[key]}
-          </MenuItem>
-        ))}
+      <MenuContent className="w-(--radix-dropdown-menu-trigger-width) min-w-36">
+        {(Object.keys(SORT_LABELS) as SortKey[]).map(key => {
+          const isActive = key === state.sort;
+          return (
+            <MenuItem
+              key={key}
+              onSelect={() => onSelect(key)}
+              className={cn('px-3 py-2 text-[15px]', isActive ? 'font-medium text-score' : 'text-fg-muted data-[highlighted]:text-fg')}
+            >
+              {SORT_LABELS[key]}
+            </MenuItem>
+          );
+        })}
       </MenuContent>
     </Menu>
   );

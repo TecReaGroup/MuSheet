@@ -28,7 +28,7 @@ function SetlistRow({ setlist, score, index, dragHandle }: SetlistRowProps) {
   const navigate = useNavigate();
   const firstPart = score.parts[0];
   return (
-    <div className="flex items-center gap-2 rounded-panel border border-border bg-surface py-2.5 pl-1 pr-1.5 shadow-card transition-shadow hover:shadow-lift">
+    <div className="flex items-center gap-2 rounded-panel border border-border bg-surface py-2.5 pl-1 pr-1.5 transition-colors hover:border-score/30">
       {dragHandle}
       <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-muted text-[13px] font-semibold text-fg-muted tabular-nums">{index + 1}</span>
       <button

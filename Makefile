@@ -7,8 +7,10 @@ install:
 db:
 	docker compose up -d --wait postgres
 
+# Node entry points are called directly: npm/npx/vite .cmd shims make cmd.exe ask
+# "Terminate batch job (Y/N)?" on Ctrl+C, which fights the shell for the console.
 run: db
-	npx concurrently -k -n web,api -c blue,green "npm run dev" "npm run backend:dev"
+	node node_modules/concurrently/dist/bin/concurrently.js -k -n web,api -c blue,green "node node_modules/vite/bin/vite.js" "node --watch --watch-preserve-output --import tsx backend/server.ts"
 
 typecheck:
 	npm run typecheck

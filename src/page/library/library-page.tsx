@@ -1,5 +1,5 @@
 import type { ScoreSummary, SetlistSummary } from '@contract/api';
-import { FileUp, ListMusic, ListPlus, Music, SearchX } from 'lucide-react';
+import { ListMusic, Music, Plus, SearchX } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
 import { scoreOpenPath } from '@/entity/score/open-score';
@@ -12,8 +12,8 @@ import { useLibrarySortStore, type LibraryCollection } from '@/feature/library-s
 import { useImportDialogStore } from '@/feature/score-import/import-dialog-store';
 import { useCreateSetlistDialogStore } from '@/feature/setlist-edit/create-setlist-dialog';
 import { useDebouncedValue } from '@/shared/lib/use-debounced-value';
-import { Button } from '@/shared/ui/button';
 import { EmptyState } from '@/shared/ui/empty-state';
+import { FloatingActionButton } from '@/shared/ui/floating-action-button';
 import { PageHeader } from '@/shared/ui/page-header';
 import { SearchField } from '@/shared/ui/search-field';
 import { PageSpinner } from '@/shared/ui/spinner';
@@ -52,26 +52,24 @@ function SetlistGridItem({ setlist }: { setlist: SetlistSummary }) {
 
 function ScoreCollection({ query }: { query: string }) {
   const sortState = useLibrarySortStore(state => state.score);
-  const openImport = useImportDialogStore(state => state.open);
   const { data, isPending } = useScoreList({ query: query || undefined, ...sortState });
   if (isPending) return <PageSpinner />;
   if (!data || data.length === 0) {
     return query
       ? <EmptyState icon={<SearchX />} title="没有匹配的乐曲" />
-      : <EmptyState icon={<Music />} title="还没有乐谱" description="导入 PDF 乐谱，或直接把文件拖进窗口。" action={<Button variant="primary" className="max-sm:w-11 max-sm:px-0" onClick={() => openImport()}><FileUp />导入乐谱</Button>} />;
+      : <EmptyState icon={<Music />} title="还没有乐谱" description="导入 PDF 乐谱，或直接把文件拖进窗口。" />;
   }
   return <div className={GRID_STYLE}>{data.map(score => <ScoreGridItem key={score.id} score={score} />)}</div>;
 }
 
 function SetlistCollection({ query }: { query: string }) {
   const sortState = useLibrarySortStore(state => state.setlist);
-  const openCreate = useCreateSetlistDialogStore(state => state.open);
   const { data, isPending } = useSetlistList({ query: query || undefined, ...sortState });
   if (isPending) return <PageSpinner />;
   if (!data || data.length === 0) {
     return query
       ? <EmptyState icon={<SearchX />} title="没有匹配的曲目单" />
-      : <EmptyState icon={<ListMusic />} title="还没有曲目单" description="把演出或排练要用的乐曲按顺序排好，翻页时自动衔接下一首。" action={<Button variant="setlist" onClick={() => openCreate()}><ListPlus />新建曲目单</Button>} />;
+      : <EmptyState icon={<ListMusic />} title="还没有曲目单" description="把演出或排练要用的乐曲按顺序排好，翻页时自动衔接下一首。" />;
   }
   return <div className={GRID_STYLE}>{data.map(setlist => <SetlistGridItem key={setlist.id} setlist={setlist} />)}</div>;
 }
@@ -98,9 +96,6 @@ export function LibraryPage() {
       <PageHeader
         title="曲库"
         subtitle={<LibraryCounts />}
-        actions={collection === 'score'
-          ? <Button variant="primary" className="max-sm:w-11 max-sm:px-0" onClick={() => openImport()}><FileUp /><span className="hidden sm:inline">导入乐谱</span></Button>
-          : <Button variant="setlist" className="max-sm:w-11 max-sm:px-0" onClick={() => openCreateSetlist()}><ListPlus /><span className="hidden sm:inline">新建曲目单</span></Button>}
       >
         <div className="flex flex-col gap-3 sm:flex-row">
           <TabSwitch
@@ -120,6 +115,9 @@ export function LibraryPage() {
         </div>
       </PageHeader>
       {collection === 'score' ? <ScoreCollection query={debouncedQuery} /> : <SetlistCollection query={debouncedQuery} />}
+      {collection === 'score'
+        ? <FloatingActionButton label="导入乐谱" tone="score" onClick={() => openImport()}><Plus /></FloatingActionButton>
+        : <FloatingActionButton label="新建曲目单" tone="setlist" onClick={() => openCreateSetlist()}><Plus /></FloatingActionButton>}
     </>
   );
 }

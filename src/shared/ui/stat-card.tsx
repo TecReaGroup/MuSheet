@@ -13,7 +13,7 @@ interface StatCardProps {
 /** Count tile that links to the matching library tab. */
 export function StatCard({ kind, count, to }: StatCardProps) {
   return (
-    <Link to={to} className="group flex items-center gap-3 rounded-panel border border-border bg-surface p-3 shadow-card transition-shadow hover:shadow-lift sm:p-4">
+    <Link to={to} className="group flex items-center gap-3 rounded-panel border border-border bg-surface p-3 transition-colors hover:border-score/30 sm:p-4">
       <IconTile kind={kind} className="size-11" />
       <span className="min-w-0 flex-1">
         <span className="block text-2xl font-semibold leading-none text-fg tabular-nums">{count ?? '–'}</span>

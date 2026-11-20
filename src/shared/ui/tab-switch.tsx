@@ -38,7 +38,7 @@ export function TabSwitch<T extends string>({ value, options, onChange, label, c
             className={cn(
               'flex h-9 flex-1 items-center justify-center gap-2 rounded-tag text-[15px] font-medium transition-[background-color,color,box-shadow] [&_svg]:size-[18px]',
               selected
-                ? cn('bg-surface text-fg shadow-card dark:bg-surface-raised', ACTIVE_ICON_STYLE[option.tone])
+                ? cn('bg-surface text-fg dark:bg-surface-raised', ACTIVE_ICON_STYLE[option.tone])
                 : 'text-fg-muted hover:text-fg',
             )}
           >

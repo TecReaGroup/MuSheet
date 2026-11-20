@@ -8,8 +8,8 @@ dist/
 coverage/
 
 # Runtime data
-data/*
-!data/.gitkeep
+backend/data/*
+!backend/data/.gitkeep
 log/*
 !log/.gitkeep
 temp/*

@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "node node_modules/vite/bin/vite.js",
     "backend": "tsx backend/server.ts",
     "backend:dev": "node --watch --watch-preserve-output --import tsx backend/server.ts",
     "typecheck": "tsc -p tsconfig.json && tsc -p backend/tsconfig.json",
@@ -17,6 +17,7 @@
     "@dnd-kit/utilities": "^3.2.2",
     "@fastify/static": "^8.2.0",
     "@fontsource-variable/inter": "^5.2.8",
+    "@fontsource-variable/noto-sans-sc": "^5.2.8",
     "@noble/hashes": "^1.8.0",
     "@tanstack/react-query": "^5.90.2",
     "class-variance-authority": "^0.7.1",
