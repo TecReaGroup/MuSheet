@@ -1,17 +1,6 @@
-import type { PageTurnMode } from '@/feature/preference/preference-store';
+export type ViewLayout = 'single' | 'spread';
 
-/**
- * `split` is the half-turn state: the top half already shows `page + 1`
- * while the bottom half still shows the end of `page`.
- */
-export interface ViewPosition {
-  page: number;
-  split: boolean;
-}
-
-export type ViewLayout = 'single' | 'split' | 'spread';
-
-export type TurnResult = ViewPosition | 'past-end' | 'before-start';
+export type TurnResult = number | 'past-end' | 'before-start';
 
 interface Size {
   width: number;
@@ -30,26 +19,17 @@ export function canShowSpread(page: Size, box: Size) {
   return singleHeightWidth * 2 <= box.width;
 }
 
-export function nextPosition(position: ViewPosition, layout: ViewLayout, mode: PageTurnMode, pageCount: number): TurnResult {
-  if (layout === 'spread') {
-    return position.page + 2 <= pageCount ? { page: position.page + 2, split: false } : 'past-end';
-  }
-  if (mode === 'half') {
-    if (position.split) return { page: position.page + 1, split: false };
-    return position.page < pageCount ? { page: position.page, split: true } : 'past-end';
-  }
-  return position.page < pageCount ? { page: position.page + 1, split: false } : 'past-end';
+function pageStep(layout: ViewLayout) {
+  return layout === 'spread' ? 2 : 1;
 }
 
-export function previousPosition(position: ViewPosition, layout: ViewLayout, mode: PageTurnMode): TurnResult {
-  if (layout === 'spread') {
-    return position.page > 1 ? { page: Math.max(1, position.page - 2), split: false } : 'before-start';
-  }
-  if (mode === 'half') {
-    if (position.split) return { page: position.page, split: false };
-    return position.page > 1 ? { page: position.page - 1, split: true } : 'before-start';
-  }
-  return position.page > 1 ? { page: position.page - 1, split: false } : 'before-start';
+export function nextPage(page: number, layout: ViewLayout, pageCount: number): TurnResult {
+  const target = page + pageStep(layout);
+  return target <= pageCount ? target : 'past-end';
+}
+
+export function previousPage(page: number, layout: ViewLayout): TurnResult {
+  return page > 1 ? Math.max(1, page - pageStep(layout)) : 'before-start';
 }
 
 export function clampPage(page: number, pageCount: number) {

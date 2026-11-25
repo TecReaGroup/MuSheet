@@ -23,7 +23,9 @@ import {
   type InstrumentChoice,
 } from './instrument-picker';
 import { PdfDropZone } from './pdf-drop-zone';
-import { PdfReadError, preparePdf, titleFromFileName, type PreparedPdf } from './prepare-pdf';
+import { UnreadableFileError, groupImportSources, importSourceName, preparePdf, titleFromImportSource, type PreparedPdf } from './prepare-pdf';
+
+const IMPORT_TOAST_DURATION_MS = 1000;
 
 const IMPORT_TEXT = defineText({
   'zh-CN': {
@@ -31,7 +33,7 @@ const IMPORT_TEXT = defineText({
     description: '同名同作曲者的乐谱会自动合并为同一首乐曲的不同声部。',
     submit: '导入',
     submitMany: (count: number) => `导入 ${count} 份`,
-    addMore: '继续添加 PDF',
+    addMore: '继续添加 PDF 或图片',
     willJoin: (scoreTitle: string) => `将作为新声部加入已有乐曲《${scoreTitle}》`,
     joined: (scoreTitle: string) => `已作为新声部加入《${scoreTitle}》`,
     imported: (scoreTitle: string) => `已导入《${scoreTitle}》`,
@@ -42,7 +44,7 @@ const IMPORT_TEXT = defineText({
     description: 'Scores with the same title and composer are merged as parts of one score.',
     submit: 'Import',
     submitMany: (count: number) => `Import ${count}`,
-    addMore: 'Add more PDFs',
+    addMore: 'Add more PDFs or images',
     willJoin: (scoreTitle: string) => `Will be added as a new part of "${scoreTitle}"`,
     joined: (scoreTitle: string) => `Added as a new part of "${scoreTitle}"`,
     imported: (scoreTitle: string) => `Imported "${scoreTitle}"`,
@@ -86,24 +88,24 @@ export function ImportScoreDialog() {
   const addFiles = (files: File[]) => {
     const choice = lastInstrumentChoice();
     // crypto.randomUUID is missing outside secure contexts (tablet on http://<LAN IP>).
-    const keyed = files.map(file => ({ key: crypto.randomUUID?.() ?? `${Date.now()}-${Math.random()}`, file }));
+    const keyed = groupImportSources(files).map(source => ({ key: crypto.randomUUID?.() ?? `${Date.now()}-${Math.random()}`, source }));
     setItems(current => [
       ...current,
-      ...keyed.map(({ key, file }): ImportItem => ({
+      ...keyed.map(({ key, source }): ImportItem => ({
         key,
-        fileName: file.name,
-        title: titleFromFileName(file.name),
+        fileName: importSourceName(source),
+        title: titleFromImportSource(source),
         composer: '',
         choice,
         status: 'uploading',
       })),
     ]);
-    for (const { key, file } of keyed) {
-      preparePdf(file)
+    for (const { key, source } of keyed) {
+      preparePdf(source)
         .then(prepared => patchItem(key, { prepared, status: 'ready' }))
         .catch(error => {
           log('warn', 'Import', 'Preparing PDF failed', serializeError(error));
-          patchItem(key, { status: 'failed', error: error instanceof PdfReadError ? readText(COMMON_TEXT).unreadablePdf : describeError(error) });
+          patchItem(key, { status: 'failed', error: error instanceof UnreadableFileError ? readText(COMMON_TEXT).unreadableFile : describeError(error) });
         });
     }
   };
@@ -141,10 +143,11 @@ export function ImportScoreDialog() {
     if (imported.length === 1 && only) {
       const importText = readText(IMPORT_TEXT);
       toast.success(only.joinedExistingScore ? importText.joined(only.score.title) : importText.imported(only.score.title), {
+        duration: IMPORT_TOAST_DURATION_MS,
         action: { label: readText(COMMON_TEXT).open, onClick: () => navigate(`/view/${only.partId}`) },
       });
     } else {
-      toast.success(readText(IMPORT_TEXT).importedMany(imported.length));
+      toast.success(readText(IMPORT_TEXT).importedMany(imported.length), { duration: IMPORT_TOAST_DURATION_MS });
     }
     if (imported.length === readyItems.length && items.length === readyItems.length) close();
   };
@@ -205,7 +208,7 @@ export function ImportScoreDialog() {
             </section>
           );
         })}
-        <PdfDropZone multiple onFiles={addFiles} hint={items.length > 0 ? text.addMore : commonText.dropPdfHint} />
+        <PdfDropZone onFiles={addFiles} hint={items.length > 0 ? text.addMore : commonText.dropFileHint} />
       </div>
     </Dialog>
   );

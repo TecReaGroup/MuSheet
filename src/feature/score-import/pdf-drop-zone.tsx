@@ -2,28 +2,27 @@ import { FileUp } from 'lucide-react';
 import { useRef, useState, type DragEvent } from 'react';
 import { defineText, useText } from '@/shared/i18n/text';
 import { cn } from '@/shared/lib/class-name';
-import { isPdfFile } from './prepare-pdf';
+import { IMPORTABLE_FILE_ACCEPT, isImportableFile } from './prepare-pdf';
 
 const DROP_ZONE_TEXT = defineText({
-  'zh-CN': { pdfOnly: '仅支持 PDF' },
-  en: { pdfOnly: 'PDF only' },
+  'zh-CN': { supportedFormats: '支持 PDF 和图片，多张图片按文件名顺序合并为一个 PDF' },
+  en: { supportedFormats: 'PDF or images; images merge into one PDF in file-name order' },
 });
 
 interface PdfDropZoneProps {
   onFiles: (files: File[]) => void;
-  multiple: boolean;
   hint: string;
   className?: string;
 }
 
-export function PdfDropZone({ onFiles, multiple, hint, className }: PdfDropZoneProps) {
+export function PdfDropZone({ onFiles, hint, className }: PdfDropZoneProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [isOver, setIsOver] = useState(false);
   const text = useText(DROP_ZONE_TEXT);
 
   const accept = (files: FileList | null) => {
-    const pdfs = Array.from(files ?? []).filter(isPdfFile);
-    if (pdfs.length > 0) onFiles(multiple ? pdfs : pdfs.slice(0, 1));
+    const importable = Array.from(files ?? []).filter(isImportableFile);
+    if (importable.length > 0) onFiles(importable);
   };
 
   const handleDrop = (event: DragEvent) => {
@@ -48,12 +47,12 @@ export function PdfDropZone({ onFiles, multiple, hint, className }: PdfDropZoneP
     >
       <FileUp className="size-7 text-score" />
       <span className="text-sm font-medium text-fg">{hint}</span>
-      <span className="text-xs text-fg-subtle">{text.pdfOnly}</span>
+      <span className="text-xs text-fg-subtle">{text.supportedFormats}</span>
       <input
         ref={inputRef}
         type="file"
-        accept="application/pdf,.pdf"
-        multiple={multiple}
+        accept={IMPORTABLE_FILE_ACCEPT}
+        multiple
         className="hidden"
         onChange={event => {
           accept(event.target.files);

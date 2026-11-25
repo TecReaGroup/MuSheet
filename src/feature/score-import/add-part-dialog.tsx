@@ -20,7 +20,7 @@ import {
   type InstrumentChoice,
 } from './instrument-picker';
 import { PdfDropZone } from './pdf-drop-zone';
-import { PdfReadError, preparePdf, type PreparedPdf } from './prepare-pdf';
+import { UnreadableFileError, groupImportSources, importSourceName, preparePdf, type PreparedPdf } from './prepare-pdf';
 
 const ADD_PART_TEXT = defineText({
   'zh-CN': {
@@ -55,14 +55,17 @@ export function AddPartDialog({ score, open, onOpenChange }: AddPartDialogProps)
   const commonText = useText(COMMON_TEXT);
   const takenInstruments = score.parts.filter(part => part.instrument !== 'custom').map(part => part.instrument);
 
-  const selectFile = ([file]: File[]) => {
-    if (!file) return;
-    setUpload({ state: 'uploading', fileName: file.name });
-    preparePdf(file)
-      .then(prepared => setUpload({ state: 'ready', fileName: file.name, prepared }))
+  const selectFiles = (files: File[]) => {
+    // A part holds one PDF: the first PDF wins, otherwise all images merge into it.
+    const [source] = groupImportSources(files);
+    if (!source) return;
+    const fileName = importSourceName(source);
+    setUpload({ state: 'uploading', fileName });
+    preparePdf(source)
+      .then(prepared => setUpload({ state: 'ready', fileName, prepared }))
       .catch(error => {
         log('warn', 'Import', 'Preparing part PDF failed', serializeError(error));
-        setUpload({ state: 'failed', message: error instanceof PdfReadError ? readText(COMMON_TEXT).unreadablePdf : describeError(error) });
+        setUpload({ state: 'failed', message: error instanceof UnreadableFileError ? readText(COMMON_TEXT).unreadableFile : describeError(error) });
       });
   };
 
@@ -99,7 +102,7 @@ export function AddPartDialog({ score, open, onOpenChange }: AddPartDialogProps)
     >
       <div className="space-y-4 pb-2">
         {upload.state === 'idle' || upload.state === 'failed'
-          ? <PdfDropZone multiple={false} onFiles={selectFile} hint={commonText.dropPdfHint} />
+          ? <PdfDropZone onFiles={selectFiles} hint={commonText.dropFileHint} />
           : (
             <div className="flex items-center gap-3 rounded-panel border border-border p-4">
               <FileText className="size-5 text-score" />

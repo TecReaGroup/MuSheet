@@ -14,10 +14,9 @@ import { usePageTurnKeys } from '@/feature/page-turn/use-page-turn-keys';
 import {
   canShowSpread,
   fitInto,
-  nextPosition,
-  previousPosition,
+  nextPage,
+  previousPage,
   type ViewLayout,
-  type ViewPosition,
 } from '@/feature/page-turn/view-position';
 import { prefetchPdfPage } from '@/feature/pdf-render/pdf-page';
 import { usePdfDocument } from '@/feature/pdf-render/use-pdf-document';
@@ -55,10 +54,9 @@ interface ScoreReaderProps {
   setlistContext?: SetlistContext;
 }
 
-function describePosition(position: ViewPosition, layout: ViewLayout, pageCount: number) {
-  if (layout === 'spread' && position.page < pageCount) return `${position.page}–${position.page + 1} / ${pageCount}`;
-  if (layout === 'split') return `${position.page}→${position.page + 1} / ${pageCount}`;
-  return `${position.page} / ${pageCount}`;
+function describePage(page: number, layout: ViewLayout, pageCount: number) {
+  if (layout === 'spread' && page < pageCount) return `${page}–${page + 1} / ${pageCount}`;
+  return `${page} / ${pageCount}`;
 }
 
 /** The reading surface for one part. Mounted per part (keyed by part id) so all reading state starts fresh. */
@@ -75,7 +73,7 @@ export function ScoreReader({ score, part, initialPage, setlistContext }: ScoreR
 
   const stageRef = useRef<HTMLDivElement>(null);
   const box = useElementSize(stageRef);
-  const [position, setPosition] = useState<ViewPosition>({ page: initialPage, split: false });
+  const [page, setPage] = useState(initialPage);
   const [isChromeVisible, setIsChromeVisible] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [isMetronomeOpen, setIsMetronomeOpen] = useState(false);
@@ -84,22 +82,17 @@ export function ScoreReader({ score, part, initialPage, setlistContext }: ScoreR
   const indicatorTimer = useRef(0);
 
   const pageCount = pdf?.pageSizes.length ?? part.pageCount;
-  const currentSize = pdf?.pageSizes[position.page - 1];
-  const layout: ViewLayout = isEditing
-    ? 'single'
-    : preference.pageTurn === 'page' && currentSize && canShowSpread(currentSize, box)
-      ? 'spread'
-      : position.split && preference.pageTurn === 'half' && position.page < pageCount
-        ? 'split'
-        : 'single';
+  const currentSize = pdf?.pageSizes[page - 1];
+  const isSpreadAvailable = !!currentSize && canShowSpread(currentSize, box);
+  const layout: ViewLayout = !isEditing && preference.twoPageView && isSpreadAvailable ? 'spread' : 'single';
 
   useEffect(() => {
     markScoreOpened(score.id).catch(error => log('warn', 'Viewer', 'Marking score opened failed', { message: String(error) }));
   }, [score.id]);
 
   useEffect(() => {
-    saveReadingPosition(part.id, position.page);
-  }, [part.id, position.page]);
+    saveReadingPosition(part.id, page);
+  }, [part.id, page]);
 
   const flashIndicator = () => {
     setIsIndicatorVisible(true);
@@ -145,11 +138,11 @@ export function ScoreReader({ score, part, initialPage, setlistContext }: ScoreR
   function turn(direction: 'next' | 'previous') {
     if (!pdf) return;
     const result = direction === 'next'
-      ? nextPosition(position, layout, preference.pageTurn, pageCount)
-      : previousPosition(position, layout, preference.pageTurn);
+      ? nextPage(page, layout, pageCount)
+      : previousPage(page, layout);
     if (result === 'past-end') return goToNeighbourSong(1);
     if (result === 'before-start') return goToNeighbourSong(-1);
-    setPosition(result);
+    setPage(result);
     gesture.resetZoom();
     flashIndicator();
   }
@@ -160,22 +153,21 @@ export function ScoreReader({ score, part, initialPage, setlistContext }: ScoreR
     if (!pdf || box.width === 0) return;
     const slot = layout === 'spread' ? { width: box.width / 2, height: box.height } : box;
     const step = layout === 'spread' ? 2 : 1;
-    for (const page of [position.page + step, position.page + step + 1, position.page - step]) {
-      const size = pdf.pageSizes[page - 1];
+    for (const neighbour of [page + step, page + step + 1, page - step]) {
+      const size = pdf.pageSizes[neighbour - 1];
       if (!size) continue;
       const fitted = fitInto(size, slot);
-      prefetchPdfPage(pdf, page, fitted.width, fitted.height);
+      prefetchPdfPage(pdf, neighbour, fitted.width, fitted.height);
     }
-  }, [pdf, position.page, layout, box]);
+  }, [pdf, page, layout, box]);
 
   const startEditing = () => {
     setIsEditing(true);
     setIsChromeVisible(true);
-    setPosition(current => ({ ...current, split: false }));
     gesture.resetZoom();
   };
 
-  const pageLabel = describePosition(position, layout, pageCount);
+  const pageLabel = describePage(page, layout, pageCount);
 
   return (
     <div className="fixed inset-0 overflow-hidden bg-canvas text-fg">
@@ -184,7 +176,7 @@ export function ScoreReader({ score, part, initialPage, setlistContext }: ScoreR
           <PageStage
             pdf={pdf}
             layout={layout}
-            position={position}
+            page={page}
             box={box}
             transform={gesture.transform}
             renderZoom={renderZoom}
@@ -210,6 +202,7 @@ export function ScoreReader({ score, part, initialPage, setlistContext }: ScoreR
         score={score}
         part={part}
         visible={isChromeVisible || isEditing}
+        isSpreadAvailable={isSpreadAvailable}
         backFallback={setlistContext ? `/setlist/${setlistContext.setlist.id}` : `/score/${score.id}`}
         setlistName={setlistContext?.setlist.name}
         onSwitchPart={target => navigate(viewerPath(target.id, setlistContext && { id: setlistContext.setlist.id, index: setlistContext.index }), { replace: true })}
@@ -219,7 +212,7 @@ export function ScoreReader({ score, part, initialPage, setlistContext }: ScoreR
       {isEditing
         ? (
           <div className="absolute inset-x-0 bottom-0 z-20 flex justify-center px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
-            <AnnotationToolbar book={book} page={position.page} onDone={() => setIsEditing(false)} />
+            <AnnotationToolbar book={book} page={page} onDone={() => setIsEditing(false)} />
           </div>
         )
         : (

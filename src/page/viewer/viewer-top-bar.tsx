@@ -16,19 +16,20 @@ interface ViewerTopBarProps {
   score: ScoreSummary;
   part: PartView;
   visible: boolean;
+  isSpreadAvailable: boolean;
   backFallback: string;
   setlistName?: string;
   onSwitchPart: (part: PartView) => void;
   onOpenSetlist?: () => void;
 }
 
-export function ViewerTopBar({ score, part, visible, backFallback, setlistName, onSwitchPart, onOpenSetlist }: ViewerTopBarProps) {
+export function ViewerTopBar({ score, part, visible, isSpreadAvailable, backFallback, setlistName, onSwitchPart, onOpenSetlist }: ViewerTopBarProps) {
   const navigate = useNavigate();
   const goBack = useGoBack(backFallback);
   const fullscreen = useFullscreen();
   const text = useText(VIEWER_TEXT);
   const commonText = useText(COMMON_TEXT);
-  const { nightScore, pageTurn, update } = usePreferenceStore();
+  const { nightScore, twoPageView, update } = usePreferenceStore();
 
   return (
     <header
@@ -76,7 +77,9 @@ export function ViewerTopBar({ score, part, visible, backFallback, setlistName, 
                 {fullscreen.isFullscreen ? text.exitFullscreen : text.fullscreen}
               </MenuItem>
             )}
-            <MenuCheckItem checked={pageTurn === 'half'} onCheckedChange={checked => update({ pageTurn: checked ? 'half' : 'page' })}>{text.halfPageTurn}</MenuCheckItem>
+            {isSpreadAvailable && (
+              <MenuCheckItem checked={twoPageView} onCheckedChange={checked => update({ twoPageView: checked })}>{text.twoPageView}</MenuCheckItem>
+            )}
             <MenuCheckItem checked={nightScore} onCheckedChange={checked => update({ nightScore: checked })}>{text.nightScore}</MenuCheckItem>
             <MenuSeparator />
             <MenuItem icon={<Info />} onSelect={() => navigate(`/score/${score.id}`)}>{text.scoreDetails}</MenuItem>
