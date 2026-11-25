@@ -12,5 +12,5 @@
     "noEmit": true,
     "types": ["node"]
   },
-  "include": ["./**/*.ts", "../contract/**/*.ts"]
+  "include": ["./**/*.ts", "../contract/**/*.ts", "../script/**/*.ts"]
 }

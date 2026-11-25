@@ -1,6 +1,5 @@
 import { z } from 'zod';
 
-export const INSTRUMENTS = ['vocal', 'keyboard', 'guitar', 'bass', 'drums', 'custom'] as const;
 export const TIME_SIGNATURES = ['2/4', '3/4', '4/4', '5/4', '6/8', '7/8', '9/8', '12/8'] as const;
 export const SORT_KEYS = ['created', 'title', 'opened'] as const;
 export const SORT_ORDERS = ['asc', 'desc'] as const;
@@ -18,8 +17,9 @@ export const ACCOUNT_MAX_LENGTH = 40;
 export const PASSWORD_MIN_LENGTH = 8;
 export const PASSWORD_MAX_LENGTH = 200;
 export const AVATAR_IMAGE_MAX_BYTES = 1024 * 1024;
+export const TAG_MAX_LENGTH = 40;
+export const TAG_LIST_MAX_SIZE = 100;
 
-export type Instrument = (typeof INSTRUMENTS)[number];
 export type TimeSignature = (typeof TIME_SIGNATURES)[number];
 export type SortKey = (typeof SORT_KEYS)[number];
 export type SortOrder = (typeof SORT_ORDERS)[number];
@@ -30,16 +30,7 @@ const sha256Schema = z.string().regex(/^[0-9a-f]{64}$/);
 const titleSchema = z.string().trim().min(1).max(TITLE_MAX_LENGTH);
 const composerSchema = z.string().trim().max(TITLE_MAX_LENGTH);
 
-const instrumentFields = {
-  instrument: z.enum(INSTRUMENTS),
-  customLabel: z.string().trim().min(1).max(40).nullable(),
-};
-
-// A custom label exists exactly when the instrument is "custom"; the DB enforces the same rule.
-function hasConsistentLabel(value: { instrument: Instrument; customLabel: string | null }) {
-  return (value.instrument === 'custom') === (value.customLabel !== null);
-}
-const INSTRUMENT_LABEL_ISSUE = { message: 'customLabel is required only for custom instruments', path: ['customLabel'] };
+const tagSchema = z.string().trim().min(1).max(TAG_MAX_LENGTH);
 
 // ---------- Requests ----------
 
@@ -69,8 +60,8 @@ export const scoreImportRequestSchema = z.object({
   title: titleSchema,
   composer: composerSchema.default(''),
   pdfSha256: sha256Schema,
-  ...instrumentFields,
-}).refine(hasConsistentLabel, INSTRUMENT_LABEL_ISSUE);
+  tag: tagSchema,
+});
 export type ScoreImportRequest = z.input<typeof scoreImportRequestSchema>;
 
 export const scoreUpdateRequestSchema = z.object({
@@ -83,11 +74,18 @@ export type ScoreUpdateRequest = z.input<typeof scoreUpdateRequestSchema>;
 
 export const partCreateRequestSchema = z.object({
   pdfSha256: sha256Schema,
-  ...instrumentFields,
-}).refine(hasConsistentLabel, INSTRUMENT_LABEL_ISSUE);
+  tag: tagSchema,
+});
 export type PartCreateRequest = z.input<typeof partCreateRequestSchema>;
 
 export const partOrderRequestSchema = z.object({ partIds: z.array(z.uuid()).min(1) });
+
+// The shared tag list is replaced as a whole; names are unique ignoring case so the picker never shows look-alikes.
+export const tagListRequestSchema = z.object({
+  tags: z.array(tagSchema).min(1).max(TAG_LIST_MAX_SIZE)
+    .refine(tags => new Set(tags.map(tag => tag.toLowerCase())).size === tags.length, 'Tags must be unique'),
+});
+export type TagListRequest = z.input<typeof tagListRequestSchema>;
 
 const descriptionSchema = z.string().trim().max(500);
 
@@ -203,8 +201,7 @@ export interface PdfFileView {
 
 export interface PartView extends PdfFileView {
   id: string;
-  instrument: Instrument;
-  customLabel: string | null;
+  tag: string;
 }
 
 export interface ScoreSummary {

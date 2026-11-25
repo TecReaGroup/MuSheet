@@ -1,15 +1,12 @@
 import type { PartView, ScoreSummary } from '@contract/api';
-import { ChevronDown, ChevronLeft, Ellipsis, Info, ListMusic, Maximize, Minimize } from 'lucide-react';
-import { useNavigate } from 'react-router';
-import { partLabel } from '@/entity/part/instrument';
+import { ChevronDown, ChevronLeft, Ellipsis, ListMusic } from 'lucide-react';
 import { usePreferenceStore } from '@/feature/preference/preference-store';
-import { useFullscreen } from '@/feature/performance-mode/use-fullscreen';
 import { COMMON_TEXT } from '@/shared/i18n/common-text';
 import { useText } from '@/shared/i18n/text';
 import { cn } from '@/shared/lib/class-name';
 import { useGoBack } from '@/shared/lib/use-go-back';
 import { IconButton } from '@/shared/ui/button';
-import { Menu, MenuCheckItem, MenuContent, MenuItem, MenuLabel, MenuSeparator, MenuTrigger } from '@/shared/ui/menu';
+import { Menu, MenuCheckItem, MenuContent, MenuLabel, MenuTrigger } from '@/shared/ui/menu';
 import { VIEWER_TEXT } from './viewer-text';
 
 interface ViewerTopBarProps {
@@ -24,9 +21,7 @@ interface ViewerTopBarProps {
 }
 
 export function ViewerTopBar({ score, part, visible, isSpreadAvailable, backFallback, setlistName, onSwitchPart, onOpenSetlist }: ViewerTopBarProps) {
-  const navigate = useNavigate();
   const goBack = useGoBack(backFallback);
-  const fullscreen = useFullscreen();
   const text = useText(VIEWER_TEXT);
   const commonText = useText(COMMON_TEXT);
   const { nightScore, twoPageView, update } = usePreferenceStore();
@@ -51,7 +46,7 @@ export function ViewerTopBar({ score, part, visible, isSpreadAvailable, backFall
                   {score.parts.length > 1 && <ChevronDown className="size-4 shrink-0 text-fg-subtle" />}
                 </span>
                 <span className="block truncate text-xs text-fg-muted">
-                  {[score.composer, partLabel(part), setlistName].filter(Boolean).join(' · ')}
+                  {[score.composer, part.tag, setlistName].filter(Boolean).join(' · ')}
                 </span>
               </button>
             </MenuTrigger>
@@ -59,7 +54,7 @@ export function ViewerTopBar({ score, part, visible, isSpreadAvailable, backFall
               <MenuLabel>{text.switchPart}</MenuLabel>
               {score.parts.map(candidate => (
                 <MenuCheckItem key={candidate.id} checked={candidate.id === part.id} onSelect={() => onSwitchPart(candidate)}>
-                  {partLabel(candidate)}
+                  {candidate.tag}
                 </MenuCheckItem>
               ))}
             </MenuContent>
@@ -72,17 +67,10 @@ export function ViewerTopBar({ score, part, visible, isSpreadAvailable, backFall
             <IconButton label={commonText.more}><Ellipsis /></IconButton>
           </MenuTrigger>
           <MenuContent>
-            {fullscreen.isSupported && (
-              <MenuItem icon={fullscreen.isFullscreen ? <Minimize /> : <Maximize />} onSelect={fullscreen.toggle}>
-                {fullscreen.isFullscreen ? text.exitFullscreen : text.fullscreen}
-              </MenuItem>
-            )}
             {isSpreadAvailable && (
               <MenuCheckItem checked={twoPageView} onCheckedChange={checked => update({ twoPageView: checked })}>{text.twoPageView}</MenuCheckItem>
             )}
             <MenuCheckItem checked={nightScore} onCheckedChange={checked => update({ nightScore: checked })}>{text.nightScore}</MenuCheckItem>
-            <MenuSeparator />
-            <MenuItem icon={<Info />} onSelect={() => navigate(`/score/${score.id}`)}>{text.scoreDetails}</MenuItem>
           </MenuContent>
         </Menu>
       </div>

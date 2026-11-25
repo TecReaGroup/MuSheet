@@ -19,7 +19,6 @@ const FLOATING_STYLE = 'rounded-full border border-border bg-surface/90 shadow-f
 
 export function ViewerBottomBar({ visible, pageLabel, onPrevious, onNext, onAnnotate, onToggleMetronome }: ViewerBottomBarProps) {
   const isMetronomePlaying = useMetronomeStore(state => state.isPlaying);
-  const currentBeat = useMetronomeStore(state => state.currentBeat);
   const text = useText(VIEWER_TEXT);
 
   return (
@@ -45,7 +44,7 @@ export function ViewerBottomBar({ visible, pageLabel, onPrevious, onNext, onAnno
         <MetronomeIcon />
         <span className="hidden sm:inline">{text.metronome}</span>
         {isMetronomePlaying && (
-          <span className={cn('absolute right-2 top-2 size-2 rounded-full transition-colors duration-75', currentBeat === 0 ? 'bg-setlist' : 'bg-score')} />
+          <span className="absolute right-2 top-2 size-2 rounded-full bg-score" />
         )}
       </Button>
     </footer>

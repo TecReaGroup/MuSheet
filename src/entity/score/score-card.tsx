@@ -4,7 +4,6 @@ import { COMMON_TEXT } from '@/shared/i18n/common-text';
 import { defineText, readText, useText } from '@/shared/i18n/text';
 import { IconTile } from '@/shared/ui/icon-tile';
 import { ListCard } from '@/shared/ui/list-card';
-import { partLabel } from '../part/instrument';
 
 interface ScoreCardProps {
   score: ScoreSummary;
@@ -22,7 +21,7 @@ const SCORE_CARD_TEXT = defineText({
 /** Reads the locale at call time; render it inside a component that subscribes via `useText`. */
 export function describeParts(score: ScoreSummary) {
   if (score.parts.length === 0) return readText(SCORE_CARD_TEXT).noParts;
-  if (score.parts.length <= 2) return score.parts.map(partLabel).join(' · ');
+  if (score.parts.length <= 2) return score.parts.map(part => part.tag).join(' · ');
   return readText(COMMON_TEXT).partCount(score.parts.length);
 }
 

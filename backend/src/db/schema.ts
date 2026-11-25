@@ -1,5 +1,5 @@
 import { boolean, integer, jsonb, pgTable, primaryKey, text, timestamp, uuid } from 'drizzle-orm/pg-core';
-import type { AvatarPreset, Instrument, Stroke, TimeSignature } from '../../../contract/api';
+import type { AvatarPreset, Stroke, TimeSignature } from '../../../contract/api';
 
 // Mirrors db/migration/*.sql, which is the source of truth for constraints and indexes.
 
@@ -28,11 +28,15 @@ export const score = pgTable('score', {
 export const part = pgTable('part', {
   id: uuid('id').primaryKey().defaultRandom(),
   scoreId: uuid('score_id').notNull().references(() => score.id, { onDelete: 'cascade' }),
-  instrument: text('instrument').$type<Instrument>().notNull(),
-  customLabel: text('custom_label'),
+  tag: text('tag').notNull(),
   pdfSha256: text('pdf_sha256').notNull().references(() => pdfFile.sha256),
   position: integer('position').notNull(),
   createdAt: timestamptz('created_at').notNull().defaultNow(),
+});
+
+export const partTag = pgTable('part_tag', {
+  name: text('name').primaryKey(),
+  position: integer('position').notNull(),
 });
 
 export const annotationPage = pgTable('annotation_page', {

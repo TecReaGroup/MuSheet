@@ -1,4 +1,4 @@
-import { ListMusic, Music } from 'lucide-react';
+import { Music } from 'lucide-react';
 import { useNavigate } from 'react-router';
 import { scoreOpenPath } from '@/entity/score/open-score';
 import { ScoreCard } from '@/entity/score/score-card';
@@ -15,7 +15,7 @@ import { RecentShelf } from './recent-shelf';
 import { SearchResult } from './search-result';
 import { byRecentlyOpened, useScoresFromBothSpaces, useSetlistsFromBothSpaces } from './use-both-spaces';
 
-const RECENT_SCORE_LIMIT = 4;
+const RECENT_SCORE_LIMIT = 3;
 const RECENT_SETLIST_LIMIT = 3;
 
 const byNewest = (left: { createdAt: string }, right: { createdAt: string }) => right.createdAt.localeCompare(left.createdAt);
@@ -50,7 +50,7 @@ function RecentContent() {
     return (
       <>
         <LibraryStats />
-        <RecentShelf icon={<Music />} title={text.recentScores} moreTo="/library">
+        <RecentShelf title={text.recentScores} moreTo="/library">
           <CardGridSkeleton count={RECENT_SCORE_LIMIT} />
         </RecentShelf>
       </>
@@ -76,13 +76,13 @@ function RecentContent() {
     <>
       <LibraryStats />
       {setlistItems.length > 0 && (
-        <RecentShelf icon={<ListMusic />} title={text.recentSetlists} moreTo="/library?tab=setlist">
+        <RecentShelf title={text.recentSetlists} moreTo="/library?tab=setlist">
           <CardGrid>
             {setlistItems.map(setlist => <SetlistCard key={setlist.id} setlist={setlist} badge={<SpaceLabel space={setlist.space} />} onOpen={() => navigate(`/setlist/${setlist.id}`)} />)}
           </CardGrid>
         </RecentShelf>
       )}
-      <RecentShelf icon={<Music />} title={text.recentScores} moreTo="/library">
+      <RecentShelf title={text.recentScores} moreTo="/library">
         <CardGrid>
           {scoreItems.map(score => <ScoreCard key={score.id} score={score} badge={<SpaceLabel space={score.space} />} onOpen={() => navigate(scoreOpenPath(score))} />)}
         </CardGrid>

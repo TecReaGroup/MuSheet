@@ -1,7 +1,6 @@
 import { and, eq, sql } from 'drizzle-orm';
-import type { Instrument, ViewerPart } from '../../../../contract/api';
+import type { ViewerPart } from '../../../../contract/api';
 import { db, type DbExecutor } from '../../db/client';
-import { postgresErrorCode, UNIQUE_VIOLATION } from '../../db/postgres-error';
 import { part, score } from '../../db/schema';
 import { HttpError } from '../../http/http-error';
 import { requirePdf, withPdfRelease } from '../pdf/pdf-repository';
@@ -10,35 +9,21 @@ import { loadScoreSummary } from '../score/score-view';
 import type { VisibleSpaceKeys } from '../space/space-key';
 
 export interface PartSelection {
-  instrument: Instrument;
-  customLabel: string | null;
+  tag: string;
   pdfSha256: string;
 }
 
-/** Appends a part at the end of the score; one score cannot hold the same instrument twice. */
+/** Appends a part at the end of the score. */
 export async function insertPart(executor: DbExecutor, scoreId: string, selection: PartSelection): Promise<string> {
   await requirePdf(executor, selection.pdfSha256);
   const [{ nextPosition }] = await executor
     .select({ nextPosition: sql<number>`coalesce(max(${part.position}), -1)::int + 1` })
     .from(part)
     .where(eq(part.scoreId, scoreId));
-  try {
-    const [row] = await executor.insert(part)
-      .values({
-        scoreId,
-        position: nextPosition,
-        instrument: selection.instrument,
-        customLabel: selection.customLabel,
-        pdfSha256: selection.pdfSha256,
-      })
-      .returning({ id: part.id });
-    return row!.id;
-  } catch (error) {
-    if (postgresErrorCode(error) === UNIQUE_VIOLATION) {
-      throw new HttpError(409, 'instrument_exists', 'This score already has a part for that instrument');
-    }
-    throw error;
-  }
+  const [row] = await executor.insert(part)
+    .values({ scoreId, position: nextPosition, tag: selection.tag, pdfSha256: selection.pdfSha256 })
+    .returning({ id: part.id });
+  return row!.id;
 }
 
 export async function addPart(scoreId: string, spaces: VisibleSpaceKeys, selection: PartSelection) {

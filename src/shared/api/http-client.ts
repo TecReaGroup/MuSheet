@@ -12,7 +12,6 @@ export class ApiError extends Error {
 const ERROR_TEXT = defineText<{ byCode: Record<string, string>; fallback: string }>({
   'zh-CN': {
     byCode: {
-      instrument_exists: '这首乐曲已经有该声部了',
       not_found: '内容不存在或已被删除',
       pdf_missing: 'PDF 尚未上传完成',
       hash_mismatch: '文件上传不完整，请重试',
@@ -33,7 +32,6 @@ const ERROR_TEXT = defineText<{ byCode: Record<string, string>; fallback: string
   },
   en: {
     byCode: {
-      instrument_exists: 'This score already has that part',
       not_found: 'This item does not exist or has been deleted',
       pdf_missing: 'The PDF has not finished uploading',
       hash_mismatch: 'The upload was incomplete. Please try again',

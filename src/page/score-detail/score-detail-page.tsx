@@ -1,8 +1,7 @@
 import type { PartView, ScoreDetail } from '@contract/api';
 import { Ellipsis, FilePlus2, Layers, ListMusic, Pencil, Play, Trash2 } from 'lucide-react';
 import { useState, type ReactNode } from 'react';
-import { Link, useNavigate, useParams } from 'react-router';
-import { partLabel } from '@/entity/part/instrument';
+import { useNavigate, useParams } from 'react-router';
 import { deletePart, useReorderParts } from '@/entity/part/part-api';
 import { PartThumbnail } from '@/entity/part/part-thumbnail';
 import { removeScoreWithUndo } from '@/entity/score/remove-score';
@@ -31,8 +30,6 @@ const SCORE_DETAIL_TEXT = defineText({
     addPart: '添加声部',
     noPartsTitle: '还没有声部',
     noPartsDescription: '为这首乐曲添加一份 PDF 分谱。',
-    inSetlists: '所在曲目单',
-    notInSetlists: '尚未加入任何曲目单，可在右上角「更多操作」中加入。',
     deletePart: (part: string) => `删除${part}声部`,
     partDeleted: (part: string) => `已删除${part}声部`,
   },
@@ -43,8 +40,6 @@ const SCORE_DETAIL_TEXT = defineText({
     addPart: 'Add part',
     noPartsTitle: 'No parts yet',
     noPartsDescription: 'Add a PDF part to this score.',
-    inSetlists: 'In setlists',
-    notInSetlists: 'Not in any setlist yet. Add it from "More actions" at the top right.',
     deletePart: (part: string) => `Delete the ${part} part`,
     partDeleted: (part: string) => `Deleted the ${part} part`,
   },
@@ -53,7 +48,7 @@ const SCORE_DETAIL_TEXT = defineText({
 function removePartWithUndo(score: ScoreDetail, part: PartView) {
   const key = scoreKey.detail(score.id);
   runUndoable({
-    message: readText(SCORE_DETAIL_TEXT).partDeleted(partLabel(part)),
+    message: readText(SCORE_DETAIL_TEXT).partDeleted(part.tag),
     apply: () => queryClient.setQueryData<ScoreDetail>(key, { ...score, parts: score.parts.filter(item => item.id !== part.id) }),
     commit: async () => {
       await deletePart(part.id);
@@ -72,11 +67,11 @@ function PartRow({ score, part, dragHandle }: { score: ScoreDetail; part: PartVi
       <button type="button" onClick={() => navigate(`/view/${part.id}`)} className="flex min-w-0 flex-1 items-center gap-3 rounded-tag text-left">
         <PartThumbnail pdf={part} />
         <span className="min-w-0 flex-1">
-          <span className="block truncate text-body font-semibold text-fg">{partLabel(part)}</span>
+          <span className="block truncate text-body font-semibold text-fg">{part.tag}</span>
           <span className="mt-0.5 block text-xs text-fg-subtle tabular-nums">{commonText.pageCount(part.pageCount)}</span>
         </span>
       </button>
-      <IconButton label={text.deletePart(partLabel(part))} onClick={() => removePartWithUndo(score, part)}><Trash2 /></IconButton>
+      <IconButton label={text.deletePart(part.tag)} onClick={() => removePartWithUndo(score, part)}><Trash2 /></IconButton>
     </SortableRowCard>
   );
 }
@@ -140,7 +135,7 @@ export function ScoreDetailPage() {
       <section>
         <SectionHeader
           icon={<Layers />}
-          title={commonText.part}
+          title={commonText.tag}
           action={<Button size="sm" variant="ghost" className="text-score hover:bg-score-soft hover:text-score" onClick={() => setIsAddingPart(true)}><FilePlus2 />{text.addPart}</Button>}
         />
         {score.parts.length === 0
@@ -152,22 +147,6 @@ export function ScoreDetailPage() {
               onReorder={reorder}
               renderItem={(part, _index, handle) => <PartRow score={score} part={part} dragHandle={handle} />}
             />
-          )}
-      </section>
-
-      <section className="mt-10">
-        <SectionHeader icon={<ListMusic />} title={text.inSetlists} />
-        {score.setlists.length === 0
-          ? <p className="text-sm text-fg-quiet">{text.notInSetlists}</p>
-          : (
-            <div className="flex flex-wrap gap-2">
-              {score.setlists.map(setlist => (
-                <Link key={setlist.id} to={`/setlist/${setlist.id}`} className="inline-flex items-center gap-1.5 rounded-tag border border-setlist-soft-2 bg-setlist-soft px-3 py-1.5 text-sm font-medium text-setlist hover:brightness-[0.97]">
-                  <ListMusic className="size-4" />
-                  {setlist.name}
-                </Link>
-              ))}
-            </div>
           )}
       </section>
 

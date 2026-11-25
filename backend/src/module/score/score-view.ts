@@ -13,8 +13,7 @@ export async function toScoreSummaries(executor: DbExecutor, rows: ScoreRow[]): 
     .select({
       id: part.id,
       scoreId: part.scoreId,
-      instrument: part.instrument,
-      customLabel: part.customLabel,
+      tag: part.tag,
       sha256: pdfFile.sha256,
       pageCount: pdfFile.pageCount,
       hasThumbnail: pdfFile.hasThumbnail,

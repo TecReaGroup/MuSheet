@@ -1,4 +1,4 @@
-import { Info, Languages, Monitor, Moon, MoonStar, Palette, Sun, UserRound, type LucideIcon } from 'lucide-react';
+import { BookOpen, Info, Languages, Monitor, Moon, MoonStar, Palette, Sun, Tag, UserRound, type LucideIcon } from 'lucide-react';
 import type { ComponentType } from 'react';
 import { LocaleMenu } from '@/feature/preference/locale-menu';
 import { usePreferenceStore, type ThemePreference } from '@/feature/preference/preference-store';
@@ -9,9 +9,10 @@ import { Switch } from '@/shared/ui/switch';
 import { AccountSection } from './account-section';
 import { SettingGroup, SettingRow } from './setting-group';
 import { SETTING_TEXT, type SettingSectionKey } from './setting-text';
+import { TagSection } from './tag-section';
 
 function AppearanceSection() {
-  const { theme, nightScore, update } = usePreferenceStore();
+  const { theme, nightScore, twoPageView, update } = usePreferenceStore();
   const text = useText(SETTING_TEXT);
   return (
     <SettingGroup>
@@ -32,6 +33,7 @@ function AppearanceSection() {
         )}
       />
       <SettingRow icon={<MoonStar />} title={text.nightScore} description={text.nightScoreDescription} control={<Switch label={text.nightScore} checked={nightScore} onChange={nextNightScore => update({ nightScore: nextNightScore })} />} />
+      <SettingRow icon={<BookOpen />} title={text.twoPageView} description={text.twoPageViewDescription} control={<Switch label={text.twoPageView} checked={twoPageView} onChange={nextTwoPageView => update({ twoPageView: nextTwoPageView })} />} />
     </SettingGroup>
   );
 }
@@ -68,6 +70,7 @@ interface SettingSection {
 export const SETTING_SECTIONS: SettingSection[] = [
   { key: 'account', icon: UserRound, Content: AccountSection },
   { key: 'appearance', icon: Palette, Content: AppearanceSection },
+  { key: 'tag', icon: Tag, Content: TagSection },
   { key: 'language', icon: Languages, Content: LanguageSection },
   { key: 'about', icon: Info, Content: AboutSection },
 ];

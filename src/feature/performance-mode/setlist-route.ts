@@ -1,11 +1,10 @@
 import type { PartView, ScoreSummary } from '@contract/api';
-import { isSameInstrument } from '@/entity/part/instrument';
 
 export type StartPage = number | 'last';
 
-/** Keeps the musician on their own instrument when moving to the next song, if that song has it. */
-export function preferredPart(score: ScoreSummary, currentPart?: Pick<PartView, 'instrument' | 'customLabel'>) {
-  return (currentPart && score.parts.find(part => isSameInstrument(part, currentPart))) ?? score.parts[0];
+/** Keeps the musician on their own tag when moving to the next song, if that song has it. */
+export function preferredPart(score: ScoreSummary, currentPart?: Pick<PartView, 'tag'>) {
+  return (currentPart && score.parts.find(part => part.tag === currentPart.tag)) ?? score.parts[0];
 }
 
 export function viewerPath(partId: string, setlist?: { id: string; index: number }, startPage?: StartPage) {

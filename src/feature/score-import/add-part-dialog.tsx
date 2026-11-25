@@ -2,7 +2,6 @@ import type { ScoreSummary } from '@contract/api';
 import { FileText } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { partLabel } from '@/entity/part/instrument';
 import { useAddPart } from '@/entity/part/part-api';
 import { describeError } from '@/shared/api/http-client';
 import { COMMON_TEXT } from '@/shared/i18n/common-text';
@@ -11,16 +10,9 @@ import { log, serializeError } from '@/shared/lib/logger';
 import { Button } from '@/shared/ui/button';
 import { Dialog } from '@/shared/ui/dialog';
 import { Spinner } from '@/shared/ui/spinner';
-import {
-  InstrumentPicker,
-  isChoiceComplete,
-  lastInstrumentChoice,
-  rememberInstrumentChoice,
-  toPartSelection,
-  type InstrumentChoice,
-} from './instrument-picker';
 import { PdfDropZone } from './pdf-drop-zone';
 import { UnreadableFileError, groupImportSources, importSourceName, preparePdf, type PreparedPdf } from './prepare-pdf';
+import { lastTag, rememberTag, TagPicker } from './tag-picker';
 
 const ADD_PART_TEXT = defineText({
   'zh-CN': {
@@ -49,11 +41,10 @@ type Upload =
 
 export function AddPartDialog({ score, open, onOpenChange }: AddPartDialogProps) {
   const [upload, setUpload] = useState<Upload>({ state: 'idle' });
-  const [choice, setChoice] = useState<InstrumentChoice>(lastInstrumentChoice);
+  const [tag, setTag] = useState(lastTag);
   const addPart = useAddPart(score.id);
   const text = useText(ADD_PART_TEXT);
   const commonText = useText(COMMON_TEXT);
-  const takenInstruments = score.parts.filter(part => part.instrument !== 'custom').map(part => part.instrument);
 
   const selectFiles = (files: File[]) => {
     // A part holds one PDF: the first PDF wins, otherwise all images merge into it.
@@ -76,10 +67,10 @@ export function AddPartDialog({ score, open, onOpenChange }: AddPartDialogProps)
 
   const submit = () => {
     if (upload.state !== 'ready') return;
-    addPart.mutate({ pdfSha256: upload.prepared.sha256, ...toPartSelection(choice) }, {
+    addPart.mutate({ pdfSha256: upload.prepared.sha256, tag }, {
       onSuccess: () => {
-        rememberInstrumentChoice(choice);
-        toast.success(readText(ADD_PART_TEXT).added(partLabel(toPartSelection(choice))));
+        rememberTag(tag);
+        toast.success(readText(ADD_PART_TEXT).added(tag));
         close();
       },
     });
@@ -94,7 +85,7 @@ export function AddPartDialog({ score, open, onOpenChange }: AddPartDialogProps)
       footer={(
         <>
           <Button variant="ghost" onClick={close}>{commonText.cancel}</Button>
-          <Button variant="primary" disabled={upload.state !== 'ready' || !isChoiceComplete(choice) || addPart.isPending} onClick={submit}>
+          <Button variant="primary" disabled={upload.state !== 'ready' || !tag || addPart.isPending} onClick={submit}>
             {commonText.add}
           </Button>
         </>
@@ -111,7 +102,7 @@ export function AddPartDialog({ score, open, onOpenChange }: AddPartDialogProps)
             </div>
           )}
         {upload.state === 'failed' && <p className="text-sm text-danger">{upload.message}</p>}
-        <InstrumentPicker value={choice} onChange={setChoice} takenInstruments={takenInstruments} />
+        <TagPicker value={tag} onChange={setTag} />
       </div>
     </Dialog>
   );

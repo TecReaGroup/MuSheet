@@ -14,16 +14,9 @@ import { Dialog } from '@/shared/ui/dialog';
 import { Field, TextInput } from '@/shared/ui/form-field';
 import { Spinner } from '@/shared/ui/spinner';
 import { useImportDialogStore } from './import-dialog-store';
-import {
-  InstrumentPicker,
-  isChoiceComplete,
-  lastInstrumentChoice,
-  rememberInstrumentChoice,
-  toPartSelection,
-  type InstrumentChoice,
-} from './instrument-picker';
 import { PdfDropZone } from './pdf-drop-zone';
 import { UnreadableFileError, groupImportSources, importSourceName, preparePdf, titleFromImportSource, type PreparedPdf } from './prepare-pdf';
+import { lastTag, rememberTag, TagPicker } from './tag-picker';
 
 const IMPORT_TOAST_DURATION_MS = 1000;
 
@@ -59,7 +52,7 @@ interface ImportItem {
   fileName: string;
   title: string;
   composer: string;
-  choice: InstrumentChoice;
+  tag: string;
   status: ImportStatus;
   prepared?: PreparedPdf;
   error?: string;
@@ -86,7 +79,7 @@ export function ImportScoreDialog() {
     setItems(current => current.map(item => (item.key === key ? { ...item, ...patch } : item)));
 
   const addFiles = (files: File[]) => {
-    const choice = lastInstrumentChoice();
+    const tag = lastTag();
     // crypto.randomUUID is missing outside secure contexts (tablet on http://<LAN IP>).
     const keyed = groupImportSources(files).map(source => ({ key: crypto.randomUUID?.() ?? `${Date.now()}-${Math.random()}`, source }));
     setItems(current => [
@@ -96,7 +89,7 @@ export function ImportScoreDialog() {
         fileName: importSourceName(source),
         title: titleFromImportSource(source),
         composer: '',
-        choice,
+        tag,
         status: 'uploading',
       })),
     ]);
@@ -115,7 +108,7 @@ export function ImportScoreDialog() {
     if (isOpen && incomingFiles.length > 0) addFiles(takeIncomingFiles());
   }, [isOpen, incomingFiles, takeIncomingFiles]);
 
-  const readyItems = items.filter(item => item.status === 'ready' && item.title.trim() && isChoiceComplete(item.choice));
+  const readyItems = items.filter(item => item.status === 'ready' && item.title.trim() && item.tag);
   const isBusy = items.some(item => item.status === 'uploading' || item.status === 'importing');
 
   const importReadyItems = async () => {
@@ -128,9 +121,9 @@ export function ImportScoreDialog() {
           title: item.title.trim(),
           composer: item.composer.trim(),
           pdfSha256: item.prepared!.sha256,
-          ...toPartSelection(item.choice),
+          tag: item.tag,
         }));
-        rememberInstrumentChoice(item.choice);
+        rememberTag(item.tag);
         setItems(current => current.filter(entry => entry.key !== item.key));
       } catch (error) {
         log('warn', 'Import', 'Import failed', serializeError(error));
@@ -200,7 +193,7 @@ export function ImportScoreDialog() {
                     <Field label={commonText.composer}>
                       <TextInput value={item.composer} maxLength={120} list="musheet-composers" placeholder={commonText.optional} onChange={event => patchItem(item.key, { composer: event.target.value })} />
                     </Field>
-                    <InstrumentPicker value={item.choice} onChange={choice => patchItem(item.key, { choice })} />
+                    <TagPicker value={item.tag} onChange={tag => patchItem(item.key, { tag })} />
                     {match && <p className="text-caption text-setlist">{text.willJoin(match.title)}</p>}
                     {item.error && <p className="text-caption text-danger">{item.error}</p>}
                   </>

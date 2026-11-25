@@ -237,12 +237,22 @@ export function ScoreReader({ score, part, initialPage, setlistContext }: ScoreR
       </div>
 
       {isMetronomeOpen && (
-        <div
-          className={cn('absolute right-3 z-30 left-3 sm:left-auto', isEditing ? 'bottom-36' : 'bottom-[calc(4.5rem+env(safe-area-inset-bottom))]')}
-          onPointerDown={event => event.stopPropagation()}
-        >
-          <MetronomePanel onClose={() => setIsMetronomeOpen(false)} />
-        </div>
+        <>
+          <div
+            aria-hidden
+            className="absolute inset-0 z-30"
+            onPointerDown={event => {
+              event.stopPropagation();
+              setIsMetronomeOpen(false);
+            }}
+          />
+          <div
+            className={cn('absolute right-3 z-30 left-3 sm:left-auto', isEditing ? 'bottom-36' : 'bottom-[calc(4.5rem+env(safe-area-inset-bottom))]')}
+            onPointerDown={event => event.stopPropagation()}
+          >
+            <MetronomePanel />
+          </div>
+        </>
       )}
 
       {setlistContext && (

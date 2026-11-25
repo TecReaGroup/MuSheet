@@ -1,6 +1,6 @@
 import { defineText } from '@/shared/i18n/text';
 
-export type SettingSectionKey = 'account' | 'appearance' | 'language' | 'about';
+export type SettingSectionKey = 'account' | 'appearance' | 'tag' | 'language' | 'about';
 
 interface SettingText {
   setting: string;
@@ -12,6 +12,13 @@ interface SettingText {
   interfaceLanguage: string;
   nightScore: string;
   nightScoreDescription: string;
+  twoPageView: string;
+  twoPageViewDescription: string;
+  tagDescription: string;
+  tagPlaceholder: string;
+  addTag: string;
+  removeTag: (tag: string) => string;
+  tagExists: string;
   logout: string;
   logoutAction: string;
   version: (version: string) => string;
@@ -21,7 +28,7 @@ interface SettingText {
 export const SETTING_TEXT = defineText<SettingText>({
   'zh-CN': {
     setting: '设置',
-    section: { account: '账号', appearance: '外观', language: '语言', about: '关于' },
+    section: { account: '账号', appearance: '外观', tag: '标签', language: '语言', about: '关于' },
     theme: '主题',
     themeSystem: '自动',
     themeLight: '浅色',
@@ -29,6 +36,13 @@ export const SETTING_TEXT = defineText<SettingText>({
     interfaceLanguage: '界面语言',
     nightScore: '夜间乐谱',
     nightScoreDescription: '反转乐谱颜色，适合暗场演出。',
+    twoPageView: '双页显示',
+    twoPageViewDescription: '横屏且空间足够时并排显示两页。',
+    tagDescription: '导入乐谱时可选的标签，所有成员共用这份列表。',
+    tagPlaceholder: '新标签名称',
+    addTag: '添加',
+    removeTag: tag => `删除标签「${tag}」`,
+    tagExists: '已有同名标签',
     logout: '退出登录',
     logoutAction: '退出',
     version: version => `版本 ${version}`,
@@ -36,7 +50,7 @@ export const SETTING_TEXT = defineText<SettingText>({
   },
   en: {
     setting: 'Settings',
-    section: { account: 'Account', appearance: 'Appearance', language: 'Language', about: 'About' },
+    section: { account: 'Account', appearance: 'Appearance', tag: 'Tags', language: 'Language', about: 'About' },
     theme: 'Theme',
     themeSystem: 'Auto',
     themeLight: 'Light',
@@ -44,6 +58,13 @@ export const SETTING_TEXT = defineText<SettingText>({
     interfaceLanguage: 'Interface language',
     nightScore: 'Night mode',
     nightScoreDescription: 'Inverts score colors for dark stages.',
+    twoPageView: 'Two-page view',
+    twoPageViewDescription: 'Shows two pages side by side in landscape when they fit.',
+    tagDescription: 'Tags to choose from when importing scores. Everyone shares this list.',
+    tagPlaceholder: 'New tag name',
+    addTag: 'Add',
+    removeTag: tag => `Remove the "${tag}" tag`,
+    tagExists: 'A tag with this name already exists',
     logout: 'Log out',
     logoutAction: 'Log out',
     version: version => `Version ${version}`,

@@ -12,11 +12,8 @@ export const VIEWER_TEXT = defineText({
     nextPage: '下一页',
     metronome: '节拍器',
     switchPart: '切换声部',
-    fullscreen: '全屏',
-    exitFullscreen: '退出全屏',
     twoPageView: '双页显示',
     nightScore: '夜间乐谱',
-    scoreDetails: '乐曲详情',
   },
   en: {
     loadFailed: 'Failed to load the score',
@@ -29,10 +26,7 @@ export const VIEWER_TEXT = defineText({
     nextPage: 'Next page',
     metronome: 'Metronome',
     switchPart: 'Switch part',
-    fullscreen: 'Full screen',
-    exitFullscreen: 'Exit full screen',
     twoPageView: 'Two-page view',
     nightScore: 'Night mode',
-    scoreDetails: 'Score details',
   },
 });

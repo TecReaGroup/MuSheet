@@ -97,8 +97,8 @@ export async function copyScoresIntoTeam(transaction: DbExecutor, personalSpaceK
     }).returning();
     const parts = sourceParts.filter(candidate => candidate.scoreId === source.id);
     if (parts.length > 0) {
-      await transaction.insert(part).values(parts.map(({ instrument, customLabel, pdfSha256, position }) => ({
-        scoreId: copy!.id, instrument, customLabel, pdfSha256, position,
+      await transaction.insert(part).values(parts.map(({ tag, pdfSha256, position }) => ({
+        scoreId: copy!.id, tag, pdfSha256, position,
       })));
     }
     copies.set(source.id, copy!);

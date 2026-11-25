@@ -20,7 +20,7 @@ export function SetlistCard({ setlist, onOpen, badge, actions, onContextMenu }: 
       leading={<IconTile kind="setlist" />}
       title={setlist.name}
       badge={badge}
-      subtitle={setlist.description || undefined}
+      subtitle={setlist.description || text.noDescription}
       meta={text.scoreCount(setlist.scoreCount)}
       trailing={actions}
       onOpen={onOpen}
