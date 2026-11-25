@@ -1,4 +1,7 @@
-import { BookOpen, Eye, Hand, Monitor, Moon, MoonStar, Palette, RotateCcw, SkipBack, SkipForward, Sun } from 'lucide-react';
+import { BookOpen, Eye, Hand, LogOut, Monitor, Moon, MoonStar, Palette, RotateCcw, SkipBack, SkipForward, Sun } from 'lucide-react';
+import { useNavigate } from 'react-router';
+import { toast } from 'sonner';
+import { logout, useSession } from '@/feature/auth/session-api';
 import {
   DEFAULT_NEXT_PAGE_KEYS,
   DEFAULT_PREVIOUS_PAGE_KEYS,
@@ -6,6 +9,7 @@ import {
   type PageTurnMode,
   type ThemePreference,
 } from '@/feature/preference/preference-store';
+import { describeError } from '@/shared/api/http-client';
 import { Button } from '@/shared/ui/button';
 import { AppIcon, Wordmark } from '@/shared/ui/logo';
 import { PageHeader } from '@/shared/ui/page-header';
@@ -17,6 +21,17 @@ import { SettingGroup, SettingRow } from './setting-group';
 export function SettingPage() {
   const preference = usePreferenceStore();
   const { update } = preference;
+  const session = useSession();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/login', { replace: true });
+    } catch (error) {
+      toast.error(describeError(error));
+    }
+  };
 
   return (
     <div className="max-w-2xl">
@@ -68,6 +83,15 @@ export function SettingPage() {
           title="恢复默认按键"
           description="翻页器配对后相当于键盘，大多数型号无需额外设置。"
           control={<Button size="sm" onClick={() => update({ nextPageKeys: DEFAULT_NEXT_PAGE_KEYS, previousPageKeys: DEFAULT_PREVIOUS_PAGE_KEYS })}>恢复</Button>}
+        />
+      </SettingGroup>
+
+      <SettingGroup title="账号">
+        <SettingRow
+          icon={<LogOut />}
+          title="退出登录"
+          description={session.data ? `当前账号：${session.data.account}` : undefined}
+          control={<Button size="sm" variant="danger" onClick={() => void handleLogout()}>退出</Button>}
         />
       </SettingGroup>
 

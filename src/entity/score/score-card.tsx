@@ -1,8 +1,8 @@
 import type { ScoreSummary } from '@contract/api';
 import type { MouseEvent, ReactNode } from 'react';
+import { IconTile } from '@/shared/ui/icon-tile';
 import { ListCard } from '@/shared/ui/list-card';
 import { partLabel } from '../part/instrument';
-import { PartThumbnail } from '../part/part-thumbnail';
 
 interface ScoreCardProps {
   score: ScoreSummary;
@@ -20,7 +20,7 @@ export function describeParts(score: ScoreSummary) {
 export function ScoreCard({ score, onOpen, actions, onContextMenu }: ScoreCardProps) {
   return (
     <ListCard
-      leading={<PartThumbnail pdf={score.parts[0]} className="h-14 w-10.5" />}
+      leading={<IconTile kind="score" />}
       title={score.title}
       subtitle={score.composer || '未填写作曲'}
       meta={`${describeParts(score)} · ${score.bpm} BPM`}

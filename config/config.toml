@@ -9,3 +9,7 @@ max_upload_mb = 100
 [log]
 # Options: "debug" | "info" | "warn" | "error"
 level = "info"
+
+[auth]
+# How long a login stays valid. The admin account itself is set in .env (account / password).
+session_days = 30

@@ -1,6 +1,9 @@
+name: musheet
+
 services:
   postgres:
     image: postgres:17-alpine
+    container_name: musheet-postgres
     restart: unless-stopped
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-musheet}
@@ -17,6 +20,8 @@ services:
       retries: 10
 
   app:
+    image: musheet-app
+    container_name: musheet-app
     build:
       context: .
       dockerfile: Dockerfile
@@ -32,6 +37,9 @@ services:
     environment:
       NODE_ENV: production
       DATABASE_URL: postgres://${POSTGRES_USER:-musheet}:${POSTGRES_PASSWORD:-musheet}@postgres:5432/${POSTGRES_DB:-musheet}
+      account: ${account:?set account in .env}
+      password: ${password:?set password in .env}
 
 volumes:
   postgres-data:
+    name: musheet-postgres-data

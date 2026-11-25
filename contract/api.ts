@@ -121,7 +121,17 @@ export const clientLogRequestSchema = z.object({
   fields: z.record(z.string(), z.union([z.string().max(2000), z.number(), z.boolean(), z.null()])).default({}),
 });
 
+export const loginRequestSchema = z.object({
+  account: z.string().trim().min(1).max(120),
+  password: z.string().min(1).max(200),
+});
+export type LoginRequest = z.input<typeof loginRequestSchema>;
+
 // ---------- Responses ----------
+
+export interface SessionView {
+  account: string;
+}
 
 export interface PdfFileView {
   sha256: string;

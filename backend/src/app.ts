@@ -8,6 +8,7 @@ import { projectPath } from './config/project-path';
 import { sendErrorResponse } from './http/error-response';
 import { log, type LogFields } from './infrastructure/logger';
 import { registerAnnotationRoutes } from './module/annotation/annotation-route';
+import { registerAuthRoutes, requireAdminSession } from './module/auth/auth-route';
 import { registerClientLogRoutes } from './module/client-log/client-log-route';
 import { registerPartRoutes } from './module/part/part-route';
 import { registerPdfRoutes } from './module/pdf/pdf-route';
@@ -39,8 +40,10 @@ export async function buildApp() {
   app.addContentTypeParser(BINARY_UPLOAD_TYPES, (_request, payload, done) => done(null, payload));
   app.setErrorHandler(sendErrorResponse);
   app.addHook('onResponse', logResponse);
+  app.addHook('onRequest', requireAdminSession);
 
   app.get('/api/health', async () => ({ status: 'ok' }));
+  await app.register(registerAuthRoutes);
   await app.register(registerScoreRoutes);
   await app.register(registerPartRoutes);
   await app.register(registerPdfRoutes);

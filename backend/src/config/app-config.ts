@@ -6,16 +6,23 @@ import { z } from 'zod';
 import { projectPath } from './project-path';
 
 const BYTES_PER_MB = 1024 * 1024;
+const MS_PER_DAY = 24 * 60 * 60 * 1000;
+// Matches the compose.yaml defaults so `make run` works against `make db` with zero setup.
+const LOCAL_DATABASE_URL = 'postgres://musheet:musheet@localhost:5432/musheet';
 
 const configFileSchema = z.object({
   server: z.object({ port: z.number().int().min(1).max(65535) }),
   storage: z.object({ data_dir: z.string().min(1), max_upload_mb: z.number().positive() }),
   log: z.object({ level: z.enum(['debug', 'info', 'warn', 'error']) }),
+  auth: z.object({ session_days: z.number().positive() }),
 });
 
 const environmentSchema = z.object({
   NODE_ENV: z.string().default('development'),
-  DATABASE_URL: z.string().min(1),
+  DATABASE_URL: z.string().min(1).default(LOCAL_DATABASE_URL),
+  // Lowercase keys mirror the admin's .env exactly (`account = root`).
+  account: z.string().trim().min(1),
+  password: z.string().min(1),
 });
 
 function readEnvironment() {
@@ -44,6 +51,8 @@ function loadAppConfig() {
     dataDir,
     maxUploadBytes: file.storage.max_upload_mb * BYTES_PER_MB,
     logLevel: file.log.level,
+    admin: { account: environment.account, password: environment.password },
+    sessionTtlMs: file.auth.session_days * MS_PER_DAY,
   };
 }
 

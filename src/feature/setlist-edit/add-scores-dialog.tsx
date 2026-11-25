@@ -1,13 +1,13 @@
 import type { SetlistDetail } from '@contract/api';
 import { Check } from 'lucide-react';
 import { useState } from 'react';
-import { PartThumbnail } from '@/entity/part/part-thumbnail';
 import { useScoreList } from '@/entity/score/score-api';
 import { saveSetlistOrder } from '@/entity/setlist/setlist-change';
 import { cn } from '@/shared/lib/class-name';
 import { useDebouncedValue } from '@/shared/lib/use-debounced-value';
 import { Button } from '@/shared/ui/button';
 import { Dialog } from '@/shared/ui/dialog';
+import { IconTile } from '@/shared/ui/icon-tile';
 import { SearchField } from '@/shared/ui/search-field';
 import { Spinner } from '@/shared/ui/spinner';
 
@@ -71,7 +71,7 @@ export function AddScoresDialog({ setlist, open, onOpenChange }: AddScoresDialog
                 onClick={() => toggle(score.id)}
                 className={cn('flex w-full items-center gap-3 rounded-card p-2 text-left transition-colors', selected ? 'bg-setlist-soft' : 'hover:bg-muted')}
               >
-                <PartThumbnail pdf={score.parts[0]} className="h-12 w-9" />
+                <IconTile kind="score" />
                 <span className="min-w-0 flex-1">
                   <span className="block truncate text-[15px] font-medium">{score.title}</span>
                   <span className="block truncate text-[13px] text-fg-muted">{score.composer || '未填写作曲'}</span>

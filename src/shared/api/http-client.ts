@@ -17,6 +17,8 @@ const ERROR_MESSAGES: Record<string, string> = {
   duplicate_score: '曲目单中已有这首乐曲',
   invalid_request: '提交的内容不正确',
   network: '无法连接服务器',
+  unauthorized: '登录已过期，请重新登录',
+  invalid_credentials: '账号或密码错误',
 };
 
 export function describeError(error: unknown): string {
