@@ -4,7 +4,7 @@ import { COMMON_TEXT } from '../i18n/common-text';
 import { readText } from '../i18n/text';
 import { log, serializeError } from './logger';
 
-const UNDO_WINDOW_MS = 5000;
+const UNDO_WINDOW_MS = 1000;
 
 interface UndoableAction {
   message: string;
