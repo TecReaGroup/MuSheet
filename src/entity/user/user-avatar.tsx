@@ -42,7 +42,7 @@ export function UserAvatar({ account, avatar, className }: UserAvatarProps) {
     return <img src={avatar.url} alt="" draggable={false} className={cn(ROUND_TILE, 'object-cover', className)} />;
   }
   return (
-    <span className={cn(ROUND_TILE, 'bg-linear-to-br from-brand-from via-brand-via to-brand-to font-semibold uppercase text-on-accent', className)}>
+    <span className={cn(ROUND_TILE, 'bg-linear-to-br from-score-soft-2 to-setlist-soft-2 font-semibold uppercase text-score-strong', className)}>
       {account.charAt(0)}
     </span>
   );
