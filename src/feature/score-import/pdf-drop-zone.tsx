@@ -1,7 +1,13 @@
 import { FileUp } from 'lucide-react';
 import { useRef, useState, type DragEvent } from 'react';
+import { defineText, useText } from '@/shared/i18n/text';
 import { cn } from '@/shared/lib/class-name';
 import { isPdfFile } from './prepare-pdf';
+
+const DROP_ZONE_TEXT = defineText({
+  'zh-CN': { pdfOnly: '仅支持 PDF' },
+  en: { pdfOnly: 'PDF only' },
+});
 
 interface PdfDropZoneProps {
   onFiles: (files: File[]) => void;
@@ -13,6 +19,7 @@ interface PdfDropZoneProps {
 export function PdfDropZone({ onFiles, multiple, hint, className }: PdfDropZoneProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [isOver, setIsOver] = useState(false);
+  const text = useText(DROP_ZONE_TEXT);
 
   const accept = (files: FileList | null) => {
     const pdfs = Array.from(files ?? []).filter(isPdfFile);
@@ -41,7 +48,7 @@ export function PdfDropZone({ onFiles, multiple, hint, className }: PdfDropZoneP
     >
       <FileUp className="size-7 text-score" />
       <span className="text-sm font-medium text-fg">{hint}</span>
-      <span className="text-xs text-fg-subtle">仅支持 PDF</span>
+      <span className="text-xs text-fg-subtle">{text.pdfOnly}</span>
       <input
         ref={inputRef}
         type="file"

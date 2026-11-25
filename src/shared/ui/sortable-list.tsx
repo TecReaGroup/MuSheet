@@ -11,6 +11,8 @@ import { arrayMove, SortableContext, sortableKeyboardCoordinates, useSortable, v
 import { CSS } from '@dnd-kit/utilities';
 import { GripVertical } from 'lucide-react';
 import type { ReactNode } from 'react';
+import { COMMON_TEXT } from '../i18n/common-text';
+import { useText } from '../i18n/text';
 import { cn } from '../lib/class-name';
 
 interface SortableListProps<T> {
@@ -50,13 +52,14 @@ export function SortableList<T>({ items, getId, onReorder, renderItem }: Sortabl
 
 function SortableRow({ id, children }: { id: string; children: (dragHandle: ReactNode) => ReactNode }) {
   const { attributes, listeners, setNodeRef, setActivatorNodeRef, transform, transition, isDragging } = useSortable({ id });
+  const text = useText(COMMON_TEXT);
   const handle = (
     <button
       type="button"
       ref={setActivatorNodeRef}
       {...attributes}
       {...listeners}
-      aria-label="拖动排序"
+      aria-label={text.dragToReorder}
       className="relative flex h-10 w-7 touch-none cursor-grab items-center justify-center rounded-tag text-fg-subtle hover:bg-muted active:cursor-grabbing"
     >
       <GripVertical className="size-4" />

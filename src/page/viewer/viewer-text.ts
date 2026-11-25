@@ -1,0 +1,38 @@
+import { defineText } from '@/shared/i18n/text';
+
+export const VIEWER_TEXT = defineText({
+  'zh-CN': {
+    loadFailed: '乐谱加载失败',
+    notFound: '乐谱不存在或已被删除',
+    lastInSetlist: '已是曲目单最后一首',
+    firstInSetlist: '已是曲目单第一首',
+    upNext: (title: string) => `下一首：${title}`,
+    annotate: '标注',
+    previousPage: '上一页',
+    nextPage: '下一页',
+    metronome: '节拍器',
+    switchPart: '切换声部',
+    fullscreen: '全屏',
+    exitFullscreen: '退出全屏',
+    halfPageTurn: '半页翻页',
+    nightScore: '夜间乐谱',
+    scoreDetails: '乐曲详情',
+  },
+  en: {
+    loadFailed: 'Failed to load the score',
+    notFound: 'This score does not exist or has been deleted',
+    lastInSetlist: 'This is the last score in the setlist',
+    firstInSetlist: 'This is the first score in the setlist',
+    upNext: (title: string) => `Up next: ${title}`,
+    annotate: 'Annotate',
+    previousPage: 'Previous page',
+    nextPage: 'Next page',
+    metronome: 'Metronome',
+    switchPart: 'Switch part',
+    fullscreen: 'Full screen',
+    exitFullscreen: 'Exit full screen',
+    halfPageTurn: 'Half-page turn',
+    nightScore: 'Night mode',
+    scoreDetails: 'Score details',
+  },
+});

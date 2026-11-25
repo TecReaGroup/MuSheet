@@ -5,6 +5,8 @@ import { cn } from '../lib/class-name';
 interface ListCardProps {
   leading: ReactNode;
   title: ReactNode;
+  /** Leads the meta line, joined with " · ", e.g. which library the item belongs to. */
+  badge?: ReactNode;
   subtitle?: ReactNode;
   meta?: ReactNode;
   trailing?: ReactNode;
@@ -14,7 +16,7 @@ interface ListCardProps {
 }
 
 /** Shared row card: leading visual + text block, whole card opens; `trailing` holds actions that must not open it. */
-export function ListCard({ leading, title, subtitle, meta, trailing, onOpen, onContextMenu, className }: ListCardProps) {
+export function ListCard({ leading, title, badge, subtitle, meta, trailing, onOpen, onContextMenu, className }: ListCardProps) {
   return (
     <div
       className={cn(
@@ -28,7 +30,13 @@ export function ListCard({ leading, title, subtitle, meta, trailing, onOpen, onC
       <div className="pointer-events-none min-w-0 flex-1">
         <div className="truncate text-[15px] font-semibold leading-snug text-fg">{title}</div>
         {subtitle && <div className="mt-0.5 truncate text-[13px] text-fg-muted">{subtitle}</div>}
-        {meta && <div className="mt-1 truncate text-xs text-fg-quiet tabular-nums">{meta}</div>}
+        {(badge || meta) && (
+          <div className="mt-1 truncate text-xs text-fg-quiet tabular-nums">
+            {badge}
+            {badge && meta && ' · '}
+            {meta}
+          </div>
+        )}
       </div>
       {trailing && <div className="relative flex items-center">{trailing}</div>}
       <ChevronRight className="pointer-events-none mr-1.5 size-5 shrink-0 text-fg-faint transition-[translate,color] group-hover:translate-x-0.5 group-hover:text-score" />

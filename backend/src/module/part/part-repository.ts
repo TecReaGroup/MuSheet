@@ -3,9 +3,11 @@ import type { Instrument, ViewerPart } from '../../../../contract/api';
 import { db, type DbExecutor } from '../../db/client';
 import { postgresErrorCode, UNIQUE_VIOLATION } from '../../db/postgres-error';
 import { part, score } from '../../db/schema';
-import { HttpError, notFound } from '../../http/http-error';
+import { HttpError } from '../../http/http-error';
 import { requirePdf, withPdfRelease } from '../pdf/pdf-repository';
+import { requireScoreSpace, requireVisiblePart } from '../score/score-access';
 import { loadScoreSummary } from '../score/score-view';
+import type { VisibleSpaceKeys } from '../space/space-key';
 
 export interface PartSelection {
   instrument: Instrument;
@@ -39,18 +41,18 @@ export async function insertPart(executor: DbExecutor, scoreId: string, selectio
   }
 }
 
-export async function addPart(scoreId: string, selection: PartSelection) {
+export async function addPart(scoreId: string, spaces: VisibleSpaceKeys, selection: PartSelection) {
   return db.transaction(async transaction => {
-    const [owner] = await transaction.select({ id: score.id }).from(score).where(eq(score.id, scoreId));
-    if (!owner) throw notFound('Score');
+    await requireScoreSpace(transaction, scoreId, spaces);
     const partId = await insertPart(transaction, scoreId, selection);
     await transaction.update(score).set({ updatedAt: new Date() }).where(eq(score.id, scoreId));
     return { partId, score: (await loadScoreSummary(transaction, scoreId))! };
   });
 }
 
-export async function reorderParts(scoreId: string, partIds: string[]) {
+export async function reorderParts(scoreId: string, spaces: VisibleSpaceKeys, partIds: string[]) {
   await db.transaction(async transaction => {
+    await requireScoreSpace(transaction, scoreId, spaces);
     const rows = await transaction.select({ id: part.id }).from(part).where(eq(part.scoreId, scoreId));
     const existing = new Set(rows.map(row => row.id));
     const isPermutation = partIds.length === existing.size && new Set(partIds).size === partIds.length
@@ -62,16 +64,15 @@ export async function reorderParts(scoreId: string, partIds: string[]) {
   });
 }
 
-export async function deletePart(partId: string) {
+export async function deletePart(partId: string, spaces: VisibleSpaceKeys) {
   await withPdfRelease(async (transaction, releasePdfs) => {
+    await requireVisiblePart(transaction, partId, spaces);
     const [row] = await transaction.delete(part).where(eq(part.id, partId)).returning({ sha256: part.pdfSha256 });
-    if (!row) throw notFound('Part');
-    releasePdfs([row.sha256]);
+    releasePdfs([row!.sha256]);
   });
 }
 
-export async function getViewerPart(partId: string): Promise<ViewerPart> {
-  const [row] = await db.select({ scoreId: part.scoreId }).from(part).where(eq(part.id, partId));
-  if (!row) throw notFound('Part');
-  return { partId, score: (await loadScoreSummary(db, row.scoreId))! };
+export async function getViewerPart(partId: string, spaces: VisibleSpaceKeys): Promise<ViewerPart> {
+  const scoreId = await requireVisiblePart(db, partId, spaces);
+  return { partId, score: (await loadScoreSummary(db, scoreId))! };
 }

@@ -1,5 +1,7 @@
 import { toast } from 'sonner';
 import { describeError } from '../api/http-client';
+import { COMMON_TEXT } from '../i18n/common-text';
+import { readText } from '../i18n/text';
 import { log, serializeError } from './logger';
 
 const UNDO_WINDOW_MS = 5000;
@@ -15,7 +17,7 @@ interface UndoableAction {
 }
 
 /**
- * Destructive actions apply instantly and offer "撤销" instead of a confirm dialog.
+ * Destructive actions apply instantly and offer "Undo" instead of a confirm dialog.
  * If the page is closed inside the window the action is simply never committed — the safe direction.
  */
 export function runUndoable({ message, apply, commit, revert }: UndoableAction) {
@@ -32,7 +34,7 @@ export function runUndoable({ message, apply, commit, revert }: UndoableAction) 
   toast(message, {
     duration: UNDO_WINDOW_MS,
     action: {
-      label: '撤销',
+      label: readText(COMMON_TEXT).undo,
       onClick: () => {
         undone = true;
         window.clearTimeout(timer);

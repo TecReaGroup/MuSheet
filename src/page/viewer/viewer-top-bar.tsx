@@ -4,10 +4,13 @@ import { useNavigate } from 'react-router';
 import { partLabel } from '@/entity/part/instrument';
 import { usePreferenceStore } from '@/feature/preference/preference-store';
 import { useFullscreen } from '@/feature/performance-mode/use-fullscreen';
+import { COMMON_TEXT } from '@/shared/i18n/common-text';
+import { useText } from '@/shared/i18n/text';
 import { cn } from '@/shared/lib/class-name';
 import { useGoBack } from '@/shared/lib/use-go-back';
 import { IconButton } from '@/shared/ui/button';
 import { Menu, MenuCheckItem, MenuContent, MenuItem, MenuLabel, MenuSeparator, MenuTrigger } from '@/shared/ui/menu';
+import { VIEWER_TEXT } from './viewer-text';
 
 interface ViewerTopBarProps {
   score: ScoreSummary;
@@ -23,7 +26,9 @@ export function ViewerTopBar({ score, part, visible, backFallback, setlistName, 
   const navigate = useNavigate();
   const goBack = useGoBack(backFallback);
   const fullscreen = useFullscreen();
-  const { nightScore, showAnnotation, pageTurn, update } = usePreferenceStore();
+  const text = useText(VIEWER_TEXT);
+  const commonText = useText(COMMON_TEXT);
+  const { nightScore, pageTurn, update } = usePreferenceStore();
 
   return (
     <header
@@ -34,7 +39,7 @@ export function ViewerTopBar({ score, part, visible, backFallback, setlistName, 
       )}
     >
       <div className="flex h-14 items-center gap-1 px-2">
-        <IconButton label="返回" onClick={goBack}><ChevronLeft /></IconButton>
+        <IconButton label={commonText.back} onClick={goBack}><ChevronLeft /></IconButton>
 
         <div className="flex min-w-0 flex-1 justify-center">
           <Menu>
@@ -50,7 +55,7 @@ export function ViewerTopBar({ score, part, visible, backFallback, setlistName, 
               </button>
             </MenuTrigger>
             <MenuContent align="center">
-              <MenuLabel>切换声部</MenuLabel>
+              <MenuLabel>{text.switchPart}</MenuLabel>
               {score.parts.map(candidate => (
                 <MenuCheckItem key={candidate.id} checked={candidate.id === part.id} onSelect={() => onSwitchPart(candidate)}>
                   {partLabel(candidate)}
@@ -60,22 +65,21 @@ export function ViewerTopBar({ score, part, visible, backFallback, setlistName, 
           </Menu>
         </div>
 
-        {onOpenSetlist && <IconButton label="曲目单" onClick={onOpenSetlist}><ListMusic /></IconButton>}
+        {onOpenSetlist && <IconButton label={commonText.setlist} onClick={onOpenSetlist}><ListMusic /></IconButton>}
         <Menu>
           <MenuTrigger asChild>
-            <IconButton label="更多"><Ellipsis /></IconButton>
+            <IconButton label={commonText.more}><Ellipsis /></IconButton>
           </MenuTrigger>
           <MenuContent>
             {fullscreen.isSupported && (
               <MenuItem icon={fullscreen.isFullscreen ? <Minimize /> : <Maximize />} onSelect={fullscreen.toggle}>
-                {fullscreen.isFullscreen ? '退出全屏' : '全屏'}
+                {fullscreen.isFullscreen ? text.exitFullscreen : text.fullscreen}
               </MenuItem>
             )}
-            <MenuCheckItem checked={pageTurn === 'half'} onCheckedChange={checked => update({ pageTurn: checked ? 'half' : 'page' })}>半页翻页</MenuCheckItem>
-            <MenuCheckItem checked={nightScore} onCheckedChange={checked => update({ nightScore: checked })}>夜间乐谱</MenuCheckItem>
-            <MenuCheckItem checked={showAnnotation} onCheckedChange={checked => update({ showAnnotation: checked })}>显示标注</MenuCheckItem>
+            <MenuCheckItem checked={pageTurn === 'half'} onCheckedChange={checked => update({ pageTurn: checked ? 'half' : 'page' })}>{text.halfPageTurn}</MenuCheckItem>
+            <MenuCheckItem checked={nightScore} onCheckedChange={checked => update({ nightScore: checked })}>{text.nightScore}</MenuCheckItem>
             <MenuSeparator />
-            <MenuItem icon={<Info />} onSelect={() => navigate(`/score/${score.id}`)}>乐曲详情</MenuItem>
+            <MenuItem icon={<Info />} onSelect={() => navigate(`/score/${score.id}`)}>{text.scoreDetails}</MenuItem>
           </MenuContent>
         </Menu>
       </div>

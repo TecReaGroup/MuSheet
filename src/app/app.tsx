@@ -3,10 +3,12 @@ import { RouterProvider } from 'react-router';
 import { Toaster } from 'sonner';
 import { useApplyTheme } from '@/feature/preference/use-apply-theme';
 import { queryClient } from '@/shared/api/query-client';
+import { useApplyLocale } from '@/shared/i18n/use-apply-locale';
 import { router } from './router';
 
 export function App() {
   useApplyTheme();
+  useApplyLocale();
   return (
     <QueryClientProvider client={queryClient}>
       <RouterProvider router={router} />

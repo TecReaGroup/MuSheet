@@ -1,17 +1,34 @@
 import type { SetlistDetail } from '@contract/api';
-import { Check } from 'lucide-react';
 import { useState } from 'react';
 import { useScoreList } from '@/entity/score/score-api';
 import { saveSetlistOrder } from '@/entity/setlist/setlist-change';
-import { cn } from '@/shared/lib/class-name';
+import { COMMON_TEXT } from '@/shared/i18n/common-text';
+import { defineText, useText } from '@/shared/i18n/text';
 import { useDebouncedValue } from '@/shared/lib/use-debounced-value';
 import { Button } from '@/shared/ui/button';
 import { Dialog } from '@/shared/ui/dialog';
-import { IconTile } from '@/shared/ui/icon-tile';
+import { PickList, toggleSelection } from '@/shared/ui/pick-list';
 import { SearchField } from '@/shared/ui/search-field';
 import { Spinner } from '@/shared/ui/spinner';
 
 const SEARCH_DEBOUNCE_MS = 200;
+
+const ADD_SCORES_TEXT = defineText({
+  'zh-CN': {
+    title: '添加乐曲',
+    description: (setlistName: string) => `添加到「${setlistName}」末尾`,
+    submitMany: (count: number) => `添加 ${count} 首`,
+    searchPlaceholder: '搜索乐曲或作曲',
+    noCandidates: '没有可添加的乐曲',
+  },
+  en: {
+    title: 'Add scores',
+    description: (setlistName: string) => `Append to the end of "${setlistName}"`,
+    submitMany: (count: number) => `Add ${count}`,
+    searchPlaceholder: 'Search scores or composers',
+    noCandidates: 'No scores to add',
+  },
+});
 
 interface AddScoresDialogProps {
   setlist: SetlistDetail;
@@ -20,15 +37,16 @@ interface AddScoresDialogProps {
 }
 
 export function AddScoresDialog({ setlist, open, onOpenChange }: AddScoresDialogProps) {
+  const text = useText(ADD_SCORES_TEXT);
+  const commonText = useText(COMMON_TEXT);
   const [query, setQuery] = useState('');
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const debouncedQuery = useDebouncedValue(query, SEARCH_DEBOUNCE_MS);
-  const { data: scores, isPending } = useScoreList({ query: debouncedQuery || undefined, sort: 'title', order: 'asc' });
+  const { data: scores, isPending } = useScoreList({ space: setlist.space, query: debouncedQuery || undefined, sort: 'title', order: 'asc' });
   const memberIds = new Set(setlist.scores.map(score => score.id));
   const candidates = (scores ?? []).filter(score => !memberIds.has(score.id));
 
-  const toggle = (scoreId: string) =>
-    setSelectedIds(current => (current.includes(scoreId) ? current.filter(id => id !== scoreId) : [...current, scoreId]));
+  const toggle = (scoreId: string) => setSelectedIds(current => toggleSelection(current, scoreId));
 
   const close = () => {
     onOpenChange(false);
@@ -46,44 +64,26 @@ export function AddScoresDialog({ setlist, open, onOpenChange }: AddScoresDialog
     <Dialog
       open={open}
       onOpenChange={next => (next ? onOpenChange(true) : close())}
-      title="添加乐曲"
-      description={`添加到「${setlist.name}」末尾`}
+      title={text.title}
+      description={text.description(setlist.name)}
       footer={(
         <>
-          <Button variant="ghost" onClick={close}>取消</Button>
+          <Button variant="ghost" onClick={close}>{commonText.cancel}</Button>
           <Button variant="setlist" disabled={selectedIds.length === 0} onClick={submit}>
-            {selectedIds.length > 0 ? `添加 ${selectedIds.length} 首` : '添加'}
+            {selectedIds.length > 0 ? text.submitMany(selectedIds.length) : commonText.add}
           </Button>
         </>
       )}
     >
-      <SearchField value={query} onChange={setQuery} placeholder="搜索乐曲或作曲" className="sticky top-0 z-10 mb-3" />
+      <SearchField value={query} onChange={setQuery} placeholder={text.searchPlaceholder} className="sticky top-0 z-10 mb-3" />
       {isPending && <div className="flex justify-center py-8"><Spinner /></div>}
-      {!isPending && candidates.length === 0 && <p className="py-8 text-center text-sm text-fg-muted">没有可添加的乐曲</p>}
-      <ul className="space-y-1 pb-2">
-        {candidates.map(score => {
-          const selected = selectedIds.includes(score.id);
-          return (
-            <li key={score.id}>
-              <button
-                type="button"
-                aria-pressed={selected}
-                onClick={() => toggle(score.id)}
-                className={cn('flex w-full items-center gap-3 rounded-card p-2 text-left transition-colors', selected ? 'bg-setlist-soft' : 'hover:bg-muted')}
-              >
-                <IconTile kind="score" />
-                <span className="min-w-0 flex-1">
-                  <span className="block truncate text-[15px] font-medium">{score.title}</span>
-                  <span className="block truncate text-[13px] text-fg-muted">{score.composer || '未填写作曲'}</span>
-                </span>
-                <span className={cn('flex size-6 items-center justify-center rounded-full border-2', selected ? 'border-setlist bg-setlist text-white' : 'border-border')}>
-                  {selected && <Check className="size-3.5" strokeWidth={3} />}
-                </span>
-              </button>
-            </li>
-          );
-        })}
-      </ul>
+      {!isPending && candidates.length === 0 && <p className="py-8 text-center text-sm text-fg-muted">{text.noCandidates}</p>}
+      <PickList
+        items={candidates.map(score => ({ id: score.id, kind: 'score', title: score.title, subtitle: score.composer || commonText.noComposer }))}
+        selectedIds={selectedIds}
+        onToggle={toggle}
+        tone="setlist"
+      />
     </Dialog>
   );
 }

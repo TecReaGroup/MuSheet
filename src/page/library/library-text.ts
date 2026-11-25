@@ -1,0 +1,41 @@
+import { defineText } from '@/shared/i18n/text';
+
+export const LIBRARY_TEXT = defineText({
+  'zh-CN': {
+    title: { personal: '曲库', team: 'Team' },
+    copyFromLibrary: '从我的曲库导入',
+    collectionType: '内容类型',
+    counts: (setlistCount: number, scoreCount: number) => `${setlistCount} 个曲目单 · ${scoreCount} 首乐曲`,
+    searchScores: '搜索乐曲或作曲',
+    searchSetlists: '搜索曲目单',
+    noMatchingScores: '没有匹配的乐曲',
+    noScoresTitle: '还没有乐谱',
+    noScoresDescription: { personal: '导入 PDF 乐谱，或直接把文件拖进窗口。', team: 'Team 是全队共享的曲库。从你的曲库导入，或上传本地 PDF。' },
+    noMatchingSetlists: '没有匹配的曲目单',
+    noSetlistsTitle: '还没有曲目单',
+    noSetlistsDescription: '把演出或排练要用的乐曲按顺序排好，翻页时自动衔接下一首。',
+    importScores: '导入乐谱',
+    newSetlist: '新建曲目单',
+    scoreDetails: '详情与声部',
+    openAndEdit: '打开与编辑',
+  },
+  en: {
+    title: { personal: 'Library', team: 'Team' },
+    copyFromLibrary: 'Import from my library',
+    collectionType: 'Content type',
+    counts: (setlistCount: number, scoreCount: number) =>
+      `${setlistCount} ${setlistCount === 1 ? 'setlist' : 'setlists'} · ${scoreCount} ${scoreCount === 1 ? 'score' : 'scores'}`,
+    searchScores: 'Search scores or composers',
+    searchSetlists: 'Search setlists',
+    noMatchingScores: 'No matching scores',
+    noScoresTitle: 'No scores yet',
+    noScoresDescription: { personal: 'Import PDF scores, or drag files into the window.', team: 'Team is the library shared by everyone. Import from your library or upload local PDFs.' },
+    noMatchingSetlists: 'No matching setlists',
+    noSetlistsTitle: 'No setlists yet',
+    noSetlistsDescription: 'Put the scores for a gig or rehearsal in order; turning past the last page moves on to the next one.',
+    importScores: 'Import scores',
+    newSetlist: 'New setlist',
+    scoreDetails: 'Details & parts',
+    openAndEdit: 'Open & edit',
+  },
+});

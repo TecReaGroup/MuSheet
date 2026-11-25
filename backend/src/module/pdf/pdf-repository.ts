@@ -1,68 +1,19 @@
-import { createHash, randomUUID } from 'node:crypto';
-import { createWriteStream } from 'node:fs';
 import { rm } from 'node:fs/promises';
-import { Transform, type Readable } from 'node:stream';
-import { pipeline } from 'node:stream/promises';
+import type { Readable } from 'node:stream';
 import { and, eq, inArray, lt, notExists, sql } from 'drizzle-orm';
 import type { PdfFileView } from '../../../../contract/api';
 import { appConfig } from '../../config/app-config';
 import { db, type DbExecutor } from '../../db/client';
 import { part, pdfFile } from '../../db/schema';
 import { HttpError, notFound } from '../../http/http-error';
-import { moveIntoStorage, pdfFilePath, removeStoredPdfs, tempFilePath, thumbnailFilePath } from '../../infrastructure/file-storage';
+import { moveIntoStorage, pdfFilePath, removeStoredPdfs, thumbnailFilePath } from '../../infrastructure/file-storage';
 import { log } from '../../infrastructure/logger';
+import { JPEG_SIGNATURE_BYTES, startsWithJpegSignature, writeUploadToTemp } from '../../infrastructure/upload-temp';
 
 const MAX_THUMBNAIL_BYTES = 2 * 1024 * 1024;
 // The PDF spec tolerates leading garbage before the header, readers scan the first KB.
 const PDF_HEADER_SCAN_BYTES = 1024;
 const ORPHAN_GRACE_PERIOD = '1 day';
-
-interface UploadMeter {
-  stream: Transform;
-  digest(): string;
-  size(): number;
-  head(): Buffer;
-}
-
-function createUploadMeter(maxBytes: number, headBytes: number): UploadMeter {
-  const hash = createHash('sha256');
-  const headChunks: Buffer[] = [];
-  let headLength = 0;
-  let size = 0;
-  const stream = new Transform({
-    transform(chunk: Buffer, _encoding, callback) {
-      size += chunk.length;
-      if (size > maxBytes) {
-        callback(new HttpError(413, 'too_large', `Upload exceeds ${Math.round(maxBytes / 1024 / 1024)}MB`));
-        return;
-      }
-      if (headLength < headBytes) {
-        headChunks.push(chunk);
-        headLength += chunk.length;
-      }
-      hash.update(chunk);
-      callback(null, chunk);
-    },
-  });
-  return {
-    stream,
-    digest: () => hash.digest('hex'),
-    size: () => size,
-    head: () => Buffer.concat(headChunks).subarray(0, headBytes),
-  };
-}
-
-async function writeUploadToTemp(body: Readable, maxBytes: number, headBytes: number) {
-  const tempPath = tempFilePath(`upload-${randomUUID()}`);
-  const meter = createUploadMeter(maxBytes, headBytes);
-  try {
-    await pipeline(body, meter.stream, createWriteStream(tempPath));
-  } catch (error) {
-    await rm(tempPath, { force: true });
-    throw error;
-  }
-  return { tempPath, meter };
-}
 
 function toPdfFileView(row: typeof pdfFile.$inferSelect): PdfFileView {
   return { sha256: row.sha256, pageCount: row.pageCount, hasThumbnail: row.hasThumbnail };
@@ -110,10 +61,9 @@ export async function storePdf(sha256: string, pageCount: number, body: Readable
 
 export async function storeThumbnail(sha256: string, body: Readable) {
   await findPdf(sha256);
-  const { tempPath, meter } = await writeUploadToTemp(body, MAX_THUMBNAIL_BYTES, 3);
+  const { tempPath, meter } = await writeUploadToTemp(body, MAX_THUMBNAIL_BYTES, JPEG_SIGNATURE_BYTES);
   try {
-    const head = meter.head();
-    if (head[0] !== 0xff || head[1] !== 0xd8 || head[2] !== 0xff) throw new HttpError(415, 'not_jpeg', 'Thumbnail must be a JPEG');
+    if (!startsWithJpegSignature(meter.head())) throw new HttpError(415, 'not_jpeg', 'Thumbnail must be a JPEG');
     await moveIntoStorage(tempPath, thumbnailFilePath(sha256));
     await db.update(pdfFile).set({ hasThumbnail: true }).where(eq(pdfFile.sha256, sha256));
   } finally {

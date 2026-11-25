@@ -5,6 +5,8 @@ import { toast } from 'sonner';
 import { partLabel } from '@/entity/part/instrument';
 import { useAddPart } from '@/entity/part/part-api';
 import { describeError } from '@/shared/api/http-client';
+import { COMMON_TEXT } from '@/shared/i18n/common-text';
+import { defineText, readText, useText } from '@/shared/i18n/text';
 import { log, serializeError } from '@/shared/lib/logger';
 import { Button } from '@/shared/ui/button';
 import { Dialog } from '@/shared/ui/dialog';
@@ -19,6 +21,19 @@ import {
 } from './instrument-picker';
 import { PdfDropZone } from './pdf-drop-zone';
 import { PdfReadError, preparePdf, type PreparedPdf } from './prepare-pdf';
+
+const ADD_PART_TEXT = defineText({
+  'zh-CN': {
+    title: '添加声部',
+    description: (scoreTitle: string) => `为《${scoreTitle}》添加另一份分谱`,
+    added: (part: string) => `已添加${part}声部`,
+  },
+  en: {
+    title: 'Add part',
+    description: (scoreTitle: string) => `Add another part to "${scoreTitle}"`,
+    added: (part: string) => `Added the ${part} part`,
+  },
+});
 
 interface AddPartDialogProps {
   score: ScoreSummary;
@@ -36,6 +51,8 @@ export function AddPartDialog({ score, open, onOpenChange }: AddPartDialogProps)
   const [upload, setUpload] = useState<Upload>({ state: 'idle' });
   const [choice, setChoice] = useState<InstrumentChoice>(lastInstrumentChoice);
   const addPart = useAddPart(score.id);
+  const text = useText(ADD_PART_TEXT);
+  const commonText = useText(COMMON_TEXT);
   const takenInstruments = score.parts.filter(part => part.instrument !== 'custom').map(part => part.instrument);
 
   const selectFile = ([file]: File[]) => {
@@ -45,7 +62,7 @@ export function AddPartDialog({ score, open, onOpenChange }: AddPartDialogProps)
       .then(prepared => setUpload({ state: 'ready', fileName: file.name, prepared }))
       .catch(error => {
         log('warn', 'Import', 'Preparing part PDF failed', serializeError(error));
-        setUpload({ state: 'failed', message: error instanceof PdfReadError ? '无法读取该 PDF' : describeError(error) });
+        setUpload({ state: 'failed', message: error instanceof PdfReadError ? readText(COMMON_TEXT).unreadablePdf : describeError(error) });
       });
   };
 
@@ -59,7 +76,7 @@ export function AddPartDialog({ score, open, onOpenChange }: AddPartDialogProps)
     addPart.mutate({ pdfSha256: upload.prepared.sha256, ...toPartSelection(choice) }, {
       onSuccess: () => {
         rememberInstrumentChoice(choice);
-        toast.success(`已添加${partLabel(toPartSelection(choice))}声部`);
+        toast.success(readText(ADD_PART_TEXT).added(partLabel(toPartSelection(choice))));
         close();
       },
     });
@@ -69,25 +86,25 @@ export function AddPartDialog({ score, open, onOpenChange }: AddPartDialogProps)
     <Dialog
       open={open}
       onOpenChange={next => (next ? onOpenChange(true) : close())}
-      title="添加声部"
-      description={`为《${score.title}》添加另一份分谱`}
+      title={text.title}
+      description={text.description(score.title)}
       footer={(
         <>
-          <Button variant="ghost" onClick={close}>取消</Button>
+          <Button variant="ghost" onClick={close}>{commonText.cancel}</Button>
           <Button variant="primary" disabled={upload.state !== 'ready' || !isChoiceComplete(choice) || addPart.isPending} onClick={submit}>
-            添加
+            {commonText.add}
           </Button>
         </>
       )}
     >
       <div className="space-y-4 pb-2">
         {upload.state === 'idle' || upload.state === 'failed'
-          ? <PdfDropZone multiple={false} onFiles={selectFile} hint="拖入 PDF，或点击选择文件" />
+          ? <PdfDropZone multiple={false} onFiles={selectFile} hint={commonText.dropPdfHint} />
           : (
             <div className="flex items-center gap-3 rounded-panel border border-border p-4">
               <FileText className="size-5 text-score" />
               <span className="min-w-0 flex-1 truncate text-sm">{upload.fileName}</span>
-              {upload.state === 'uploading' ? <Spinner className="size-4" /> : <span className="text-xs text-fg-subtle tabular-nums">{upload.prepared.pageCount} 页</span>}
+              {upload.state === 'uploading' ? <Spinner className="size-4" /> : <span className="text-xs text-fg-subtle tabular-nums">{commonText.pageCount(upload.prepared.pageCount)}</span>}
             </div>
           )}
         {upload.state === 'failed' && <p className="text-sm text-danger">{upload.message}</p>}

@@ -43,3 +43,10 @@ export async function markScoreOpened(scoreId: string) {
   await requestJson<void>('POST', `/api/score/${scoreId}/open`);
   await queryClient.invalidateQueries({ queryKey: scoreKey.lists });
 }
+
+/** Copies personal scores into the team library and refreshes every list that could show them. */
+export async function copyScoresToTeam(scoreIds: string[]) {
+  const copies = await requestJson<ScoreSummary[]>('POST', '/api/score/team-copy', { scoreIds });
+  await queryClient.invalidateQueries({ queryKey: scoreKey.lists });
+  return copies;
+}

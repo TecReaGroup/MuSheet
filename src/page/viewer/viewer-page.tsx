@@ -3,13 +3,17 @@ import { useEffect } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router';
 import { useViewerPart } from '@/entity/part/part-api';
 import { useSetlistDetail } from '@/entity/setlist/setlist-api';
+import { useDeclareActiveSpace } from '@/entity/space/active-space';
 import { useMetronomeStore } from '@/feature/metronome/metronome-store';
 import { readSavedPage } from '@/feature/page-turn/reading-position';
 import { clampPage } from '@/feature/page-turn/view-position';
 import { useWakeLock } from '@/feature/performance-mode/use-wake-lock';
+import { COMMON_TEXT } from '@/shared/i18n/common-text';
+import { useText } from '@/shared/i18n/text';
 import { Button } from '@/shared/ui/button';
 import { Spinner } from '@/shared/ui/spinner';
 import { ScoreReader, type SetlistContext } from './score-reader';
+import { VIEWER_TEXT } from './viewer-text';
 
 /** `?page=last` (arriving backwards from the next song), an explicit number, or the saved bookmark. */
 function resolveInitialPage(requested: string | null, partId: string, pageCount: number) {
@@ -23,10 +27,13 @@ export function ViewerPage() {
   const { partId } = useParams<{ partId: string }>();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const text = useText(VIEWER_TEXT);
+  const commonText = useText(COMMON_TEXT);
   const setlistId = searchParams.get('setlist') ?? undefined;
   const setlistIndex = Number(searchParams.get('index') ?? -1);
   const viewer = useViewerPart(partId);
   const setlist = useSetlistDetail(setlistId);
+  useDeclareActiveSpace(viewer.data?.score.space);
   useWakeLock();
 
   // Leaving the viewer silences the metronome; moving between songs keeps it running.
@@ -39,8 +46,8 @@ export function ViewerPage() {
     return (
       <div className="fixed inset-0 flex flex-col items-center justify-center gap-4 bg-canvas text-center">
         <FileWarning className="size-12 text-fg-subtle" />
-        <p className="text-fg-muted">乐谱不存在或已被删除</p>
-        <Button onClick={() => navigate('/library', { replace: true })}>返回曲库</Button>
+        <p className="text-fg-muted">{text.notFound}</p>
+        <Button onClick={() => navigate('/library', { replace: true })}>{commonText.backToLibrary}</Button>
       </div>
     );
   }

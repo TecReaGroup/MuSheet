@@ -1,7 +1,7 @@
 import type { ListQuery, SetlistCreateRequest, SetlistDetail, SetlistSummary, SetlistUpdateRequest } from '@contract/api';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { requestJson, toSearchParams } from '@/shared/api/http-client';
-import { queryClient } from '@/shared/api/query-client';
+import { invalidateLibrary, queryClient } from '@/shared/api/query-client';
 
 export const setlistKey = {
   list: (query: ListQuery) => ['setlist', 'list', query] as const,
@@ -55,4 +55,11 @@ export function deleteSetlist(setlistId: string) {
 export async function markSetlistOpened(setlistId: string) {
   await requestJson<void>('POST', `/api/setlist/${setlistId}/open`);
   await queryClient.invalidateQueries({ queryKey: setlistKey.lists });
+}
+
+/** Copies personal setlists (and their scores) into the team library, then refreshes every list that could show them. */
+export async function copySetlistsToTeam(setlistIds: string[]) {
+  const copies = await requestJson<SetlistSummary[]>('POST', '/api/setlist/team-copy', { setlistIds });
+  await invalidateLibrary();
+  return copies;
 }

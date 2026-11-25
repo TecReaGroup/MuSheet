@@ -1,8 +1,11 @@
 import { LoaderCircle } from 'lucide-react';
+import { COMMON_TEXT } from '../i18n/common-text';
+import { useText } from '../i18n/text';
 import { cn } from '../lib/class-name';
 
 export function Spinner({ className }: { className?: string }) {
-  return <LoaderCircle className={cn('size-5 animate-spin text-fg-subtle', className)} aria-label="加载中" />;
+  const text = useText(COMMON_TEXT);
+  return <LoaderCircle className={cn('size-5 animate-spin text-fg-subtle', className)} aria-label={text.loading} />;
 }
 
 export function PageSpinner() {

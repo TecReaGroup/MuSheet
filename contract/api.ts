@@ -5,17 +5,26 @@ export const TIME_SIGNATURES = ['2/4', '3/4', '4/4', '5/4', '6/8', '7/8', '9/8',
 export const SORT_KEYS = ['created', 'title', 'opened'] as const;
 export const SORT_ORDERS = ['asc', 'desc'] as const;
 export const ANNOTATION_TOOLS = ['pen', 'highlighter'] as const;
+// `personal` is the caller's private library; `team` is shared by every account.
+export const SPACES = ['personal', 'team'] as const;
+export const AVATAR_PRESETS = ['note', 'piano', 'guitar', 'drum', 'mic', 'headphones', 'disc', 'wave'] as const;
 
 export const BPM_MIN = 20;
 export const BPM_MAX = 300;
 export const TITLE_MAX_LENGTH = 120;
 export const MAX_STROKES_PER_PAGE = 2000;
 export const MAX_POINTS_PER_STROKE = 5000;
+export const ACCOUNT_MAX_LENGTH = 40;
+export const PASSWORD_MIN_LENGTH = 8;
+export const PASSWORD_MAX_LENGTH = 200;
+export const AVATAR_IMAGE_MAX_BYTES = 1024 * 1024;
 
 export type Instrument = (typeof INSTRUMENTS)[number];
 export type TimeSignature = (typeof TIME_SIGNATURES)[number];
 export type SortKey = (typeof SORT_KEYS)[number];
 export type SortOrder = (typeof SORT_ORDERS)[number];
+export type AvatarPreset = (typeof AVATAR_PRESETS)[number];
+export type Space = (typeof SPACES)[number];
 
 const sha256Schema = z.string().regex(/^[0-9a-f]{64}$/);
 const titleSchema = z.string().trim().min(1).max(TITLE_MAX_LENGTH);
@@ -38,6 +47,7 @@ export const idParamSchema = z.object({ id: z.uuid() });
 export const sha256ParamSchema = z.object({ sha256: sha256Schema });
 
 export const listQuerySchema = z.object({
+  space: z.enum(SPACES).default('personal'),
   query: z.string().trim().max(TITLE_MAX_LENGTH).optional(),
   sort: z.enum(SORT_KEYS).default('created'),
   order: z.enum(SORT_ORDERS).default('desc'),
@@ -45,6 +55,7 @@ export const listQuerySchema = z.object({
 });
 // Written out because z.coerce inputs are typed `unknown`; this is what callers actually send.
 export interface ListQuery {
+  space?: Space;
   query?: string;
   sort?: SortKey;
   order?: SortOrder;
@@ -54,6 +65,7 @@ export interface ListQuery {
 export const pdfUploadQuerySchema = z.object({ pageCount: z.coerce.number().int().min(1).max(5000) });
 
 export const scoreImportRequestSchema = z.object({
+  space: z.enum(SPACES),
   title: titleSchema,
   composer: composerSchema.default(''),
   pdfSha256: sha256Schema,
@@ -80,6 +92,7 @@ export const partOrderRequestSchema = z.object({ partIds: z.array(z.uuid()).min(
 const descriptionSchema = z.string().trim().max(500);
 
 export const setlistCreateRequestSchema = z.object({
+  space: z.enum(SPACES),
   name: titleSchema,
   description: descriptionSchema.default(''),
 });
@@ -94,6 +107,14 @@ export type SetlistUpdateRequest = z.input<typeof setlistUpdateRequestSchema>;
 
 export const setlistItemsRequestSchema = z.object({ scoreIds: z.array(z.uuid()).max(500) });
 export const setlistAppendRequestSchema = z.object({ scoreId: z.uuid() });
+
+/** Copies personal scores into the team library; the copies share PDF files but nothing else. */
+export const teamCopyRequestSchema = z.object({ scoreIds: z.array(z.uuid()).min(1).max(200) });
+export type TeamCopyRequest = z.input<typeof teamCopyRequestSchema>;
+
+/** Copies personal setlists into Team together with their scores, which are copied once even if shared between setlists. */
+export const teamSetlistCopyRequestSchema = z.object({ setlistIds: z.array(z.uuid()).min(1).max(100) });
+export type TeamSetlistCopyRequest = z.input<typeof teamSetlistCopyRequestSchema>;
 
 export const annotationPageParamSchema = z.object({
   id: z.uuid(),
@@ -127,10 +148,51 @@ export const loginRequestSchema = z.object({
 });
 export type LoginRequest = z.input<typeof loginRequestSchema>;
 
+// ASCII letters, digits, dot, dash and underscore keep account names typeable on any login keyboard.
+const accountNameSchema = z.string().trim().min(1).max(ACCOUNT_MAX_LENGTH).regex(/^[A-Za-z0-9._-]+$/);
+const newPasswordSchema = z.string().min(PASSWORD_MIN_LENGTH).max(PASSWORD_MAX_LENGTH);
+
+export const accountRenameRequestSchema = z.object({ account: accountNameSchema });
+export type AccountRenameRequest = z.input<typeof accountRenameRequestSchema>;
+
+export const passwordChangeRequestSchema = z.object({
+  currentPassword: z.string().min(1).max(PASSWORD_MAX_LENGTH),
+  newPassword: newPasswordSchema,
+});
+export type PasswordChangeRequest = z.input<typeof passwordChangeRequestSchema>;
+
+export const avatarPresetRequestSchema = z.object({ preset: z.enum(AVATAR_PRESETS) });
+export type AvatarPresetRequest = z.input<typeof avatarPresetRequestSchema>;
+
+export const userCreateRequestSchema = z.object({ account: accountNameSchema, password: newPasswordSchema });
+export type UserCreateRequest = z.input<typeof userCreateRequestSchema>;
+
+export const userPasswordResetRequestSchema = z.object({ password: newPasswordSchema });
+export type UserPasswordResetRequest = z.input<typeof userPasswordResetRequestSchema>;
+
+export const userIdParamSchema = z.object({ userId: z.uuid() });
+
 // ---------- Responses ----------
 
-export interface SessionView {
+/** `letter` is the default: the first character of the account name. */
+export type AvatarView =
+  | { kind: 'letter' }
+  | { kind: 'preset'; preset: AvatarPreset }
+  | { kind: 'image'; url: string };
+
+export interface UserView {
+  id: string;
   account: string;
+  avatar: AvatarView;
+}
+
+export interface SessionView extends UserView {
+  /** Root's credentials live in .env, so it cannot rename itself or change its password here. */
+  isRoot: boolean;
+}
+
+export interface ManagedUserView extends UserView {
+  createdAt: string;
 }
 
 export interface PdfFileView {
@@ -147,6 +209,7 @@ export interface PartView extends PdfFileView {
 
 export interface ScoreSummary {
   id: string;
+  space: Space;
   title: string;
   composer: string;
   bpm: number;
@@ -172,6 +235,7 @@ export interface ScoreImportResponse {
 }
 
 export interface SetlistSummary extends SetlistReference {
+  space: Space;
   description: string;
   createdAt: string;
   lastOpenedAt: string | null;

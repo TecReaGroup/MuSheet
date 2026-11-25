@@ -26,6 +26,8 @@ import { SetlistDrawer } from '@/feature/performance-mode/setlist-drawer';
 import { usePreferenceStore } from '@/feature/preference/preference-store';
 import { useViewerGesture } from '@/feature/viewer-gesture/use-viewer-gesture';
 import { queryClient } from '@/shared/api/query-client';
+import { COMMON_TEXT } from '@/shared/i18n/common-text';
+import { readText, useText } from '@/shared/i18n/text';
 import { cn } from '@/shared/lib/class-name';
 import { log } from '@/shared/lib/logger';
 import { useDebouncedValue } from '@/shared/lib/use-debounced-value';
@@ -35,6 +37,7 @@ import { Spinner } from '@/shared/ui/spinner';
 import { PageStage } from './page-stage';
 import { ViewerBottomBar } from './viewer-bottom-bar';
 import { ViewerTopBar } from './viewer-top-bar';
+import { VIEWER_TEXT } from './viewer-text';
 
 const PAGE_INDICATOR_MS = 1500;
 const ZOOM_RENDER_DELAY_MS = 200;
@@ -62,6 +65,8 @@ function describePosition(position: ViewPosition, layout: ViewLayout, pageCount:
 export function ScoreReader({ score, part, initialPage, setlistContext }: ScoreReaderProps) {
   const navigate = useNavigate();
   const preference = usePreferenceStore();
+  const text = useText(VIEWER_TEXT);
+  const commonText = useText(COMMON_TEXT);
   const pdfState = usePdfDocument(part.sha256);
   const pdf = pdfState.status === 'ready' ? pdfState.pdf : null;
   const book = useAnnotationBook(part.id);
@@ -117,10 +122,11 @@ export function ScoreReader({ score, part, initialPage, setlistContext }: ScoreR
     if (!setlistContext) return;
     const targetIndex = findPlayableIndex(setlistContext.setlist.scores, setlistContext.index, direction);
     if (targetIndex < 0) {
-      toast(direction === 1 ? '已是曲目单最后一首' : '已是曲目单第一首', { duration: 1500 });
+      const viewerText = readText(VIEWER_TEXT);
+      toast(direction === 1 ? viewerText.lastInSetlist : viewerText.firstInSetlist, { duration: 1500 });
       return;
     }
-    if (direction === 1) toast(`下一首：${setlistContext.setlist.scores[targetIndex]!.title}`, { duration: 2000 });
+    if (direction === 1) toast(readText(VIEWER_TEXT).upNext(setlistContext.setlist.scores[targetIndex]!.title), { duration: 2000 });
     goToSetlistItem(targetIndex, direction === 1 ? 1 : 'last');
   };
 
@@ -169,7 +175,6 @@ export function ScoreReader({ score, part, initialPage, setlistContext }: ScoreR
     gesture.resetZoom();
   };
 
-  const showStrokes = preference.showAnnotation || isEditing;
   const pageLabel = describePosition(position, layout, pageCount);
 
   return (
@@ -184,7 +189,7 @@ export function ScoreReader({ score, part, initialPage, setlistContext }: ScoreR
             transform={gesture.transform}
             renderZoom={renderZoom}
             isNightScore={preference.nightScore}
-            strokesFor={page => (showStrokes ? book.strokesOf(page) : undefined)}
+            strokesFor={page => book.strokesOf(page)}
             drawingFor={page => (isEditing && book.isLoaded ? {
               onStroke: stroke => book.addStroke(page, stroke),
               onErase: index => book.removeStroke(page, index),
@@ -195,8 +200,8 @@ export function ScoreReader({ score, part, initialPage, setlistContext }: ScoreR
         {pdfState.status === 'failed' && (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 text-center" onPointerDown={event => event.stopPropagation()}>
             <FileWarning className="size-12 text-fg-subtle" />
-            <p className="text-fg-muted">乐谱加载失败</p>
-            <Button onClick={() => window.location.reload()}>重试</Button>
+            <p className="text-fg-muted">{text.loadFailed}</p>
+            <Button onClick={() => window.location.reload()}>{commonText.retry}</Button>
           </div>
         )}
       </div>

@@ -1,9 +1,16 @@
 import { INSTRUMENTS, type Instrument } from '@contract/api';
-import { INSTRUMENT_NAMES } from '@/entity/part/instrument';
+import { instrumentName } from '@/entity/part/instrument';
+import { COMMON_TEXT } from '@/shared/i18n/common-text';
+import { defineText, useText } from '@/shared/i18n/text';
 import { readStored, writeStored } from '@/shared/lib/local-storage';
 import { Field, Select, TextInput } from '@/shared/ui/form-field';
 
 const LAST_INSTRUMENT_KEY = 'musheet.last-instrument';
+
+const PICKER_TEXT = defineText({
+  'zh-CN': { customName: '声部名称', customPlaceholder: '如：小号' },
+  en: { customName: 'Part name', customPlaceholder: 'e.g. Trumpet' },
+});
 
 export interface InstrumentChoice {
   instrument: Instrument;
@@ -37,23 +44,25 @@ interface InstrumentPickerProps {
 }
 
 export function InstrumentPicker({ value, onChange, takenInstruments = [] }: InstrumentPickerProps) {
+  const text = useText(PICKER_TEXT);
+  const commonText = useText(COMMON_TEXT);
   return (
     <div className="flex gap-2">
-      <Field label="声部" className="flex-1">
+      <Field label={commonText.part} className="flex-1">
         <Select value={value.instrument} onChange={event => onChange({ ...value, instrument: event.target.value as Instrument })}>
           {INSTRUMENTS.map(instrument => (
             <option key={instrument} value={instrument} disabled={instrument !== 'custom' && takenInstruments.includes(instrument)}>
-              {INSTRUMENT_NAMES[instrument]}
+              {instrumentName(instrument)}
             </option>
           ))}
         </Select>
       </Field>
       {value.instrument === 'custom' && (
-        <Field label="声部名称" className="flex-1">
+        <Field label={text.customName} className="flex-1">
           <TextInput
             value={value.customLabel}
             maxLength={40}
-            placeholder="如：小号"
+            placeholder={text.customPlaceholder}
             onChange={event => onChange({ ...value, customLabel: event.target.value })}
           />
         </Field>

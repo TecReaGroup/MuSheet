@@ -2,6 +2,7 @@ import { asc, eq, inArray } from 'drizzle-orm';
 import type { PartView, ScoreSummary } from '../../../../contract/api';
 import type { DbExecutor } from '../../db/client';
 import { part, pdfFile, score } from '../../db/schema';
+import { spaceOfKey } from '../space/space-key';
 
 type ScoreRow = typeof score.$inferSelect;
 
@@ -32,6 +33,7 @@ export async function toScoreSummaries(executor: DbExecutor, rows: ScoreRow[]): 
 
   return rows.map(row => ({
     id: row.id,
+    space: spaceOfKey(row.spaceKey),
     title: row.title,
     composer: row.composer,
     bpm: row.bpm,

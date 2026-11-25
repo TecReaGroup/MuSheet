@@ -1,6 +1,8 @@
 import { X } from 'lucide-react';
 import { Dialog as DialogPrimitive } from 'radix-ui';
 import type { ReactNode } from 'react';
+import { COMMON_TEXT } from '../i18n/common-text';
+import { useText } from '../i18n/text';
 import { cn } from '../lib/class-name';
 
 interface DialogProps {
@@ -15,6 +17,7 @@ interface DialogProps {
 
 /** Bottom sheet on phones, centered card from `sm` up — one component, layout decided by CSS. */
 export function Dialog({ open, onOpenChange, title, description, children, footer, className }: DialogProps) {
+  const text = useText(COMMON_TEXT);
   return (
     <DialogPrimitive.Root open={open} onOpenChange={onOpenChange}>
       <DialogPrimitive.Portal>
@@ -34,7 +37,7 @@ export function Dialog({ open, onOpenChange, title, description, children, foote
                 ? <DialogPrimitive.Description className="mt-1 text-sm text-fg-muted">{description}</DialogPrimitive.Description>
                 : <DialogPrimitive.Description className="sr-only">{title}</DialogPrimitive.Description>}
             </div>
-            <DialogPrimitive.Close className="-mr-2 rounded-full p-2 text-fg-subtle hover:bg-muted hover:text-fg" aria-label="关闭">
+            <DialogPrimitive.Close className="-mr-2 rounded-full p-2 text-fg-subtle hover:bg-muted hover:text-fg" aria-label={text.close}>
               <X className="size-5" />
             </DialogPrimitive.Close>
           </div>

@@ -1,13 +1,16 @@
 import { ListMusic, Music, SearchX } from 'lucide-react';
 import { useNavigate } from 'react-router';
 import { scoreOpenPath } from '@/entity/score/open-score';
-import { useScoreList } from '@/entity/score/score-api';
 import { ScoreCard } from '@/entity/score/score-card';
-import { useSetlistList } from '@/entity/setlist/setlist-api';
 import { SetlistCard } from '@/entity/setlist/setlist-card';
+import { SpaceLabel } from '@/entity/space/space-label';
+import { COMMON_TEXT } from '@/shared/i18n/common-text';
+import { useText } from '@/shared/i18n/text';
 import { EmptyState } from '@/shared/ui/empty-state';
 import { SectionHeader } from '@/shared/ui/section-header';
 import { PageSpinner } from '@/shared/ui/spinner';
+import { HOME_TEXT } from './home-text';
+import { useScoresFromBothSpaces, useSetlistsFromBothSpaces } from './use-both-spaces';
 
 const RESULT_LIMIT = 30;
 const RESULT_GRID_STYLE = 'grid gap-3 sm:grid-cols-2 xl:grid-cols-3';
@@ -18,31 +21,33 @@ function ResultCount({ count }: { count: number }) {
 
 export function SearchResult({ query }: { query: string }) {
   const navigate = useNavigate();
-  const scores = useScoreList({ query, sort: 'title', order: 'asc', limit: RESULT_LIMIT });
-  const setlists = useSetlistList({ query, sort: 'title', order: 'asc', limit: RESULT_LIMIT });
+  const text = useText(HOME_TEXT);
+  const commonText = useText(COMMON_TEXT);
+  const scores = useScoresFromBothSpaces({ query, sort: 'title', order: 'asc', limit: RESULT_LIMIT }, (left, right) => left.title.localeCompare(right.title));
+  const setlists = useSetlistsFromBothSpaces({ query, sort: 'title', order: 'asc', limit: RESULT_LIMIT }, (left, right) => left.name.localeCompare(right.name));
 
   if (scores.isPending || setlists.isPending) return <PageSpinner />;
-  const scoreItems = scores.data ?? [];
-  const setlistItems = setlists.data ?? [];
+  const scoreItems = scores.items;
+  const setlistItems = setlists.items;
   if (scoreItems.length === 0 && setlistItems.length === 0) {
-    return <EmptyState icon={<SearchX />} title="没有找到匹配的内容" description="试试乐曲名、作曲者或曲目单名称" />;
+    return <EmptyState icon={<SearchX />} title={text.noMatchTitle} description={text.noMatchDescription} />;
   }
 
   return (
     <div className="space-y-8">
       {setlistItems.length > 0 && (
         <section>
-          <SectionHeader icon={<ListMusic />} title={<>曲目单<ResultCount count={setlistItems.length} /></>} />
+          <SectionHeader icon={<ListMusic />} title={<>{commonText.setlist}<ResultCount count={setlistItems.length} /></>} />
           <div className={RESULT_GRID_STYLE}>
-            {setlistItems.map(setlist => <SetlistCard key={setlist.id} setlist={setlist} onOpen={() => navigate(`/setlist/${setlist.id}`)} />)}
+            {setlistItems.map(setlist => <SetlistCard key={setlist.id} setlist={setlist} badge={<SpaceLabel space={setlist.space} />} onOpen={() => navigate(`/setlist/${setlist.id}`)} />)}
           </div>
         </section>
       )}
       {scoreItems.length > 0 && (
         <section>
-          <SectionHeader icon={<Music />} title={<>乐曲<ResultCount count={scoreItems.length} /></>} />
+          <SectionHeader icon={<Music />} title={<>{commonText.score}<ResultCount count={scoreItems.length} /></>} />
           <div className={RESULT_GRID_STYLE}>
-            {scoreItems.map(score => <ScoreCard key={score.id} score={score} onOpen={() => navigate(scoreOpenPath(score))} />)}
+            {scoreItems.map(score => <ScoreCard key={score.id} score={score} badge={<SpaceLabel space={score.space} />} onOpen={() => navigate(scoreOpenPath(score))} />)}
           </div>
         </section>
       )}

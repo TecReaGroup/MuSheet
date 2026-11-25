@@ -3,10 +3,16 @@ import { useQuery } from '@tanstack/react-query';
 import { useCallback, useEffect, useReducer, useRef } from 'react';
 import { toast } from 'sonner';
 import { requestJson, sendJsonOnUnload } from '@/shared/api/http-client';
+import { defineText, readText } from '@/shared/i18n/text';
 import { log, serializeError } from '@/shared/lib/logger';
 
 const SAVE_DELAY_MS = 800;
 const NO_STROKES: Stroke[] = [];
+
+const ANNOTATION_TEXT = defineText({
+  'zh-CN': { saveFailed: '标注保存失败，请检查网络' },
+  en: { saveFailed: 'Failed to save annotations. Check your connection' },
+});
 
 interface PageHistory {
   past: Stroke[][];
@@ -96,7 +102,7 @@ export function useAnnotationBook(partId: string) {
       const strokes = stateRef.current.pages[page] ?? NO_STROKES;
       requestJson<void>('PUT', pagePath(partId, page), { strokes }).catch(error => {
         log('error', 'Annotation', 'Saving page failed', { page, ...serializeError(error) });
-        toast.error('标注保存失败，请检查网络');
+        toast.error(readText(ANNOTATION_TEXT).saveFailed);
       });
     }, SAVE_DELAY_MS));
   }, [partId]);

@@ -1,4 +1,6 @@
 import type { SetlistDetail } from '@contract/api';
+import { COMMON_TEXT } from '@/shared/i18n/common-text';
+import { useText } from '@/shared/i18n/text';
 import { cn } from '@/shared/lib/class-name';
 import { Dialog } from '@/shared/ui/dialog';
 
@@ -11,8 +13,9 @@ interface SetlistDrawerProps {
 }
 
 export function SetlistDrawer({ setlist, currentIndex, open, onOpenChange, onSelect }: SetlistDrawerProps) {
+  const text = useText(COMMON_TEXT);
   return (
-    <Dialog open={open} onOpenChange={onOpenChange} title={setlist.name} description={`${setlist.scores.length} 首乐曲`}>
+    <Dialog open={open} onOpenChange={onOpenChange} title={setlist.name} description={text.scoreCount(setlist.scores.length)}>
       <ol className="space-y-1 pb-4">
         {setlist.scores.map((score, index) => {
           const isCurrent = index === currentIndex;

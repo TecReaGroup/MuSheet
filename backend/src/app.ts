@@ -8,12 +8,14 @@ import { projectPath } from './config/project-path';
 import { sendErrorResponse } from './http/error-response';
 import { log, type LogFields } from './infrastructure/logger';
 import { registerAnnotationRoutes } from './module/annotation/annotation-route';
-import { registerAuthRoutes, requireAdminSession } from './module/auth/auth-route';
+import { registerAccountRoutes } from './module/account/account-route';
+import { installSessionGuard, registerAuthRoutes } from './module/auth/auth-route';
 import { registerClientLogRoutes } from './module/client-log/client-log-route';
 import { registerPartRoutes } from './module/part/part-route';
 import { registerPdfRoutes } from './module/pdf/pdf-route';
 import { registerScoreRoutes } from './module/score/score-route';
 import { registerSetlistRoutes } from './module/setlist/setlist-route';
+import { registerUserRoutes } from './module/user/user-route';
 
 // Annotation pages with many dense strokes exceed Fastify's 1MB default.
 const JSON_BODY_LIMIT_BYTES = 8 * 1024 * 1024;
@@ -40,10 +42,12 @@ export async function buildApp() {
   app.addContentTypeParser(BINARY_UPLOAD_TYPES, (_request, payload, done) => done(null, payload));
   app.setErrorHandler(sendErrorResponse);
   app.addHook('onResponse', logResponse);
-  app.addHook('onRequest', requireAdminSession);
+  installSessionGuard(app);
 
   app.get('/api/health', async () => ({ status: 'ok' }));
   await app.register(registerAuthRoutes);
+  await app.register(registerAccountRoutes);
+  await app.register(registerUserRoutes);
   await app.register(registerScoreRoutes);
   await app.register(registerPartRoutes);
   await app.register(registerPdfRoutes);

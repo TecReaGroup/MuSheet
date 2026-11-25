@@ -1,7 +1,14 @@
 import { useEffect, useState } from 'react';
+import { COMMON_TEXT } from '@/shared/i18n/common-text';
+import { defineText, useText } from '@/shared/i18n/text';
 import { Button } from '@/shared/ui/button';
 import { Dialog } from '@/shared/ui/dialog';
 import { Field, TextArea, TextInput } from '@/shared/ui/form-field';
+
+const SETLIST_FORM_TEXT = defineText({
+  'zh-CN': { name: '名称', namePlaceholder: '如：周六婚礼演出', description: '描述' },
+  en: { name: 'Name', namePlaceholder: 'e.g. Saturday wedding gig', description: 'Description' },
+});
 
 export interface SetlistFormValues {
   name: string;
@@ -20,6 +27,8 @@ interface SetlistFormDialogProps {
 
 export function SetlistFormDialog({ open, onOpenChange, title, submitLabel, initial, isSubmitting, onSubmit }: SetlistFormDialogProps) {
   const [values, setValues] = useState(initial);
+  const text = useText(SETLIST_FORM_TEXT);
+  const commonText = useText(COMMON_TEXT);
 
   // Reset only when the dialog opens; `initial` is often a fresh object on every parent render.
   useEffect(() => {
@@ -38,17 +47,17 @@ export function SetlistFormDialog({ open, onOpenChange, title, submitLabel, init
       title={title}
       footer={(
         <>
-          <Button variant="ghost" onClick={() => onOpenChange(false)}>取消</Button>
+          <Button variant="ghost" onClick={() => onOpenChange(false)}>{commonText.cancel}</Button>
           <Button variant="setlist" disabled={!canSubmit} onClick={submit}>{submitLabel}</Button>
         </>
       )}
     >
       <form className="space-y-4 pb-2" onSubmit={event => { event.preventDefault(); submit(); }}>
-        <Field label="名称">
-          <TextInput autoFocus value={values.name} maxLength={120} placeholder="如：周六婚礼演出" onChange={event => setValues({ ...values, name: event.target.value })} />
+        <Field label={text.name}>
+          <TextInput autoFocus value={values.name} maxLength={120} placeholder={text.namePlaceholder} onChange={event => setValues({ ...values, name: event.target.value })} />
         </Field>
-        <Field label="描述">
-          <TextArea value={values.description} maxLength={500} placeholder="可选" onChange={event => setValues({ ...values, description: event.target.value })} />
+        <Field label={text.description}>
+          <TextArea value={values.description} maxLength={500} placeholder={commonText.optional} onChange={event => setValues({ ...values, description: event.target.value })} />
         </Field>
       </form>
     </Dialog>
