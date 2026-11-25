@@ -4,14 +4,11 @@ import { useScoreList } from '@/entity/score/score-api';
 import { saveSetlistOrder } from '@/entity/setlist/setlist-change';
 import { COMMON_TEXT } from '@/shared/i18n/common-text';
 import { defineText, useText } from '@/shared/i18n/text';
-import { useDebouncedValue } from '@/shared/lib/use-debounced-value';
+import { useSearchQuery } from '@/shared/lib/use-search-query';
 import { Button } from '@/shared/ui/button';
 import { Dialog } from '@/shared/ui/dialog';
-import { PickList, toggleSelection } from '@/shared/ui/pick-list';
+import { PickList, PickListSkeleton, toggleSelection } from '@/shared/ui/pick-list';
 import { SearchField } from '@/shared/ui/search-field';
-import { Spinner } from '@/shared/ui/spinner';
-
-const SEARCH_DEBOUNCE_MS = 200;
 
 const ADD_SCORES_TEXT = defineText({
   'zh-CN': {
@@ -39,10 +36,9 @@ interface AddScoresDialogProps {
 export function AddScoresDialog({ setlist, open, onOpenChange }: AddScoresDialogProps) {
   const text = useText(ADD_SCORES_TEXT);
   const commonText = useText(COMMON_TEXT);
-  const [query, setQuery] = useState('');
+  const { query, setQuery, settledQuery } = useSearchQuery();
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const debouncedQuery = useDebouncedValue(query, SEARCH_DEBOUNCE_MS);
-  const { data: scores, isPending } = useScoreList({ space: setlist.space, query: debouncedQuery || undefined, sort: 'title', order: 'asc' });
+  const { data: scores, isPending } = useScoreList({ space: setlist.space, query: settledQuery || undefined, sort: 'title', order: 'asc' });
   const memberIds = new Set(setlist.scores.map(score => score.id));
   const candidates = (scores ?? []).filter(score => !memberIds.has(score.id));
 
@@ -76,14 +72,15 @@ export function AddScoresDialog({ setlist, open, onOpenChange }: AddScoresDialog
       )}
     >
       <SearchField value={query} onChange={setQuery} placeholder={text.searchPlaceholder} className="sticky top-0 z-10 mb-3" />
-      {isPending && <div className="flex justify-center py-8"><Spinner /></div>}
-      {!isPending && candidates.length === 0 && <p className="py-8 text-center text-sm text-fg-muted">{text.noCandidates}</p>}
-      <PickList
-        items={candidates.map(score => ({ id: score.id, kind: 'score', title: score.title, subtitle: score.composer || commonText.noComposer }))}
-        selectedIds={selectedIds}
-        onToggle={toggle}
-        tone="setlist"
-      />
+      {isPending ? <PickListSkeleton /> : (
+        <PickList
+          items={candidates.map(score => ({ id: score.id, kind: 'score', title: score.title, subtitle: score.composer || commonText.noComposer }))}
+          selectedIds={selectedIds}
+          onToggle={toggle}
+          tone="setlist"
+          emptyMessage={text.noCandidates}
+        />
+      )}
     </Dialog>
   );
 }

@@ -10,7 +10,7 @@ import { Button, IconButton } from '@/shared/ui/button';
 import { Dialog } from '@/shared/ui/dialog';
 import { Field, TextInput } from '@/shared/ui/form-field';
 import { Menu, MenuContent, MenuItem, MenuTrigger } from '@/shared/ui/menu';
-import { Spinner } from '@/shared/ui/spinner';
+import { Skeleton, SkeletonRegion, skeletonKeys } from '@/shared/ui/skeleton';
 import { deleteUser, hideUserFromList, refreshUserList, useCreateUser, useResetUserPassword, useUserList } from './user-admin-api';
 import { USER_ADMIN_TEXT } from './user-admin-text';
 
@@ -69,7 +69,7 @@ function CreateUserDialog({ open, onOpenChange }: { open: boolean; onOpenChange:
         <Field label={text.password}>
           <TextInput type="password" autoComplete="new-password" maxLength={PASSWORD_MAX_LENGTH} value={password} onChange={event => setPassword(event.target.value)} />
         </Field>
-        <p className="text-[13px] text-fg-quiet">{text.passwordHint}</p>
+        <p className="text-caption text-fg-quiet">{text.passwordHint}</p>
       </form>
     </Dialog>
   );
@@ -110,9 +110,20 @@ function ResetPasswordDialog({ user, onClose }: { user: ManagedUserView | null; 
         <Field label={text.newPassword}>
           <TextInput autoFocus type="password" autoComplete="new-password" maxLength={PASSWORD_MAX_LENGTH} value={password} onChange={event => setPassword(event.target.value)} />
         </Field>
-        <p className="text-[13px] text-fg-quiet">{text.passwordHint}</p>
+        <p className="text-caption text-fg-quiet">{text.passwordHint}</p>
       </form>
     </Dialog>
+  );
+}
+
+const USER_ROW_SKELETON_COUNT = 2;
+
+function UserRowSkeleton() {
+  return (
+    <div className="flex items-center gap-3 px-4 py-3">
+      <Skeleton className="size-9 rounded-full" />
+      <Skeleton className="h-4 w-32" />
+    </div>
   );
 }
 
@@ -122,7 +133,7 @@ function UserRow({ user, onResetPassword }: { user: ManagedUserView; onResetPass
   return (
     <div className="flex items-center gap-3 px-4 py-3">
       <UserAvatar account={user.account} avatar={user.avatar} className="size-9 text-sm" />
-      <span className="min-w-0 flex-1 truncate text-[15px] font-medium text-fg">{user.account}</span>
+      <span className="min-w-0 flex-1 truncate text-body font-medium text-fg">{user.account}</span>
       <Menu>
         <MenuTrigger asChild>
           <IconButton label={commonText.moreActions} className="size-9"><Ellipsis /></IconButton>
@@ -146,14 +157,18 @@ export function UserAdminPanel() {
   return (
     <section className="mb-8">
       <div className="mb-2.5 flex items-center justify-between px-1">
-        <h3 className="text-[13px] font-semibold text-fg-quiet">{text.title}</h3>
+        <h3 className="text-caption font-semibold text-fg-quiet">{text.title}</h3>
         <Button size="sm" variant="ghost" className="text-score hover:bg-score-soft hover:text-score" onClick={() => setIsCreating(true)}>
           <UserPlus />
           {text.newUser}
         </Button>
       </div>
       <div className="divide-y divide-border overflow-hidden rounded-panel border border-border bg-surface">
-        {users.isPending && <div className="flex justify-center py-6"><Spinner /></div>}
+        {users.isPending && (
+          <SkeletonRegion className="divide-y divide-border">
+            {skeletonKeys(USER_ROW_SKELETON_COUNT).map(key => <UserRowSkeleton key={key} />)}
+          </SkeletonRegion>
+        )}
         {users.data?.length === 0 && <p className="px-4 py-6 text-center text-sm text-fg-quiet">{text.noUsers}</p>}
         {users.data?.map(user => <UserRow key={user.id} user={user} onResetPassword={() => setResetting(user)} />)}
       </div>

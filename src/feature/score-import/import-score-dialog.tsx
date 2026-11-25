@@ -198,8 +198,8 @@ export function ImportScoreDialog() {
                       <TextInput value={item.composer} maxLength={120} list="musheet-composers" placeholder={commonText.optional} onChange={event => patchItem(item.key, { composer: event.target.value })} />
                     </Field>
                     <InstrumentPicker value={item.choice} onChange={choice => patchItem(item.key, { choice })} />
-                    {match && <p className="text-[13px] text-setlist">{text.willJoin(match.title)}</p>}
-                    {item.error && <p className="text-[13px] text-danger">{item.error}</p>}
+                    {match && <p className="text-caption text-setlist">{text.willJoin(match.title)}</p>}
+                    {item.error && <p className="text-caption text-danger">{item.error}</p>}
                   </>
                 )}
             </section>

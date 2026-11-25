@@ -6,14 +6,11 @@ import { describeError } from '@/shared/api/http-client';
 import { COMMON_TEXT } from '@/shared/i18n/common-text';
 import { defineText, readText, useText } from '@/shared/i18n/text';
 import { log, serializeError } from '@/shared/lib/logger';
-import { useDebouncedValue } from '@/shared/lib/use-debounced-value';
+import { useSearchQuery } from '@/shared/lib/use-search-query';
 import { Button } from '@/shared/ui/button';
 import { Dialog } from '@/shared/ui/dialog';
-import { PickList, toggleSelection, type PickItem } from '@/shared/ui/pick-list';
+import { PickList, PickListSkeleton, toggleSelection, type PickItem } from '@/shared/ui/pick-list';
 import { SearchField } from '@/shared/ui/search-field';
-import { Spinner } from '@/shared/ui/spinner';
-
-const SEARCH_DEBOUNCE_MS = 200;
 
 const TEAM_COPY_TEXT = defineText({
   'zh-CN': {
@@ -66,11 +63,10 @@ interface CopyDialogFrameProps extends CopyDialogProps {
 function CopyDialogFrame({ open, onOpenChange, title, description, searchPlaceholder, emptyMessage, tone, useCandidates, copy }: CopyDialogFrameProps) {
   const text = useText(TEAM_COPY_TEXT);
   const commonText = useText(COMMON_TEXT);
-  const [query, setQuery] = useState('');
+  const { query, setQuery, settledQuery } = useSearchQuery();
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [isCopying, setIsCopying] = useState(false);
-  const debouncedQuery = useDebouncedValue(query, SEARCH_DEBOUNCE_MS);
-  const { items, isPending } = useCandidates(debouncedQuery || undefined);
+  const { items, isPending } = useCandidates(settledQuery || undefined);
 
   const close = () => {
     onOpenChange(false);
@@ -107,9 +103,9 @@ function CopyDialogFrame({ open, onOpenChange, title, description, searchPlaceho
       )}
     >
       <SearchField value={query} onChange={setQuery} placeholder={searchPlaceholder} className="sticky top-0 z-10 mb-3" />
-      {isPending && <div className="flex justify-center py-8"><Spinner /></div>}
-      {!isPending && items.length === 0 && <p className="py-8 text-center text-sm text-fg-muted">{emptyMessage}</p>}
-      <PickList items={items} selectedIds={selectedIds} onToggle={id => setSelectedIds(current => toggleSelection(current, id))} tone={tone} />
+      {isPending
+        ? <PickListSkeleton />
+        : <PickList items={items} selectedIds={selectedIds} onToggle={id => setSelectedIds(current => toggleSelection(current, id))} tone={tone} emptyMessage={emptyMessage} />}
     </Dialog>
   );
 }

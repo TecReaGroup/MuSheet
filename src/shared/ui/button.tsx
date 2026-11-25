@@ -15,7 +15,7 @@ const buttonStyle = cva(
       },
       size: {
         sm: 'h-8 px-3 text-sm',
-        md: 'h-11 px-5 text-[15px]',
+        md: 'h-11 px-5 text-body',
         lg: 'h-12 px-6 text-base',
         icon: 'size-10 text-[20px]',
       },

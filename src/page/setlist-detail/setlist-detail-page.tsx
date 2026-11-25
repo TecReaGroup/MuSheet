@@ -16,10 +16,9 @@ import { defineText, useText } from '@/shared/i18n/text';
 import { log } from '@/shared/lib/logger';
 import { Button, IconButton } from '@/shared/ui/button';
 import { EmptyState } from '@/shared/ui/empty-state';
-import { EntityHeader } from '@/shared/ui/entity-header';
+import { EntityHeader, EntityPageSkeleton } from '@/shared/ui/entity-header';
 import { Menu, MenuContent, MenuItem, MenuSeparator, MenuTrigger } from '@/shared/ui/menu';
-import { SortableList } from '@/shared/ui/sortable-list';
-import { PageSpinner } from '@/shared/ui/spinner';
+import { SortableList, SortableRowCard } from '@/shared/ui/sortable-list';
 
 const SETLIST_DETAIL_TEXT = defineText({
   'zh-CN': {
@@ -56,9 +55,8 @@ function SetlistRow({ setlist, score, index, dragHandle }: SetlistRowProps) {
   const firstPart = score.parts[0];
   const text = useText(SETLIST_DETAIL_TEXT);
   return (
-    <div className="flex items-center gap-2 rounded-panel border border-border bg-surface py-2.5 pl-1 pr-1.5 transition-colors hover:border-score/30">
-      {dragHandle}
-      <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-muted text-[13px] font-semibold text-fg-muted tabular-nums">{index + 1}</span>
+    <SortableRowCard dragHandle={dragHandle}>
+      <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-muted text-caption font-semibold text-fg-muted tabular-nums">{index + 1}</span>
       <button
         type="button"
         disabled={!firstPart}
@@ -67,14 +65,14 @@ function SetlistRow({ setlist, score, index, dragHandle }: SetlistRowProps) {
       >
         <PartThumbnail pdf={firstPart} className="h-14 w-10.5" />
         <span className="min-w-0 flex-1">
-          <span className="block truncate text-[15px] font-semibold text-fg">{score.title}</span>
-          <span className="mt-0.5 block truncate text-[13px] text-fg-quiet">
+          <span className="block truncate text-body font-semibold text-fg">{score.title}</span>
+          <span className="mt-0.5 block truncate text-caption text-fg-quiet">
             {[score.composer, `${score.bpm} BPM`, describeParts(score)].filter(Boolean).join(' · ')}
           </span>
         </span>
       </button>
       <IconButton label={text.removeScore(score.title)} onClick={() => removeFromSetlistWithUndo(setlist, score.id)}><X /></IconButton>
-    </div>
+    </SortableRowCard>
   );
 }
 
@@ -94,7 +92,7 @@ export function SetlistDetailPage() {
     markSetlistOpened(setlistId).catch(error => log('warn', 'Setlist', 'Marking opened failed', { message: String(error) }));
   }, [setlistId]);
 
-  if (isPending) return <PageSpinner />;
+  if (isPending) return <EntityPageSkeleton />;
   if (isError || !setlist) return <EmptyState icon={<ListMusic />} title={text.notFound} action={<Button onClick={() => navigate('/library?tab=setlist')}>{commonText.backToLibrary}</Button>} />;
 
   const firstPlayable = findPlayableIndex(setlist.scores, -1, 1);
@@ -109,7 +107,7 @@ export function SetlistDetailPage() {
   };
 
   return (
-    <>
+    <div className="animate-fade-in">
       <EntityHeader
         kind="setlist"
         backTo={setlistCollectionPath(setlist.space)}
@@ -162,6 +160,6 @@ export function SetlistDetailPage() {
         onSubmit={values => updateSetlist.mutate(values, { onSuccess: () => setIsEditing(false) })}
       />
       <AddScoresDialog setlist={setlist} open={isAdding} onOpenChange={setIsAdding} />
-    </>
+    </div>
   );
 }

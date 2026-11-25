@@ -44,6 +44,9 @@
   --danger: #dc2626;
   --danger-soft: #fef2f2;
   --overlay: rgb(0 0 0 / 0.5);
+  /* Toasts and the reader's page chip: dark in both themes, so they read as transient overlays. */
+  --inverse: #374151;
+  --on-inverse: #ffffff;
   color-scheme: light;
 }
 
@@ -124,6 +127,8 @@
   --color-danger: var(--danger);
   --color-danger-soft: var(--danger-soft);
   --color-overlay: var(--overlay);
+  --color-inverse: var(--inverse);
+  --color-on-inverse: var(--on-inverse);
 
   --radius-tag: 8px;
   --radius-card: 12px;
@@ -133,6 +138,64 @@
 
   --shadow-float: 0 12px 40px rgb(0 0 0 / 0.16);
   --shadow-fab: 0 1px 3px rgb(0 0 0 / 0.08), 0 6px 16px rgb(0 0 0 / 0.12);
+
+  /* Between Tailwind's sm (14px) and base (16px): body copy and secondary lines of list rows. */
+  --text-body: 15px;
+  --text-caption: 13px;
+
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  /* iOS sheet curve: fast start, long settle, so a bottom sheet feels dragged rather than tweened. */
+  --ease-sheet: cubic-bezier(0.32, 0.72, 0, 1);
+
+  /* Exit animations keep `forwards`: Radix unmounts on animationend, and without it the last frame snaps back. */
+  --animate-fade-in: fade-in 180ms var(--ease-out-quart);
+  --animate-fade-out: fade-out 140ms ease-in forwards;
+  --animate-sheet-in: sheet-in 320ms var(--ease-sheet);
+  --animate-sheet-out: sheet-out 220ms ease-in forwards;
+  --animate-modal-in: modal-in 200ms var(--ease-out-quart);
+  --animate-modal-out: modal-out 140ms ease-in forwards;
+  --animate-pop-in: pop-in 140ms var(--ease-out-quart);
+  --animate-pop-out: fade-out 100ms ease-in forwards;
+  --animate-rise-in: rise-in 260ms var(--ease-out-quart);
+  /* Delayed so fast loads never flash a skeleton. */
+  --animate-skeleton-in: fade-in 240ms ease-out 150ms both;
+
+  @keyframes fade-in {
+    from { opacity: 0; }
+  }
+  @keyframes fade-out {
+    to { opacity: 0; }
+  }
+  @keyframes sheet-in {
+    from { transform: translateY(100%); }
+  }
+  @keyframes sheet-out {
+    to { transform: translateY(100%); }
+  }
+  @keyframes modal-in {
+    from { opacity: 0; transform: scale(0.96); }
+  }
+  @keyframes modal-out {
+    to { opacity: 0; transform: scale(0.96); }
+  }
+  @keyframes pop-in {
+    from { opacity: 0; transform: scale(0.96); }
+  }
+  @keyframes rise-in {
+    from { opacity: 0; transform: translateY(6px); }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* 1ms rather than 0 so animationend still fires and Radix can unmount closing overlays. */
+  *,
+  ::before,
+  ::after {
+    animation-duration: 1ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+  }
 }
 
 @layer base {

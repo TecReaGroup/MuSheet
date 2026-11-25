@@ -46,7 +46,7 @@ export function ViewerTopBar({ score, part, visible, backFallback, setlistName, 
             <MenuTrigger asChild>
               <button type="button" className="min-w-0 max-w-full rounded-card px-3 py-1 text-center hover:bg-muted">
                 <span className="flex items-center justify-center gap-1">
-                  <span className="truncate text-[15px] font-semibold">{score.title}</span>
+                  <span className="truncate text-body font-semibold">{score.title}</span>
                   {score.parts.length > 1 && <ChevronDown className="size-4 shrink-0 text-fg-subtle" />}
                 </span>
                 <span className="block truncate text-xs text-fg-muted">

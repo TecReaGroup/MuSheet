@@ -50,6 +50,16 @@ export function SortableList<T>({ items, getId, onReorder, renderItem }: Sortabl
   );
 }
 
+/** Card frame for a `SortableList` row: drag handle first, then the row's own content. */
+export function SortableRowCard({ dragHandle, children }: { dragHandle: ReactNode; children: ReactNode }) {
+  return (
+    <div className="flex items-center gap-2 rounded-panel border border-border bg-surface py-2.5 pl-1 pr-1.5 transition-colors hover:border-score/30">
+      {dragHandle}
+      {children}
+    </div>
+  );
+}
+
 function SortableRow({ id, children }: { id: string; children: (dragHandle: ReactNode) => ReactNode }) {
   const { attributes, listeners, setNodeRef, setActivatorNodeRef, transform, transition, isDragging } = useSortable({ id });
   const text = useText(COMMON_TEXT);

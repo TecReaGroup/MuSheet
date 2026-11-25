@@ -63,7 +63,7 @@ export function ChangePasswordDialog({ open, onOpenChange }: { open: boolean; on
         <Field label={text.currentPassword}>{passwordInput('currentPassword', 'current-password')}</Field>
         <Field label={text.newPassword}>{passwordInput('newPassword', 'new-password')}</Field>
         <Field label={text.confirmPassword}>{passwordInput('confirmPassword', 'new-password')}</Field>
-        <p className={isMismatch ? 'text-[13px] text-danger' : 'text-[13px] text-fg-quiet'}>
+        <p className={isMismatch ? 'text-caption text-danger' : 'text-caption text-fg-quiet'}>
           {isMismatch ? text.passwordMismatch : text.passwordHint}
         </p>
       </form>

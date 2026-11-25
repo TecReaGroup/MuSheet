@@ -61,7 +61,7 @@ export function RenameAccountDialog({ currentAccount, open, onOpenChange }: Rena
             onChange={event => setAccount(event.target.value)}
           />
         </Field>
-        <p className="text-[13px] text-fg-quiet">{text.renameHint}</p>
+        <p className="text-caption text-fg-quiet">{text.renameHint}</p>
       </form>
     </Dialog>
   );

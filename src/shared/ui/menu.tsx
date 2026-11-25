@@ -7,7 +7,7 @@ export const Menu = DropdownMenu.Root;
 export const MenuTrigger = DropdownMenu.Trigger;
 export const MenuSub = DropdownMenu.Sub;
 
-const PANEL_STYLE = 'z-50 min-w-48 overflow-hidden rounded-card border border-border bg-surface-raised p-1 shadow-float';
+const PANEL_STYLE = 'z-50 min-w-48 origin-(--radix-dropdown-menu-content-transform-origin) overflow-hidden rounded-card border border-border bg-surface-raised p-1 shadow-float data-[state=closed]:animate-pop-out data-[state=open]:animate-pop-in';
 
 export function MenuContent({ className, align = 'end', sideOffset = 6, ...props }: ComponentProps<typeof DropdownMenu.Content>) {
   return (

@@ -35,7 +35,7 @@ export function SortMenu({ state, onSelect }: SortMenuProps) {
         <Button
           variant="secondary"
           aria-label={text.sortBy(text.label[state.sort])}
-          className="group h-11 w-11 px-0 text-[15px] font-medium text-fg-muted hover:text-fg data-[state=open]:bg-muted data-[state=open]:text-fg sm:w-36 sm:justify-start sm:px-3.5 [&_svg]:size-[18px] [&_svg]:text-fg-subtle"
+          className="group h-11 w-11 px-0 text-body font-medium text-fg-muted hover:text-fg data-[state=open]:bg-muted data-[state=open]:text-fg sm:w-36 sm:justify-start sm:px-3.5 [&_svg]:size-[18px] [&_svg]:text-fg-subtle"
         >
           <DirectionIcon />
           <span className="hidden flex-1 text-center sm:inline">{text.label[state.sort]}</span>
@@ -49,7 +49,7 @@ export function SortMenu({ state, onSelect }: SortMenuProps) {
             <MenuItem
               key={key}
               onSelect={() => onSelect(key)}
-              className={cn('justify-center px-3 py-2 text-[15px]', isActive ? 'font-medium text-score' : 'text-fg-muted data-[highlighted]:text-fg')}
+              className={cn('justify-center px-3 py-2 text-body', isActive ? 'font-medium text-score' : 'text-fg-muted data-[highlighted]:text-fg')}
             >
               {text.label[key]}
             </MenuItem>

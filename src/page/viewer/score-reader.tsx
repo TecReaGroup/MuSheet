@@ -178,7 +178,7 @@ export function ScoreReader({ score, part, initialPage, setlistContext }: ScoreR
   const pageLabel = describePosition(position, layout, pageCount);
 
   return (
-    <div className="fixed inset-0 overflow-hidden bg-canvas text-fg dark:bg-zinc-950">
+    <div className="fixed inset-0 overflow-hidden bg-canvas text-fg">
       <div ref={stageRef} className="absolute inset-0 touch-none select-none" {...gesture.bind}>
         {pdf && box.width > 0 && (
           <PageStage
@@ -236,7 +236,7 @@ export function ScoreReader({ score, part, initialPage, setlistContext }: ScoreR
       <div
         aria-hidden
         className={cn(
-          'pointer-events-none absolute bottom-[max(1rem,env(safe-area-inset-bottom))] left-1/2 z-10 -translate-x-1/2 rounded-full bg-zinc-900/75 px-3 py-1 text-sm font-medium text-white tabular-nums transition-opacity duration-300',
+          'pointer-events-none absolute bottom-[max(1rem,env(safe-area-inset-bottom))] left-1/2 z-10 -translate-x-1/2 rounded-full bg-inverse/75 px-3 py-1 text-sm font-medium text-on-inverse tabular-nums transition-opacity duration-300',
           isIndicatorVisible && !isChromeVisible && !isEditing ? 'opacity-100' : 'opacity-0',
         )}
       >

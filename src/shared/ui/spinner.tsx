@@ -7,11 +7,3 @@ export function Spinner({ className }: { className?: string }) {
   const text = useText(COMMON_TEXT);
   return <LoaderCircle className={cn('size-5 animate-spin text-fg-subtle', className)} aria-label={text.loading} />;
 }
-
-export function PageSpinner() {
-  return (
-    <div className="flex justify-center py-20">
-      <Spinner className="size-6" />
-    </div>
-  );
-}

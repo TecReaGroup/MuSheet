@@ -13,7 +13,7 @@ const EXIT_TO = '/';
 function ExitLink() {
   const text = useText(COMMON_TEXT);
   return (
-    <Link to={EXIT_TO} className="group inline-flex items-center gap-1.5 rounded-card px-2 py-1.5 text-[15px] font-medium text-fg-muted transition-colors hover:text-fg">
+    <Link to={EXIT_TO} className="group inline-flex items-center gap-1.5 rounded-card px-2 py-1.5 text-body font-medium text-fg-muted transition-colors hover:text-fg">
       <ArrowLeft className="size-4.5 transition-transform duration-200 group-hover:-translate-x-0.5 motion-reduce:transform-none" />
       {text.back}
     </Link>
@@ -27,7 +27,7 @@ function SettingSidebar() {
       <div className="flex items-center gap-2">
         <ExitLink />
         <span aria-hidden className="h-4 w-px bg-border" />
-        <h1 className="px-2 text-[15px] font-semibold text-fg-title">{text.setting}</h1>
+        <h1 className="px-2 text-body font-semibold text-fg-title">{text.setting}</h1>
       </div>
       <nav className="mt-6 flex flex-col gap-1">
         {SETTING_SECTIONS.map(({ key, icon }) => <SidebarLink key={key} to={`${SETTING_ROOT}/${key}`} label={text.section[key]} icon={icon} />)}

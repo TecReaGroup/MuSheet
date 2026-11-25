@@ -16,7 +16,7 @@ export function App() {
         position="bottom-center"
         offset={{ bottom: 'calc(5.5rem + env(safe-area-inset-bottom))' }}
         mobileOffset={{ bottom: 'calc(5rem + env(safe-area-inset-bottom))', left: 16, right: 16 }}
-        toastOptions={{ className: 'rounded-tag! border-0! bg-gray-700! text-white! text-sm! shadow-float! [&_[data-button]]:bg-white/15! [&_[data-button]]:text-white!' }}
+        toastOptions={{ className: 'rounded-tag! border-0! bg-inverse! text-on-inverse! text-sm! shadow-float! [&_[data-button]]:bg-on-inverse/15! [&_[data-button]]:text-on-inverse!' }}
       />
     </QueryClientProvider>
   );

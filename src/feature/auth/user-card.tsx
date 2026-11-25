@@ -23,8 +23,8 @@ export function UserCard({ to }: { to: string }) {
     >
       <UserAvatar account={session.account} avatar={session.avatar} className="size-10 text-base" />
       <span className="flex min-w-0 flex-1 flex-col">
-        <span className="truncate text-[15px] font-semibold leading-tight tracking-tight text-fg-title">{session.account}</span>
-        <span className="mt-1 text-[13px] leading-none text-fg-quiet">{session.isRoot ? roleText.root : roleText.member}</span>
+        <span className="truncate text-body font-semibold leading-tight tracking-tight text-fg-title">{session.account}</span>
+        <span className="mt-1 text-caption leading-none text-fg-quiet">{session.isRoot ? roleText.root : roleText.member}</span>
       </span>
       <ChevronRight className="size-4 shrink-0 text-fg-faint transition-[transform,color] duration-200 ease-out group-hover:translate-x-0.5 group-hover:text-fg-muted motion-reduce:transform-none" />
     </NavLink>

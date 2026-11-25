@@ -6,14 +6,14 @@ import { SetlistCard } from '@/entity/setlist/setlist-card';
 import { SpaceLabel } from '@/entity/space/space-label';
 import { COMMON_TEXT } from '@/shared/i18n/common-text';
 import { useText } from '@/shared/i18n/text';
+import { CardGrid, CardGridSkeleton } from '@/shared/ui/card-grid';
 import { EmptyState } from '@/shared/ui/empty-state';
 import { SectionHeader } from '@/shared/ui/section-header';
-import { PageSpinner } from '@/shared/ui/spinner';
 import { HOME_TEXT } from './home-text';
 import { useScoresFromBothSpaces, useSetlistsFromBothSpaces } from './use-both-spaces';
 
 const RESULT_LIMIT = 30;
-const RESULT_GRID_STYLE = 'grid gap-3 sm:grid-cols-2 xl:grid-cols-3';
+const RESULT_SKELETON_COUNT = 6;
 
 function ResultCount({ count }: { count: number }) {
   return <span className="ml-1 text-base font-normal text-fg-subtle tabular-nums">{count}</span>;
@@ -26,7 +26,7 @@ export function SearchResult({ query }: { query: string }) {
   const scores = useScoresFromBothSpaces({ query, sort: 'title', order: 'asc', limit: RESULT_LIMIT }, (left, right) => left.title.localeCompare(right.title));
   const setlists = useSetlistsFromBothSpaces({ query, sort: 'title', order: 'asc', limit: RESULT_LIMIT }, (left, right) => left.name.localeCompare(right.name));
 
-  if (scores.isPending || setlists.isPending) return <PageSpinner />;
+  if (scores.isPending || setlists.isPending) return <CardGridSkeleton count={RESULT_SKELETON_COUNT} />;
   const scoreItems = scores.items;
   const setlistItems = setlists.items;
   if (scoreItems.length === 0 && setlistItems.length === 0) {
@@ -38,17 +38,17 @@ export function SearchResult({ query }: { query: string }) {
       {setlistItems.length > 0 && (
         <section>
           <SectionHeader icon={<ListMusic />} title={<>{commonText.setlist}<ResultCount count={setlistItems.length} /></>} />
-          <div className={RESULT_GRID_STYLE}>
+          <CardGrid>
             {setlistItems.map(setlist => <SetlistCard key={setlist.id} setlist={setlist} badge={<SpaceLabel space={setlist.space} />} onOpen={() => navigate(`/setlist/${setlist.id}`)} />)}
-          </div>
+          </CardGrid>
         </section>
       )}
       {scoreItems.length > 0 && (
         <section>
           <SectionHeader icon={<Music />} title={<>{commonText.score}<ResultCount count={scoreItems.length} /></>} />
-          <div className={RESULT_GRID_STYLE}>
+          <CardGrid>
             {scoreItems.map(score => <ScoreCard key={score.id} score={score} badge={<SpaceLabel space={score.space} />} onOpen={() => navigate(scoreOpenPath(score))} />)}
-          </div>
+          </CardGrid>
         </section>
       )}
     </div>

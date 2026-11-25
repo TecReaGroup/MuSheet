@@ -34,8 +34,8 @@ export function SetlistDrawer({ setlist, currentIndex, open, onOpenChange, onSel
               >
                 <span className={cn('w-6 text-center text-sm font-semibold tabular-nums', isCurrent ? 'text-setlist' : 'text-fg-subtle')}>{index + 1}</span>
                 <span className="min-w-0 flex-1">
-                  <span className="block truncate text-[15px] font-medium">{score.title}</span>
-                  {score.composer && <span className="block truncate text-[13px] text-fg-muted">{score.composer}</span>}
+                  <span className="block truncate text-body font-medium">{score.title}</span>
+                  {score.composer && <span className="block truncate text-caption text-fg-muted">{score.composer}</span>}
                 </span>
                 <span className="text-xs text-fg-subtle tabular-nums">{score.bpm}</span>
               </button>

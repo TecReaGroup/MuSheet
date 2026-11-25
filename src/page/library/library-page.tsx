@@ -14,20 +14,19 @@ import { useImportDialogStore } from '@/feature/score-import/import-dialog-store
 import { useCreateSetlistDialogStore } from '@/feature/setlist-edit/create-setlist-dialog';
 import { COMMON_TEXT } from '@/shared/i18n/common-text';
 import { useText } from '@/shared/i18n/text';
-import { useDebouncedValue } from '@/shared/lib/use-debounced-value';
+import { useSearchQuery } from '@/shared/lib/use-search-query';
+import { CardGrid, CardGridSkeleton } from '@/shared/ui/card-grid';
 import { EmptyState } from '@/shared/ui/empty-state';
 import { FloatingActionButton } from '@/shared/ui/floating-action-button';
 import { PageHeader } from '@/shared/ui/page-header';
 import { SearchField } from '@/shared/ui/search-field';
-import { PageSpinner } from '@/shared/ui/spinner';
 import { TabSwitch } from '@/shared/ui/tab-switch';
 import { LIBRARY_TEXT } from './library-text';
 import { ScoreActionsMenu } from './score-actions-menu';
 import { SetlistActionsMenu } from './setlist-actions-menu';
 import { TeamAddButton } from './team-add-button';
 
-const SEARCH_DEBOUNCE_MS = 200;
-const GRID_STYLE = 'grid gap-3 sm:grid-cols-2 xl:grid-cols-3';
+const COLLECTION_SKELETON_COUNT = 6;
 
 function ScoreGridItem({ score }: { score: ScoreSummary }) {
   const navigate = useNavigate();
@@ -64,26 +63,26 @@ function ScoreCollection({ space, query }: CollectionProps) {
   const text = useText(LIBRARY_TEXT);
   const sortState = useLibrarySortStore(state => state.score);
   const { data, isPending } = useScoreList({ space, query: query || undefined, ...sortState });
-  if (isPending) return <PageSpinner />;
+  if (isPending) return <CardGridSkeleton count={COLLECTION_SKELETON_COUNT} />;
   if (!data || data.length === 0) {
     return query
       ? <EmptyState icon={<SearchX />} title={text.noMatchingScores} />
       : <EmptyState icon={<Music />} title={text.noScoresTitle} description={text.noScoresDescription[space]} />;
   }
-  return <div className={GRID_STYLE}>{data.map(score => <ScoreGridItem key={score.id} score={score} />)}</div>;
+  return <CardGrid>{data.map(score => <ScoreGridItem key={score.id} score={score} />)}</CardGrid>;
 }
 
 function SetlistCollection({ space, query }: CollectionProps) {
   const text = useText(LIBRARY_TEXT);
   const sortState = useLibrarySortStore(state => state.setlist);
   const { data, isPending } = useSetlistList({ space, query: query || undefined, ...sortState });
-  if (isPending) return <PageSpinner />;
+  if (isPending) return <CardGridSkeleton count={COLLECTION_SKELETON_COUNT} />;
   if (!data || data.length === 0) {
     return query
       ? <EmptyState icon={<SearchX />} title={text.noMatchingSetlists} />
       : <EmptyState icon={<ListMusic />} title={text.noSetlistsTitle} description={text.noSetlistsDescription} />;
   }
-  return <div className={GRID_STYLE}>{data.map(setlist => <SetlistGridItem key={setlist.id} setlist={setlist} />)}</div>;
+  return <CardGrid>{data.map(setlist => <SetlistGridItem key={setlist.id} setlist={setlist} />)}</CardGrid>;
 }
 
 function LibraryCounts({ space }: { space: Space }) {
@@ -100,8 +99,7 @@ export function LibraryPage({ space }: { space: Space }) {
   const commonText = useText(COMMON_TEXT);
   const [searchParams, setSearchParams] = useSearchParams();
   const collection: LibraryCollection = searchParams.get('tab') === 'setlist' ? 'setlist' : 'score';
-  const [query, setQuery] = useState('');
-  const debouncedQuery = useDebouncedValue(query.trim(), SEARCH_DEBOUNCE_MS);
+  const { query, setQuery, settledQuery } = useSearchQuery();
   const sortState = useLibrarySortStore(state => state[collection]);
   const selectSort = useLibrarySortStore(state => state.select);
   const openImport = useImportDialogStore(state => state.open);
@@ -131,7 +129,7 @@ export function LibraryPage({ space }: { space: Space }) {
           </div>
         </div>
       </PageHeader>
-      {collection === 'score' ? <ScoreCollection space={space} query={debouncedQuery} /> : <SetlistCollection space={space} query={debouncedQuery} />}
+      {collection === 'score' ? <ScoreCollection space={space} query={settledQuery} /> : <SetlistCollection space={space} query={settledQuery} />}
       {space === 'team'
         ? <TeamAddButton collection={collection} />
         : collection === 'score'

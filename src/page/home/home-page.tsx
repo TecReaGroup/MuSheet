@@ -1,14 +1,13 @@
 import { ListMusic, Music } from 'lucide-react';
-import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { scoreOpenPath } from '@/entity/score/open-score';
 import { ScoreCard } from '@/entity/score/score-card';
 import { SetlistCard } from '@/entity/setlist/setlist-card';
 import { SpaceLabel } from '@/entity/space/space-label';
 import { useText } from '@/shared/i18n/text';
-import { useDebouncedValue } from '@/shared/lib/use-debounced-value';
+import { useSearchQuery } from '@/shared/lib/use-search-query';
 import { EmptyState } from '@/shared/ui/empty-state';
-import { PageSpinner } from '@/shared/ui/spinner';
+import { CardGrid, CardGridSkeleton } from '@/shared/ui/card-grid';
 import { StatCard } from '@/shared/ui/stat-card';
 import { HomeHeader } from './home-header';
 import { HOME_TEXT } from './home-text';
@@ -18,7 +17,6 @@ import { byRecentlyOpened, useScoresFromBothSpaces, useSetlistsFromBothSpaces } 
 
 const RECENT_SCORE_LIMIT = 4;
 const RECENT_SETLIST_LIMIT = 3;
-const SEARCH_DEBOUNCE_MS = 200;
 
 const byNewest = (left: { createdAt: string }, right: { createdAt: string }) => right.createdAt.localeCompare(left.createdAt);
 
@@ -48,7 +46,16 @@ function RecentContent() {
   const scores = useScoresFromBothSpaces({ sort: 'opened', order: 'desc', limit: RECENT_SCORE_LIMIT }, byRecentlyOpened);
   const setlists = useSetlistsFromBothSpaces({ sort: 'opened', order: 'desc', limit: RECENT_SETLIST_LIMIT }, byRecentlyOpened);
 
-  if (scores.isPending || setlists.isPending) return <PageSpinner />;
+  if (scores.isPending || setlists.isPending) {
+    return (
+      <>
+        <LibraryStats />
+        <RecentShelf icon={<Music />} title={text.recentScores} moreTo="/library">
+          <CardGridSkeleton count={RECENT_SCORE_LIMIT} />
+        </RecentShelf>
+      </>
+    );
+  }
   const scoreItems = scores.items;
   const setlistItems = setlists.items;
 
@@ -70,24 +77,27 @@ function RecentContent() {
       <LibraryStats />
       {setlistItems.length > 0 && (
         <RecentShelf icon={<ListMusic />} title={text.recentSetlists} moreTo="/library?tab=setlist">
-          {setlistItems.map(setlist => <SetlistCard key={setlist.id} setlist={setlist} badge={<SpaceLabel space={setlist.space} />} onOpen={() => navigate(`/setlist/${setlist.id}`)} />)}
+          <CardGrid>
+            {setlistItems.map(setlist => <SetlistCard key={setlist.id} setlist={setlist} badge={<SpaceLabel space={setlist.space} />} onOpen={() => navigate(`/setlist/${setlist.id}`)} />)}
+          </CardGrid>
         </RecentShelf>
       )}
       <RecentShelf icon={<Music />} title={text.recentScores} moreTo="/library">
-        {scoreItems.map(score => <ScoreCard key={score.id} score={score} badge={<SpaceLabel space={score.space} />} onOpen={() => navigate(scoreOpenPath(score))} />)}
+        <CardGrid>
+          {scoreItems.map(score => <ScoreCard key={score.id} score={score} badge={<SpaceLabel space={score.space} />} onOpen={() => navigate(scoreOpenPath(score))} />)}
+        </CardGrid>
       </RecentShelf>
     </>
   );
 }
 
 export function HomePage() {
-  const [query, setQuery] = useState('');
-  const debouncedQuery = useDebouncedValue(query.trim(), SEARCH_DEBOUNCE_MS);
+  const { query, setQuery, settledQuery } = useSearchQuery();
 
   return (
     <>
       <HomeHeader query={query} onQueryChange={setQuery} />
-      {debouncedQuery ? <SearchResult query={debouncedQuery} /> : <RecentContent />}
+      {settledQuery ? <SearchResult query={settledQuery} /> : <RecentContent />}
     </>
   );
 }

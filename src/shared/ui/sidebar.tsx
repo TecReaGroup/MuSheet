@@ -25,7 +25,7 @@ export function SidebarLink({ to, label, icon: Icon, end }: SidebarLinkProps) {
       to={to}
       end={end}
       className={({ isActive }) => cn(
-        'flex items-center gap-3 rounded-card px-3 py-2.5 text-[15px] font-medium transition-[background-color,color,box-shadow]',
+        'flex items-center gap-3 rounded-card px-3 py-2.5 text-body font-medium transition-[background-color,color,box-shadow]',
         isActive
           ? 'bg-surface text-fg ring-1 ring-border [&_svg]:text-score'
           : 'text-fg-muted hover:bg-muted hover:text-fg',

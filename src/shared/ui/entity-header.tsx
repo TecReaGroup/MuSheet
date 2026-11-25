@@ -5,6 +5,8 @@ import { useText } from '../i18n/text';
 import { useGoBack } from '../lib/use-go-back';
 import { Button } from './button';
 import { IconTile } from './icon-tile';
+import { ListCardSkeleton } from './list-card';
+import { Skeleton, SkeletonRegion, skeletonKeys } from './skeleton';
 
 interface EntityHeaderProps {
   kind: 'score' | 'setlist';
@@ -38,5 +40,30 @@ export function EntityHeader({ kind, title, subtitle, meta, backTo, actions }: E
         </div>
       </div>
     </header>
+  );
+}
+
+const DETAIL_ROW_SKELETON_COUNT = 3;
+
+/** Loading layout of a score or setlist detail page: header, primary action, then the item rows. */
+export function EntityPageSkeleton() {
+  return (
+    <SkeletonRegion>
+      <div className="mb-6 pt-[calc(0.75rem+env(safe-area-inset-top))] md:pt-8">
+        <Skeleton className="h-8 w-20" />
+        <div className="mt-4 flex items-center gap-4">
+          <Skeleton className="size-14 rounded-panel md:size-16" />
+          <div className="min-w-0 flex-1 space-y-2">
+            <Skeleton className="h-6 w-1/2 md:h-7" />
+            <Skeleton className="h-4 w-1/3" />
+            <Skeleton className="h-3 w-1/4" />
+          </div>
+        </div>
+      </div>
+      <Skeleton className="mb-10 h-12 w-full rounded-card sm:w-48" />
+      <div className="space-y-2">
+        {skeletonKeys(DETAIL_ROW_SKELETON_COUNT).map(key => <ListCardSkeleton key={key} />)}
+      </div>
+    </SkeletonRegion>
   );
 }

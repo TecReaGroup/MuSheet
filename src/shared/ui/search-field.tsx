@@ -25,7 +25,7 @@ export function SearchField({ value, onChange, placeholder, ref, hint, className
         value={value}
         onChange={event => onChange(event.target.value)}
         placeholder={placeholder}
-        className="h-full min-w-0 flex-1 bg-transparent px-3 text-[15px] text-fg outline-none placeholder:text-fg-subtle [&::-webkit-search-cancel-button]:hidden"
+        className="h-full min-w-0 flex-1 bg-transparent px-3 text-body text-fg outline-none placeholder:text-fg-subtle [&::-webkit-search-cancel-button]:hidden"
       />
       {value
         ? (

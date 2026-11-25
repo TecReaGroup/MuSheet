@@ -17,11 +17,10 @@ import { defineText, readText, useText } from '@/shared/i18n/text';
 import { runUndoable } from '@/shared/lib/undoable';
 import { Button, IconButton } from '@/shared/ui/button';
 import { EmptyState } from '@/shared/ui/empty-state';
-import { EntityHeader } from '@/shared/ui/entity-header';
+import { EntityHeader, EntityPageSkeleton } from '@/shared/ui/entity-header';
 import { Menu, MenuContent, MenuItem, MenuSeparator, MenuTrigger } from '@/shared/ui/menu';
 import { SectionHeader } from '@/shared/ui/section-header';
-import { SortableList } from '@/shared/ui/sortable-list';
-import { PageSpinner } from '@/shared/ui/spinner';
+import { SortableList, SortableRowCard } from '@/shared/ui/sortable-list';
 import { EditScoreDialog } from './edit-score-dialog';
 
 const SCORE_DETAIL_TEXT = defineText({
@@ -69,17 +68,16 @@ function PartRow({ score, part, dragHandle }: { score: ScoreDetail; part: PartVi
   const text = useText(SCORE_DETAIL_TEXT);
   const commonText = useText(COMMON_TEXT);
   return (
-    <div className="flex items-center gap-2 rounded-panel border border-border bg-surface py-2.5 pl-1 pr-1.5 transition-colors hover:border-score/30">
-      {dragHandle}
+    <SortableRowCard dragHandle={dragHandle}>
       <button type="button" onClick={() => navigate(`/view/${part.id}`)} className="flex min-w-0 flex-1 items-center gap-3 rounded-tag text-left">
         <PartThumbnail pdf={part} />
         <span className="min-w-0 flex-1">
-          <span className="block truncate text-[15px] font-semibold text-fg">{partLabel(part)}</span>
+          <span className="block truncate text-body font-semibold text-fg">{partLabel(part)}</span>
           <span className="mt-0.5 block text-xs text-fg-subtle tabular-nums">{commonText.pageCount(part.pageCount)}</span>
         </span>
       </button>
       <IconButton label={text.deletePart(partLabel(part))} onClick={() => removePartWithUndo(score, part)}><Trash2 /></IconButton>
-    </div>
+    </SortableRowCard>
   );
 }
 
@@ -94,7 +92,7 @@ export function ScoreDetailPage() {
   const text = useText(SCORE_DETAIL_TEXT);
   const commonText = useText(COMMON_TEXT);
 
-  if (isPending) return <PageSpinner />;
+  if (isPending) return <EntityPageSkeleton />;
   if (isError || !score) return <EmptyState icon={<ListMusic />} title={text.notFound} action={<Button onClick={() => navigate('/library')}>{commonText.backToLibrary}</Button>} />;
 
   const reorder = (parts: PartView[]) => {
@@ -108,7 +106,7 @@ export function ScoreDetailPage() {
   };
 
   return (
-    <>
+    <div className="animate-fade-in">
       <EntityHeader
         kind="score"
         backTo={scoreCollectionPath(score.space)}
@@ -175,6 +173,6 @@ export function ScoreDetailPage() {
 
       <EditScoreDialog score={score} open={isEditing} onOpenChange={setIsEditing} />
       <AddPartDialog score={score} open={isAddingPart} onOpenChange={setIsAddingPart} />
-    </>
+    </div>
   );
 }

@@ -59,7 +59,7 @@ export function MetronomePanel({ onClose }: { onClose: () => void }) {
   const text = useText(METRONOME_TEXT);
 
   return (
-    <section aria-label={text.metronome} className="w-full rounded-panel border border-border bg-surface/95 p-4 shadow-float backdrop-blur sm:w-80">
+    <section aria-label={text.metronome} className="w-full animate-rise-in rounded-panel border border-border bg-surface/95 p-4 shadow-float backdrop-blur sm:w-80">
       <div className="flex items-center justify-between">
         <div className="flex gap-1.5" aria-hidden>
           {Array.from({ length: beatsPerBar(timeSignature) }, (_, beat) => (

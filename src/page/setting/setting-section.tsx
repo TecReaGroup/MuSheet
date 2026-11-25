@@ -53,7 +53,7 @@ function AboutSection() {
         <AppIcon className="size-20" />
         <Wordmark className="mt-4 text-[32px]" />
         <p className="mt-1 text-sm text-fg-quiet tabular-nums">{text.version(__APP_VERSION__)}</p>
-        <p className="mt-3 max-w-sm text-[13px] text-fg-subtle">{text.tagline}</p>
+        <p className="mt-3 max-w-sm text-caption text-fg-subtle">{text.tagline}</p>
       </div>
     </SettingGroup>
   );

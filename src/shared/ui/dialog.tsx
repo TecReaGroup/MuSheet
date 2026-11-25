@@ -21,11 +21,13 @@ export function Dialog({ open, onOpenChange, title, description, children, foote
   return (
     <DialogPrimitive.Root open={open} onOpenChange={onOpenChange}>
       <DialogPrimitive.Portal>
-        <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-overlay" />
+        <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-overlay data-[state=closed]:animate-fade-out data-[state=open]:animate-fade-in" />
         <DialogPrimitive.Content
           className={cn(
             'fixed inset-x-0 bottom-0 z-50 flex max-h-[88dvh] flex-col rounded-t-panel bg-surface shadow-float outline-none',
+            'data-[state=closed]:animate-sheet-out data-[state=open]:animate-sheet-in',
             'sm:inset-auto sm:left-1/2 sm:top-1/2 sm:w-[calc(100%-2rem)] sm:max-w-md sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-modal',
+            'sm:data-[state=closed]:animate-modal-out sm:data-[state=open]:animate-modal-in',
             className,
           )}
         >

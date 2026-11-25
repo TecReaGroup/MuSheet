@@ -24,7 +24,7 @@ export function RequireSession() {
   }
   if (session.isError) {
     return (
-      <div className="flex min-h-dvh flex-col items-center justify-center gap-4 bg-canvas text-[15px] text-fg-muted">
+      <div className="flex min-h-dvh flex-col items-center justify-center gap-4 bg-canvas text-body text-fg-muted">
         {text.serverUnreachable}
         <Button size="sm" onClick={() => void session.refetch()}>{text.retry}</Button>
       </div>
