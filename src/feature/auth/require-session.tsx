@@ -18,7 +18,7 @@ export function RequireSession() {
   if (session.isPending) {
     return (
       <div className="flex min-h-dvh items-center justify-center bg-canvas">
-        <Spinner className="size-6" />
+        <Spinner className="size-6 animate-deferred-in" />
       </div>
     );
   }

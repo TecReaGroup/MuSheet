@@ -29,7 +29,7 @@ export const LIBRARY_TEXT = defineText({
     copyFromLibrary: 'From my library',
     importFromDevice: 'Import from device',
     teamAdd: {
-      score: { title: 'Add scores to Team', fromLibrary: 'Copy scores from your library; each copy is edited independently', fresh: 'Upload PDF scores from this device' },
+      score: { title: 'Add scores to Team', fromLibrary: 'Copies are edited independently', fresh: 'Upload PDF scores from this device' },
       setlist: { title: 'Add setlists to Team', fromLibrary: 'Copy setlists together with their scores', fresh: 'Start a new setlist in Team' },
     },
     collectionType: 'Content type',

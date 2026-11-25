@@ -1,8 +1,9 @@
 import { ArrowLeft } from 'lucide-react';
-import { Link, Navigate, NavLink, Outlet, type RouteObject } from 'react-router';
+import { Link, Navigate, NavLink, type RouteObject } from 'react-router';
 import { COMMON_TEXT } from '@/shared/i18n/common-text';
 import { useText } from '@/shared/i18n/text';
 import { cn } from '@/shared/lib/class-name';
+import { PageOutlet } from '@/shared/ui/page-outlet';
 import { Sidebar, SidebarLink } from '@/shared/ui/sidebar';
 import { SETTING_SECTIONS } from './setting-section';
 import { SETTING_TEXT, type SettingSectionKey } from './setting-text';
@@ -72,7 +73,7 @@ export function SettingLayout() {
       <main className="overflow-x-clip pb-[calc(3rem+env(safe-area-inset-bottom))] md:pl-64">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-10">
           <div className="max-w-2xl">
-            <Outlet />
+            <PageOutlet />
           </div>
         </div>
       </main>

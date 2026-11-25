@@ -1,9 +1,10 @@
 import { House, Library, Settings, UsersRound, type LucideIcon } from 'lucide-react';
-import { NavLink, Outlet } from 'react-router';
+import { NavLink } from 'react-router';
 import { UserCard } from '@/feature/auth/user-card';
 import { defineText, useText } from '@/shared/i18n/text';
 import { cn } from '@/shared/lib/class-name';
 import { Wordmark } from '@/shared/ui/logo';
+import { PageOutlet } from '@/shared/ui/page-outlet';
 import { Sidebar, SidebarLink } from '@/shared/ui/sidebar';
 
 type NavKey = 'home' | 'library' | 'team' | 'setting';
@@ -79,7 +80,7 @@ export function AppShell() {
       <SidebarNav />
       <main className="overflow-x-clip pb-[calc(6rem+env(safe-area-inset-bottom))] md:pb-12 md:pl-64">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-10">
-          <Outlet />
+          <PageOutlet />
         </div>
       </main>
       <BottomNav />

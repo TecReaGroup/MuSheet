@@ -53,7 +53,7 @@ export function ViewerPage() {
   }
 
   if (!viewer.data || !part || isWaitingForSetlist) {
-    return <div className="fixed inset-0 flex items-center justify-center bg-canvas"><Spinner className="size-7" /></div>;
+    return <div className="fixed inset-0 flex items-center justify-center bg-canvas"><Spinner className="size-7 animate-deferred-in" /></div>;
   }
 
   const setlistContext: SetlistContext | undefined = setlist.data && setlistIndex >= 0 && setlist.data.scores[setlistIndex]?.id === viewer.data.score.id

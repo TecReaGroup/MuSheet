@@ -44,6 +44,7 @@
   --danger: #dc2626;
   --danger-soft: #fef2f2;
   --overlay: rgb(0 0 0 / 0.5);
+  --shimmer: rgb(255 255 255 / 0.55);
   /* Toasts and the reader's page chip: dark in both themes, so they read as transient overlays. */
   --inverse: #374151;
   --on-inverse: #ffffff;
@@ -85,6 +86,7 @@
   --danger: #f87171;
   --danger-soft: #450a0a;
   --overlay: rgb(0 0 0 / 0.6);
+  --shimmer: rgb(255 255 255 / 0.04);
   color-scheme: dark;
 }
 
@@ -157,8 +159,11 @@
   --animate-pop-in: pop-in 140ms var(--ease-out-quart);
   --animate-pop-out: fade-out 100ms ease-in forwards;
   --animate-rise-in: rise-in 260ms var(--ease-out-quart);
-  /* Delayed so fast loads never flash a skeleton. */
-  --animate-skeleton-in: fade-in 240ms ease-out 150ms both;
+  /* Fade only: pages already hold rising content (CardGrid), and stacking two translates reads as a jolt. */
+  --animate-page-in: fade-in 220ms var(--ease-out-quart);
+  /* Delayed so fast loads never flash a skeleton or spinner. */
+  --animate-deferred-in: fade-in 240ms ease-out 150ms both;
+  --animate-shimmer: shimmer 1.8s ease-in-out infinite;
 
   @keyframes fade-in {
     from { opacity: 0; }
@@ -183,6 +188,10 @@
   }
   @keyframes rise-in {
     from { opacity: 0; transform: translateY(6px); }
+  }
+  @keyframes shimmer {
+    from { background-position-x: -60vw; }
+    to { background-position-x: 100vw; }
   }
 }
 
@@ -231,6 +240,15 @@
 
 @utility pt-safe {
   padding-top: env(safe-area-inset-top);
+}
+
+/* Viewport-fixed gradient so one sweep crosses every skeleton block in sync instead of each block shimmering on its own. */
+@utility skeleton-shimmer {
+  background-image: linear-gradient(90deg, transparent, var(--shimmer), transparent);
+  background-size: 60vw 100%;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  animation: var(--animate-shimmer);
 }
 
 @utility scrollbar-none {

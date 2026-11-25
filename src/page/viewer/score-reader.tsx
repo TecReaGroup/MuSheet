@@ -196,7 +196,7 @@ export function ScoreReader({ score, part, initialPage, setlistContext }: ScoreR
             } : undefined)}
           />
         )}
-        {pdfState.status === 'loading' && <div className="absolute inset-0 flex items-center justify-center"><Spinner className="size-7" /></div>}
+        {pdfState.status === 'loading' && <div className="absolute inset-0 flex items-center justify-center"><Spinner className="size-7 animate-deferred-in" /></div>}
         {pdfState.status === 'failed' && (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 text-center" onPointerDown={event => event.stopPropagation()}>
             <FileWarning className="size-12 text-fg-subtle" />

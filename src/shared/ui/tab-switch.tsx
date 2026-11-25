@@ -24,8 +24,15 @@ interface TabSwitchProps<T extends string> {
 
 /** Equal-width tabs on a sunken track for switching the top-level collection (library scores / setlists). */
 export function TabSwitch<T extends string>({ value, options, onChange, label, className }: TabSwitchProps<T>) {
+  const selectedIndex = options.findIndex(option => option.value === value);
   return (
-    <div role="tablist" aria-label={label} className={cn('flex rounded-card bg-muted p-1', className)}>
+    <div role="tablist" aria-label={label} className={cn('relative flex rounded-card bg-muted p-1', className)}>
+      {/* Tabs are equal-width, so the thumb slides by whole multiples of its own width. */}
+      <span
+        aria-hidden
+        className="absolute inset-y-1 left-1 rounded-tag bg-surface transition-transform duration-300 ease-out-quart dark:bg-surface-raised"
+        style={{ width: `calc((100% - 0.5rem) / ${options.length})`, transform: `translateX(${selectedIndex * 100}%)` }}
+      />
       {options.map(option => {
         const selected = option.value === value;
         return (
@@ -36,10 +43,8 @@ export function TabSwitch<T extends string>({ value, options, onChange, label, c
             aria-selected={selected}
             onClick={() => onChange(option.value)}
             className={cn(
-              'flex h-9 flex-1 items-center justify-center gap-2 rounded-tag text-body font-medium transition-[background-color,color,box-shadow] [&_svg]:size-[18px]',
-              selected
-                ? cn('bg-surface text-fg dark:bg-surface-raised', ACTIVE_ICON_STYLE[option.tone])
-                : 'text-fg-muted hover:text-fg',
+              'relative flex h-9 flex-1 items-center justify-center gap-2 rounded-tag text-body font-medium transition-colors [&_svg]:size-[18px] [&_svg]:transition-colors',
+              selected ? cn('text-fg', ACTIVE_ICON_STYLE[option.tone]) : 'text-fg-muted hover:text-fg',
             )}
           >
             {option.icon}

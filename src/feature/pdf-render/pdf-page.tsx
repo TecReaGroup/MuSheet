@@ -29,12 +29,14 @@ export function PdfPage({ pdf, pageNumber, width, height, zoom }: PdfPageProps) 
         canvas.width = bitmap.width;
         canvas.height = bitmap.height;
         canvas.getContext('2d')!.drawImage(bitmap, 0, 0);
+        canvas.dataset.painted = '';
       })
       .catch(error => log('error', 'PdfRender', 'Rendering page failed', { pageNumber, ...serializeError(error) }));
     return () => { cancelled = true; };
   }, [pdf, pageNumber, pixelWidth]);
 
-  return <canvas ref={canvasRef} style={{ width, height }} className="block bg-white" />;
+  // `data-painted` is set on first draw outside React, so only that paint fades in; later bitmaps swap in place.
+  return <canvas ref={canvasRef} style={{ width, height }} className="block bg-white opacity-0 transition-opacity duration-200 data-painted:opacity-100" />;
 }
 
 /** Warms the bitmap cache for a page that is about to be shown. */
