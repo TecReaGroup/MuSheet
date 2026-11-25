@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { cn } from '../lib/class-name';
+import { SelectionThumb } from './selection-thumb';
 
 const ACTIVE_ICON_STYLE = {
   score: '[&_svg]:text-score',
@@ -27,12 +28,7 @@ export function TabSwitch<T extends string>({ value, options, onChange, label, c
   const selectedIndex = options.findIndex(option => option.value === value);
   return (
     <div role="tablist" aria-label={label} className={cn('relative flex rounded-card bg-muted p-1', className)}>
-      {/* Tabs are equal-width, so the thumb slides by whole multiples of its own width. */}
-      <span
-        aria-hidden
-        className="absolute inset-y-1 left-1 rounded-tag bg-surface transition-transform duration-300 ease-out-quart dark:bg-surface-raised"
-        style={{ width: `calc((100% - 0.5rem) / ${options.length})`, transform: `translateX(${selectedIndex * 100}%)` }}
-      />
+      <SelectionThumb index={selectedIndex} count={options.length} />
       {options.map(option => {
         const selected = option.value === value;
         return (

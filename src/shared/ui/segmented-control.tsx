@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { cn } from '../lib/class-name';
+import { SelectionThumb } from './selection-thumb';
 
 interface SegmentOption<T extends string> {
   value: T;
@@ -15,9 +16,12 @@ interface SegmentedControlProps<T extends string> {
   className?: string;
 }
 
+/** Equal-width options (sized by the widest) so the selection thumb can slide between them. */
 export function SegmentedControl<T extends string>({ value, options, onChange, label, className }: SegmentedControlProps<T>) {
+  const selectedIndex = options.findIndex(option => option.value === value);
   return (
-    <div role="radiogroup" aria-label={label} className={cn('inline-flex rounded-card bg-muted p-1', className)}>
+    <div role="radiogroup" aria-label={label} className={cn('relative inline-grid auto-cols-fr grid-flow-col rounded-card bg-muted p-1', className)}>
+      <SelectionThumb index={selectedIndex} count={options.length} />
       {options.map(option => {
         const selected = option.value === value;
         return (
@@ -28,8 +32,8 @@ export function SegmentedControl<T extends string>({ value, options, onChange, l
             aria-checked={selected}
             onClick={() => onChange(option.value)}
             className={cn(
-              'flex flex-1 items-center justify-center gap-1.5 whitespace-nowrap rounded-tag px-3 py-1.5 text-sm font-medium transition-all [&_svg]:size-4',
-              selected ? 'bg-surface text-fg dark:bg-surface-raised' : 'text-fg-muted hover:text-fg',
+              'relative flex items-center justify-center gap-1.5 whitespace-nowrap rounded-tag px-3 py-1.5 text-sm font-medium transition-colors [&_svg]:size-4',
+              selected ? 'text-fg' : 'text-fg-muted hover:text-fg',
             )}
           >
             {option.icon}

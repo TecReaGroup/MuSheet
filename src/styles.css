@@ -195,7 +195,20 @@
   }
 }
 
+/* Theme switch cross-fade (see useApplyTheme); the default 250ms linear feels mechanical on a full-screen recolour. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 280ms;
+  animation-timing-function: cubic-bezier(0.25, 1, 0.5, 1);
+}
+
 @media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+
   /* 1ms rather than 0 so animationend still fires and Radix can unmount closing overlays. */
   *,
   ::before,
