@@ -3,7 +3,12 @@ import { defineText } from '@/shared/i18n/text';
 export const LIBRARY_TEXT = defineText({
   'zh-CN': {
     title: { personal: '曲库', team: 'Team' },
-    copyFromLibrary: '从我的曲库导入',
+    copyFromLibrary: '从我的曲库选取',
+    importFromDevice: '从本地导入',
+    teamAdd: {
+      score: { title: '添加乐曲到 Team', fromLibrary: '复制你曲库里的乐曲，两边各自修改互不影响', fresh: '上传设备上的 PDF 乐谱' },
+      setlist: { title: '添加曲目单到 Team', fromLibrary: '连同其中的乐曲一起复制到 Team', fresh: '在 Team 中新建一个曲目单' },
+    },
     collectionType: '内容类型',
     counts: (setlistCount: number, scoreCount: number) => `${setlistCount} 个曲目单 · ${scoreCount} 首乐曲`,
     searchScores: '搜索乐曲或作曲',
@@ -21,7 +26,12 @@ export const LIBRARY_TEXT = defineText({
   },
   en: {
     title: { personal: 'Library', team: 'Team' },
-    copyFromLibrary: 'Import from my library',
+    copyFromLibrary: 'From my library',
+    importFromDevice: 'Import from device',
+    teamAdd: {
+      score: { title: 'Add scores to Team', fromLibrary: 'Copy scores from your library; each copy is edited independently', fresh: 'Upload PDF scores from this device' },
+      setlist: { title: 'Add setlists to Team', fromLibrary: 'Copy setlists together with their scores', fresh: 'Start a new setlist in Team' },
+    },
     collectionType: 'Content type',
     counts: (setlistCount: number, scoreCount: number) =>
       `${setlistCount} ${setlistCount === 1 ? 'setlist' : 'setlists'} · ${scoreCount} ${scoreCount === 1 ? 'score' : 'scores'}`,

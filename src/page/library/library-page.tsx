@@ -1,5 +1,5 @@
 import type { ScoreSummary, SetlistSummary, Space } from '@contract/api';
-import { LibraryBig, ListMusic, Music, Plus, SearchX } from 'lucide-react';
+import { ListMusic, Music, Plus, SearchX } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
 import { scoreOpenPath } from '@/entity/score/open-score';
@@ -12,10 +12,8 @@ import { SortMenu } from '@/feature/library-search/sort-menu';
 import { useLibrarySortStore, type LibraryCollection } from '@/feature/library-search/sort-store';
 import { useImportDialogStore } from '@/feature/score-import/import-dialog-store';
 import { useCreateSetlistDialogStore } from '@/feature/setlist-edit/create-setlist-dialog';
-import { TeamScoreCopyDialog, TeamSetlistCopyDialog } from '@/feature/team-share/team-copy-dialog';
 import { COMMON_TEXT } from '@/shared/i18n/common-text';
 import { useText } from '@/shared/i18n/text';
-import { Button } from '@/shared/ui/button';
 import { useDebouncedValue } from '@/shared/lib/use-debounced-value';
 import { EmptyState } from '@/shared/ui/empty-state';
 import { FloatingActionButton } from '@/shared/ui/floating-action-button';
@@ -26,6 +24,7 @@ import { TabSwitch } from '@/shared/ui/tab-switch';
 import { LIBRARY_TEXT } from './library-text';
 import { ScoreActionsMenu } from './score-actions-menu';
 import { SetlistActionsMenu } from './setlist-actions-menu';
+import { TeamAddButton } from './team-add-button';
 
 const SEARCH_DEBOUNCE_MS = 200;
 const GRID_STYLE = 'grid gap-3 sm:grid-cols-2 xl:grid-cols-3';
@@ -107,8 +106,6 @@ export function LibraryPage({ space }: { space: Space }) {
   const selectSort = useLibrarySortStore(state => state.select);
   const openImport = useImportDialogStore(state => state.open);
   const openCreateSetlist = useCreateSetlistDialogStore(state => state.open);
-  const [isCopyingFromLibrary, setIsCopyingFromLibrary] = useState(false);
-  const canCopyFromLibrary = space === 'team';
   useDeclareActiveSpace(space);
 
   return (
@@ -116,12 +113,6 @@ export function LibraryPage({ space }: { space: Space }) {
       <PageHeader
         title={text.title[space]}
         subtitle={<LibraryCounts space={space} />}
-        actions={canCopyFromLibrary && (
-          <Button size="sm" onClick={() => setIsCopyingFromLibrary(true)}>
-            <LibraryBig />
-            {text.copyFromLibrary}
-          </Button>
-        )}
       >
         <div className="flex flex-col gap-3 sm:flex-row">
           <TabSwitch
@@ -141,11 +132,11 @@ export function LibraryPage({ space }: { space: Space }) {
         </div>
       </PageHeader>
       {collection === 'score' ? <ScoreCollection space={space} query={debouncedQuery} /> : <SetlistCollection space={space} query={debouncedQuery} />}
-      {collection === 'score'
-        ? <FloatingActionButton label={text.importScores} tone="score" onClick={() => openImport(space)}><Plus /></FloatingActionButton>
-        : <FloatingActionButton label={text.newSetlist} tone="setlist" onClick={() => openCreateSetlist(space)}><Plus /></FloatingActionButton>}
-      <TeamScoreCopyDialog open={isCopyingFromLibrary && collection === 'score'} onOpenChange={setIsCopyingFromLibrary} />
-      <TeamSetlistCopyDialog open={isCopyingFromLibrary && collection === 'setlist'} onOpenChange={setIsCopyingFromLibrary} />
+      {space === 'team'
+        ? <TeamAddButton collection={collection} />
+        : collection === 'score'
+          ? <FloatingActionButton label={text.importScores} tone="score" onClick={() => openImport(space)}><Plus /></FloatingActionButton>
+          : <FloatingActionButton label={text.newSetlist} tone="setlist" onClick={() => openCreateSetlist(space)}><Plus /></FloatingActionButton>}
     </>
   );
 }
