@@ -4,14 +4,13 @@ import { useNavigate } from 'react-router';
 import { scoreOpenPath } from '@/entity/score/open-score';
 import { ScoreCard } from '@/entity/score/score-card';
 import { SetlistCard } from '@/entity/setlist/setlist-card';
-import { SpaceLabel, SPACE_TEXT } from '@/entity/space/space-label';
+import { SpaceLabel } from '@/entity/space/space-label';
 import { useText } from '@/shared/i18n/text';
 import { useDebouncedValue } from '@/shared/lib/use-debounced-value';
 import { EmptyState } from '@/shared/ui/empty-state';
-import { Wordmark } from '@/shared/ui/logo';
-import { SearchField } from '@/shared/ui/search-field';
 import { PageSpinner } from '@/shared/ui/spinner';
 import { StatCard } from '@/shared/ui/stat-card';
+import { HomeHeader } from './home-header';
 import { HOME_TEXT } from './home-text';
 import { RecentShelf } from './recent-shelf';
 import { SearchResult } from './search-result';
@@ -27,20 +26,16 @@ function LibraryStats() {
   // Same queries as the library headers, so the counts are shared from cache.
   const scores = useScoresFromBothSpaces({ sort: 'created', order: 'desc' }, byNewest);
   const setlists = useSetlistsFromBothSpaces({ sort: 'created', order: 'desc' }, byNewest);
-  const spaceText = useText(SPACE_TEXT);
-  const breakdown = (personal: number, team: number) => `${spaceText.personal} ${personal} · ${spaceText.team} ${team}`;
   return (
     <div className="grid grid-cols-2 gap-3 sm:gap-4">
       <StatCard
         kind="score"
         count={scores.isPending ? undefined : scores.items.length}
-        detail={!scores.isPending && breakdown(scores.personalCount, scores.teamCount)}
         to="/library"
       />
       <StatCard
         kind="setlist"
         count={setlists.isPending ? undefined : setlists.items.length}
-        detail={!setlists.isPending && breakdown(setlists.personalCount, setlists.teamCount)}
         to="/library?tab=setlist"
       />
     </div>
@@ -86,16 +81,12 @@ function RecentContent() {
 }
 
 export function HomePage() {
-  const text = useText(HOME_TEXT);
   const [query, setQuery] = useState('');
   const debouncedQuery = useDebouncedValue(query.trim(), SEARCH_DEBOUNCE_MS);
 
   return (
     <>
-      <header className="mb-6 pt-[calc(1.25rem+env(safe-area-inset-top))] md:pt-10">
-        <Wordmark className="md:hidden" />
-        <SearchField className="mt-5 h-12 md:mt-0 md:max-w-xl" value={query} onChange={setQuery} placeholder={text.searchPlaceholder} />
-      </header>
+      <HomeHeader query={query} onQueryChange={setQuery} />
       {debouncedQuery ? <SearchResult query={debouncedQuery} /> : <RecentContent />}
     </>
   );
