@@ -1,6 +1,6 @@
 import { defineText } from '@/shared/i18n/text';
 
-export type SettingSectionKey = 'account' | 'appearance' | 'language' | 'reading' | 'about';
+export type SettingSectionKey = 'account' | 'appearance' | 'language' | 'about';
 
 interface SettingText {
   setting: string;
@@ -21,7 +21,7 @@ interface SettingText {
 export const SETTING_TEXT = defineText<SettingText>({
   'zh-CN': {
     setting: '设置',
-    section: { account: '账号', appearance: '外观', language: '语言', reading: '阅读', about: '关于' },
+    section: { account: '账号', appearance: '外观', language: '语言', about: '关于' },
     theme: '主题',
     themeSystem: '自动',
     themeLight: '浅色',
@@ -36,7 +36,7 @@ export const SETTING_TEXT = defineText<SettingText>({
   },
   en: {
     setting: 'Settings',
-    section: { account: 'Account', appearance: 'Appearance', language: 'Language', reading: 'Reading', about: 'About' },
+    section: { account: 'Account', appearance: 'Appearance', language: 'Language', about: 'About' },
     theme: 'Theme',
     themeSystem: 'Auto',
     themeLight: 'Light',

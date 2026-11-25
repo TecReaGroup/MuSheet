@@ -1,4 +1,4 @@
-import { BookOpen, Info, Languages, Monitor, Moon, MoonStar, Palette, Sun, UserRound, type LucideIcon } from 'lucide-react';
+import { Info, Languages, Monitor, Moon, MoonStar, Palette, Sun, UserRound, type LucideIcon } from 'lucide-react';
 import type { ComponentType } from 'react';
 import { LocaleMenu } from '@/feature/preference/locale-menu';
 import { usePreferenceStore, type ThemePreference } from '@/feature/preference/preference-store';
@@ -11,7 +11,7 @@ import { SettingGroup, SettingRow } from './setting-group';
 import { SETTING_TEXT, type SettingSectionKey } from './setting-text';
 
 function AppearanceSection() {
-  const { theme, update } = usePreferenceStore();
+  const { theme, nightScore, update } = usePreferenceStore();
   const text = useText(SETTING_TEXT);
   return (
     <SettingGroup>
@@ -31,6 +31,7 @@ function AppearanceSection() {
           />
         )}
       />
+      <SettingRow icon={<MoonStar />} title={text.nightScore} description={text.nightScoreDescription} control={<Switch label={text.nightScore} checked={nightScore} onChange={nextNightScore => update({ nightScore: nextNightScore })} />} />
     </SettingGroup>
   );
 }
@@ -40,16 +41,6 @@ function LanguageSection() {
   return (
     <SettingGroup>
       <SettingRow icon={<Languages />} title={text.interfaceLanguage} control={<LocaleMenu />} />
-    </SettingGroup>
-  );
-}
-
-function ReadingSection() {
-  const { nightScore, update } = usePreferenceStore();
-  const text = useText(SETTING_TEXT);
-  return (
-    <SettingGroup>
-      <SettingRow icon={<MoonStar />} title={text.nightScore} description={text.nightScoreDescription} control={<Switch label={text.nightScore} checked={nightScore} onChange={nextNightScore => update({ nightScore: nextNightScore })} />} />
     </SettingGroup>
   );
 }
@@ -78,6 +69,5 @@ export const SETTING_SECTIONS: SettingSection[] = [
   { key: 'account', icon: UserRound, Content: AccountSection },
   { key: 'appearance', icon: Palette, Content: AppearanceSection },
   { key: 'language', icon: Languages, Content: LanguageSection },
-  { key: 'reading', icon: BookOpen, Content: ReadingSection },
   { key: 'about', icon: Info, Content: AboutSection },
 ];

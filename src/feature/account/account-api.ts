@@ -1,4 +1,4 @@
-import type { AccountRenameRequest, AvatarPreset, PasswordChangeRequest, SessionView } from '@contract/api';
+import type { AccountRenameRequest, PasswordChangeRequest, SessionView } from '@contract/api';
 import { useMutation } from '@tanstack/react-query';
 import { requestJson, uploadBlob } from '@/shared/api/http-client';
 import { queryClient, SESSION_QUERY_KEY } from '@/shared/api/query-client';
@@ -21,23 +21,9 @@ export function useChangePassword() {
   });
 }
 
-export function useChoosePresetAvatar() {
-  return useMutation({
-    mutationFn: (preset: AvatarPreset) => requestJson<SessionView>('PUT', '/api/account/avatar/preset', { preset }),
-    onSuccess: storeSession,
-  });
-}
-
 export function useUploadAvatarImage() {
   return useMutation({
     mutationFn: (image: Blob) => uploadBlob<SessionView>('/api/account/avatar/image', image, 'image/jpeg'),
-    onSuccess: storeSession,
-  });
-}
-
-export function useResetAvatar() {
-  return useMutation({
-    mutationFn: () => requestJson<SessionView>('DELETE', '/api/account/avatar'),
     onSuccess: storeSession,
   });
 }

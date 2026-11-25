@@ -6,38 +6,41 @@ const JPEG_QUALITY = 0.88;
 
 export class AvatarImageError extends Error {}
 
-function loadImage(file: File) {
+/** Square region of the source image, in natural pixels. */
+export interface SquareCrop {
+  x: number;
+  y: number;
+  side: number;
+}
+
+/** The returned image keeps its object URL alive for preview; pair with `releaseAvatarImage`. */
+export function loadAvatarImage(file: File) {
   const url = URL.createObjectURL(file);
   return new Promise<HTMLImageElement>((resolve, reject) => {
     const image = new Image();
     image.onload = () => resolve(image);
-    image.onerror = () => reject(new AvatarImageError('Unreadable image'));
+    image.onerror = () => {
+      URL.revokeObjectURL(url);
+      reject(new AvatarImageError('Unreadable image'));
+    };
     image.src = url;
-  }).finally(() => URL.revokeObjectURL(url));
+  });
+}
+
+export function releaseAvatarImage(image: HTMLImageElement) {
+  URL.revokeObjectURL(image.src);
 }
 
 /**
- * Center-crops any browser-decodable image to a square JPEG. Re-encoding on the client strips
- * EXIF/GPS data and lets the server accept a single format.
+ * Renders the chosen square to a JPEG. Re-encoding on the client strips EXIF/GPS data and lets
+ * the server accept a single format.
  */
-export async function cropAvatarImage(file: File): Promise<Blob> {
-  const image = await loadImage(file);
-  const side = Math.min(image.naturalWidth, image.naturalHeight);
+export async function cropAvatarImage(image: HTMLImageElement, crop: SquareCrop): Promise<Blob> {
   const canvas = document.createElement('canvas');
   canvas.width = AVATAR_PIXELS;
   canvas.height = AVATAR_PIXELS;
   const context = canvas.getContext('2d')!;
-  context.drawImage(
-    image,
-    (image.naturalWidth - side) / 2,
-    (image.naturalHeight - side) / 2,
-    side,
-    side,
-    0,
-    0,
-    AVATAR_PIXELS,
-    AVATAR_PIXELS,
-  );
+  context.drawImage(image, crop.x, crop.y, crop.side, crop.side, 0, 0, AVATAR_PIXELS, AVATAR_PIXELS);
   const blob = await new Promise<Blob | null>(resolve => canvas.toBlob(resolve, 'image/jpeg', JPEG_QUALITY));
   if (!blob || blob.size > AVATAR_IMAGE_MAX_BYTES) throw new AvatarImageError('Image could not be encoded');
   return blob;
