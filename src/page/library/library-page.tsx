@@ -1,13 +1,12 @@
-import type { ScoreSummary, SetlistSummary, Space } from '@contract/api';
+import type { Space } from '@contract/api';
 import { ListMusic, Music, Plus, SearchX } from 'lucide-react';
-import { useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router';
-import { scoreOpenPath } from '@/entity/score/open-score';
+import { useEffect } from 'react';
+import { useSearchParams } from 'react-router';
 import { useScoreList } from '@/entity/score/score-api';
-import { ScoreCard } from '@/entity/score/score-card';
 import { useSetlistList } from '@/entity/setlist/setlist-api';
-import { SetlistCard } from '@/entity/setlist/setlist-card';
 import { useDeclareActiveSpace } from '@/entity/space/active-space';
+import { ScoreListItem } from '@/feature/library-item/score-list-item';
+import { SetlistListItem } from '@/feature/library-item/setlist-list-item';
 import { SortMenu } from '@/feature/library-search/sort-menu';
 import { useLibrarySortStore, type LibraryCollection } from '@/feature/library-search/sort-store';
 import { useImportDialogStore } from '@/feature/score-import/import-dialog-store';
@@ -21,37 +20,25 @@ import { FloatingActionButton } from '@/shared/ui/floating-action-button';
 import { PageHeader } from '@/shared/ui/page-header';
 import { SearchField } from '@/shared/ui/search-field';
 import { TabSwitch } from '@/shared/ui/tab-switch';
+import { useLastCollectionStore } from './last-collection-store';
 import { LIBRARY_TEXT } from './library-text';
-import { ScoreActionsMenu } from './score-actions-menu';
-import { SetlistActionsMenu } from './setlist-actions-menu';
 import { TeamAddButton } from './team-add-button';
 
 const COLLECTION_SKELETON_COUNT = 6;
 
-function ScoreGridItem({ score }: { score: ScoreSummary }) {
-  const navigate = useNavigate();
-  const [menuOpen, setMenuOpen] = useState(false);
-  return (
-    <ScoreCard
-      score={score}
-      onOpen={() => navigate(scoreOpenPath(score))}
-      onContextMenu={event => { event.preventDefault(); setMenuOpen(true); }}
-      actions={<ScoreActionsMenu score={score} open={menuOpen} onOpenChange={setMenuOpen} />}
-    />
-  );
+function parseCollection(tab: string | null): LibraryCollection | undefined {
+  return tab === 'score' || tab === 'setlist' ? tab : undefined;
 }
 
-function SetlistGridItem({ setlist }: { setlist: SetlistSummary }) {
-  const navigate = useNavigate();
-  const [menuOpen, setMenuOpen] = useState(false);
-  return (
-    <SetlistCard
-      setlist={setlist}
-      onOpen={() => navigate(`/setlist/${setlist.id}`)}
-      onContextMenu={event => { event.preventDefault(); setMenuOpen(true); }}
-      actions={<SetlistActionsMenu setlist={setlist} open={menuOpen} onOpenChange={setMenuOpen} />}
-    />
-  );
+/** An explicit `?tab=` wins (deep links, back buttons); a bare library URL reopens the last tab left on. */
+function useLibraryCollection(space: Space) {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const remembered = useLastCollectionStore(state => state.bySpace[space]);
+  const remember = useLastCollectionStore(state => state.remember);
+  const collection = parseCollection(searchParams.get('tab')) ?? remembered;
+  useEffect(() => remember(space, collection), [remember, space, collection]);
+  const selectCollection = (next: LibraryCollection) => setSearchParams({ tab: next }, { replace: true });
+  return { collection, selectCollection };
 }
 
 interface CollectionProps {
@@ -69,7 +56,7 @@ function ScoreCollection({ space, query }: CollectionProps) {
       ? <EmptyState icon={<SearchX />} title={text.noMatchingScores} />
       : <EmptyState icon={<Music />} title={text.noScoresTitle} description={text.noScoresDescription[space]} />;
   }
-  return <CardGrid>{data.map(score => <ScoreGridItem key={score.id} score={score} />)}</CardGrid>;
+  return <CardGrid>{data.map(score => <ScoreListItem key={score.id} score={score} />)}</CardGrid>;
 }
 
 function SetlistCollection({ space, query }: CollectionProps) {
@@ -82,7 +69,7 @@ function SetlistCollection({ space, query }: CollectionProps) {
       ? <EmptyState icon={<SearchX />} title={text.noMatchingSetlists} />
       : <EmptyState icon={<ListMusic />} title={text.noSetlistsTitle} description={text.noSetlistsDescription} />;
   }
-  return <CardGrid>{data.map(setlist => <SetlistGridItem key={setlist.id} setlist={setlist} />)}</CardGrid>;
+  return <CardGrid>{data.map(setlist => <SetlistListItem key={setlist.id} setlist={setlist} />)}</CardGrid>;
 }
 
 function LibraryCounts({ space }: { space: Space }) {
@@ -97,8 +84,7 @@ function LibraryCounts({ space }: { space: Space }) {
 export function LibraryPage({ space }: { space: Space }) {
   const text = useText(LIBRARY_TEXT);
   const commonText = useText(COMMON_TEXT);
-  const [searchParams, setSearchParams] = useSearchParams();
-  const collection: LibraryCollection = searchParams.get('tab') === 'setlist' ? 'setlist' : 'score';
+  const { collection, selectCollection } = useLibraryCollection(space);
   const { query, setQuery, settledQuery } = useSearchQuery();
   const sortState = useLibrarySortStore(state => state[collection]);
   const selectSort = useLibrarySortStore(state => state.select);
@@ -108,16 +94,18 @@ export function LibraryPage({ space }: { space: Space }) {
 
   return (
     <>
+      {/* Title, tabs and search stay put; only the collection below scrolls. Negative margins bleed the opaque band to the content edges. */}
       <PageHeader
         title={text.title[space]}
         subtitle={<LibraryCounts space={space} />}
+        className="sticky top-0 z-20 -mx-4 mb-0 bg-canvas px-4 pb-6 sm:-mx-6 sm:px-6 lg:-mx-10 lg:px-10"
       >
         <div className="flex flex-col gap-3 sm:flex-row">
           <TabSwitch
             className="sm:w-60 sm:shrink-0"
             label={text.collectionType}
             value={collection}
-            onChange={value => setSearchParams(value === 'setlist' ? { tab: 'setlist' } : {}, { replace: true })}
+            onChange={selectCollection}
             options={[
               { value: 'score', label: commonText.score, icon: <Music />, tone: 'score' },
               { value: 'setlist', label: commonText.setlist, icon: <ListMusic />, tone: 'setlist' },
@@ -133,7 +121,7 @@ export function LibraryPage({ space }: { space: Space }) {
       {space === 'team'
         ? <TeamAddButton collection={collection} />
         : collection === 'score'
-          ? <FloatingActionButton label={text.importScores} tone="score" onClick={() => openImport(space)}><Plus /></FloatingActionButton>
+          ? <FloatingActionButton label={text.importScore} tone="score" onClick={() => openImport(space)}><Plus /></FloatingActionButton>
           : <FloatingActionButton label={text.newSetlist} tone="setlist" onClick={() => openCreateSetlist(space)}><Plus /></FloatingActionButton>}
     </>
   );

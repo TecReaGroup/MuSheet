@@ -27,9 +27,9 @@ const EMPTY_FORM = { name: '', description: '' };
 
 const CREATE_SETLIST_TEXT = defineText({
   'zh-CN': {
-    title: '新建曲目单',
+    title: '新建谱单',
     submit: '创建',
-    createdWithScore: (setlistName: string) => `已创建「${setlistName}」并加入乐曲`,
+    createdWithScore: (setlistName: string) => `已创建「${setlistName}」并加入乐谱`,
   },
   en: {
     title: 'New setlist',

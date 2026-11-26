@@ -20,7 +20,7 @@ const SEED_SPACE_KEYS = [ROOT_USER_ID, TEAM_SPACE_KEY];
 const SEED_USER_COUNT = 20;
 const SEED_USER_PASSWORD = 'password123';
 const SETLIST_COUNT = 20;
-const PART_TAGS = ['Keyboard', 'Vocal', 'Guitar', 'Bass', 'Drums'];
+const PART_NAMES = ['Keyboard', 'Vocal', 'Guitar', 'Bass', 'Drums'];
 
 const SAMPLE_SCORES = [
   { title: 'Autumn Leaves', composer: 'Joseph Kosma' },
@@ -82,8 +82,8 @@ async function seedUsers() {
   log('info', 'Seed', 'Seeded users', { created, password: SEED_USER_PASSWORD });
 }
 
-async function storeSamplePdf(title: string, tag: string, pageCount: number) {
-  const bytes = buildSamplePdf({ title, subtitle: `${tag} part`, pageCount });
+async function storeSamplePdf(title: string, partName: string, pageCount: number) {
+  const bytes = buildSamplePdf({ title, subtitle: `${partName} part`, pageCount });
   const sha256 = sha256Of(bytes);
   await storePdf(sha256, pageCount, Readable.from(bytes));
   return sha256;
@@ -95,9 +95,9 @@ async function seedScores(spaceKey: string): Promise<string[]> {
     const partCount = 1 + (index % 3);
     let scoreId = '';
     for (let partIndex = 0; partIndex < partCount; partIndex += 1) {
-      const tag = PART_TAGS[(index + partIndex) % PART_TAGS.length]!;
-      const pdfSha256 = await storeSamplePdf(sample.title, tag, 1 + ((index + partIndex) % 4));
-      const imported = await importScore(spaceKey, { ...sample, tag, pdfSha256 });
+      const partName = PART_NAMES[(index + partIndex) % PART_NAMES.length]!;
+      const pdfSha256 = await storeSamplePdf(sample.title, partName, 1 + ((index + partIndex) % 4));
+      const imported = await importScore(spaceKey, { ...sample, partName, pdfSha256 });
       scoreId = imported.score.id;
     }
     await updateScore(scoreId, spacesFor(spaceKey), {

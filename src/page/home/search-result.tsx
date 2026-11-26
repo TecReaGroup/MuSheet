@@ -1,9 +1,6 @@
 import { ListMusic, Music, SearchX } from 'lucide-react';
-import { useNavigate } from 'react-router';
-import { scoreOpenPath } from '@/entity/score/open-score';
-import { ScoreCard } from '@/entity/score/score-card';
-import { SetlistCard } from '@/entity/setlist/setlist-card';
-import { SpaceLabel } from '@/entity/space/space-label';
+import { ScoreListItem } from '@/feature/library-item/score-list-item';
+import { SetlistListItem } from '@/feature/library-item/setlist-list-item';
 import { COMMON_TEXT } from '@/shared/i18n/common-text';
 import { useText } from '@/shared/i18n/text';
 import { CardGrid, CardGridSkeleton } from '@/shared/ui/card-grid';
@@ -20,7 +17,6 @@ function ResultCount({ count }: { count: number }) {
 }
 
 export function SearchResult({ query }: { query: string }) {
-  const navigate = useNavigate();
   const text = useText(HOME_TEXT);
   const commonText = useText(COMMON_TEXT);
   const scores = useScoresFromBothSpaces({ query, sort: 'title', order: 'asc', limit: RESULT_LIMIT }, (left, right) => left.title.localeCompare(right.title));
@@ -39,7 +35,7 @@ export function SearchResult({ query }: { query: string }) {
         <section>
           <SectionHeader icon={<ListMusic />} title={<>{commonText.setlist}<ResultCount count={setlistItems.length} /></>} />
           <CardGrid>
-            {setlistItems.map(setlist => <SetlistCard key={setlist.id} setlist={setlist} badge={<SpaceLabel space={setlist.space} />} onOpen={() => navigate(`/setlist/${setlist.id}`)} />)}
+            {setlistItems.map(setlist => <SetlistListItem key={setlist.id} setlist={setlist} />)}
           </CardGrid>
         </section>
       )}
@@ -47,7 +43,7 @@ export function SearchResult({ query }: { query: string }) {
         <section>
           <SectionHeader icon={<Music />} title={<>{commonText.score}<ResultCount count={scoreItems.length} /></>} />
           <CardGrid>
-            {scoreItems.map(score => <ScoreCard key={score.id} score={score} badge={<SpaceLabel space={score.space} />} onOpen={() => navigate(scoreOpenPath(score))} />)}
+            {scoreItems.map(score => <ScoreListItem key={score.id} score={score} />)}
           </CardGrid>
         </section>
       )}

@@ -9,7 +9,7 @@ export const USER_ADMIN_TEXT = defineText({
     username: '用户名',
     password: '初始密码',
     newPassword: '新密码',
-    passwordHint: `至少 ${PASSWORD_MIN_LENGTH} 位。`,
+    passwordHint: `至少 ${PASSWORD_MIN_LENGTH} 位`,
     create: '创建',
     created: (account: string) => `已创建账号 ${account}`,
     resetPassword: '重置密码',

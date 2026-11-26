@@ -22,14 +22,14 @@ import { SortableList, SortableRowCard } from '@/shared/ui/sortable-list';
 
 const SETLIST_DETAIL_TEXT = defineText({
   'zh-CN': {
-    notFound: '曲目单不存在',
-    addScores: '添加乐曲',
-    deleteSetlist: '删除曲目单',
+    notFound: '谱单不存在',
+    addScores: '添加乐谱',
+    deleteSetlist: '删除谱单',
     startPerformance: '开始演奏',
-    emptyTitle: '曲目单是空的',
-    emptyDescription: '添加乐曲并拖动排序，演奏时翻过最后一页会自动进入下一首。',
-    editSetlist: '编辑曲目单',
-    removeScore: (title: string) => `从曲目单移除《${title}》`,
+    emptyTitle: '谱单是空的',
+    emptyDescription: '添加乐谱并拖动排序，演奏时翻过最后一页会自动进入下一首',
+    editSetlist: '编辑谱单',
+    removeScore: (title: string) => `从谱单移除《${title}》`,
   },
   en: {
     notFound: 'Setlist not found',
@@ -93,7 +93,7 @@ export function SetlistDetailPage() {
   }, [setlistId]);
 
   if (isPending) return <EntityPageSkeleton />;
-  if (isError || !setlist) return <EmptyState icon={<ListMusic />} title={text.notFound} action={<Button onClick={() => navigate('/library?tab=setlist')}>{commonText.backToLibrary}</Button>} />;
+  if (isError || !setlist) return <EmptyState icon={<ListMusic />} title={text.notFound} action={<Button onClick={() => navigate(setlistCollectionPath('personal'))}>{commonText.backToLibrary}</Button>} />;
 
   const firstPlayable = findPlayableIndex(setlist.scores, -1, 1);
   const startPerformance = () => {

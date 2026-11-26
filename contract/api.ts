@@ -17,8 +17,8 @@ export const ACCOUNT_MAX_LENGTH = 40;
 export const PASSWORD_MIN_LENGTH = 8;
 export const PASSWORD_MAX_LENGTH = 200;
 export const AVATAR_IMAGE_MAX_BYTES = 1024 * 1024;
-export const TAG_MAX_LENGTH = 40;
-export const TAG_LIST_MAX_SIZE = 100;
+export const PART_NAME_MAX_LENGTH = 40;
+export const PART_NAME_LIST_MAX_SIZE = 100;
 
 export type TimeSignature = (typeof TIME_SIGNATURES)[number];
 export type SortKey = (typeof SORT_KEYS)[number];
@@ -30,7 +30,7 @@ const sha256Schema = z.string().regex(/^[0-9a-f]{64}$/);
 const titleSchema = z.string().trim().min(1).max(TITLE_MAX_LENGTH);
 const composerSchema = z.string().trim().max(TITLE_MAX_LENGTH);
 
-const tagSchema = z.string().trim().min(1).max(TAG_MAX_LENGTH);
+const partNameSchema = z.string().trim().min(1).max(PART_NAME_MAX_LENGTH);
 
 // ---------- Requests ----------
 
@@ -60,7 +60,7 @@ export const scoreImportRequestSchema = z.object({
   title: titleSchema,
   composer: composerSchema.default(''),
   pdfSha256: sha256Schema,
-  tag: tagSchema,
+  partName: partNameSchema,
 });
 export type ScoreImportRequest = z.input<typeof scoreImportRequestSchema>;
 
@@ -74,18 +74,18 @@ export type ScoreUpdateRequest = z.input<typeof scoreUpdateRequestSchema>;
 
 export const partCreateRequestSchema = z.object({
   pdfSha256: sha256Schema,
-  tag: tagSchema,
+  partName: partNameSchema,
 });
 export type PartCreateRequest = z.input<typeof partCreateRequestSchema>;
 
 export const partOrderRequestSchema = z.object({ partIds: z.array(z.uuid()).min(1) });
 
-// The shared tag list is replaced as a whole; names are unique ignoring case so the picker never shows look-alikes.
-export const tagListRequestSchema = z.object({
-  tags: z.array(tagSchema).min(1).max(TAG_LIST_MAX_SIZE)
-    .refine(tags => new Set(tags.map(tag => tag.toLowerCase())).size === tags.length, 'Tags must be unique'),
+// The shared part name list is replaced as a whole; names are unique ignoring case so the picker never shows look-alikes.
+export const partNameListRequestSchema = z.object({
+  names: z.array(partNameSchema).min(1).max(PART_NAME_LIST_MAX_SIZE)
+    .refine(names => new Set(names.map(name => name.toLowerCase())).size === names.length, 'Part names must be unique'),
 });
-export type TagListRequest = z.input<typeof tagListRequestSchema>;
+export type PartNameListRequest = z.input<typeof partNameListRequestSchema>;
 
 const descriptionSchema = z.string().trim().max(500);
 
@@ -193,6 +193,17 @@ export interface ManagedUserView extends UserView {
   createdAt: string;
 }
 
+/** Whole-server totals for root; personal counts sum every member's library. */
+export interface LibraryStatView {
+  userCount: number;
+  score: Record<Space, number>;
+  setlist: Record<Space, number>;
+  partCount: number;
+  annotatedPageCount: number;
+  pdfFileCount: number;
+  pdfByteSize: number;
+}
+
 export interface PdfFileView {
   sha256: string;
   pageCount: number;
@@ -201,7 +212,7 @@ export interface PdfFileView {
 
 export interface PartView extends PdfFileView {
   id: string;
-  tag: string;
+  name: string;
 }
 
 export interface ScoreSummary {

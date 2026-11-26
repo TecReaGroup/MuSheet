@@ -28,13 +28,13 @@ export const score = pgTable('score', {
 export const part = pgTable('part', {
   id: uuid('id').primaryKey().defaultRandom(),
   scoreId: uuid('score_id').notNull().references(() => score.id, { onDelete: 'cascade' }),
-  tag: text('tag').notNull(),
+  name: text('name').notNull(),
   pdfSha256: text('pdf_sha256').notNull().references(() => pdfFile.sha256),
   position: integer('position').notNull(),
   createdAt: timestamptz('created_at').notNull().defaultNow(),
 });
 
-export const partTag = pgTable('part_tag', {
+export const partName = pgTable('part_name', {
   name: text('name').primaryKey(),
   position: integer('position').notNull(),
 });

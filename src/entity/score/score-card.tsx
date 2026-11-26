@@ -21,7 +21,7 @@ const SCORE_CARD_TEXT = defineText({
 /** Reads the locale at call time; render it inside a component that subscribes via `useText`. */
 export function describeParts(score: ScoreSummary) {
   if (score.parts.length === 0) return readText(SCORE_CARD_TEXT).noParts;
-  if (score.parts.length <= 2) return score.parts.map(part => part.tag).join(' · ');
+  if (score.parts.length <= 2) return score.parts.map(part => part.name).join(' · ');
   return readText(COMMON_TEXT).partCount(score.parts.length);
 }
 

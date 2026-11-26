@@ -4,12 +4,12 @@ export const HOME_TEXT = defineText({
   'zh-CN': {
     title: '首页',
     welcomeTitle: '欢迎使用 MuSheet',
-    welcomeDescription: '导入第一份 PDF 乐谱，开始你的数字谱架。',
-    recentSetlists: '最近曲目单',
-    recentScores: '最近乐曲',
-    searchPlaceholder: '搜索乐曲、作曲者或曲目单',
+    welcomeDescription: '导入第一份 PDF 乐谱，开始你的数字谱架',
+    recentSetlists: '最近谱单',
+    recentScores: '最近乐谱',
+    searchPlaceholder: '搜索乐谱、作曲者或谱单',
     noMatchTitle: '没有找到匹配的内容',
-    noMatchDescription: '试试乐曲名、作曲者或曲目单名称',
+    noMatchDescription: '试试乐谱名、作曲者或谱单名称',
   },
   en: {
     title: 'Home',

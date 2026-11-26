@@ -50,7 +50,7 @@ export function RenameAccountDialog({ currentAccount, open, onOpenChange }: Rena
       )}
     >
       <form className="space-y-2 pb-2" onSubmit={event => { event.preventDefault(); save(); }}>
-        <Field label={text.username}>
+        <Field label={text.username} required>
           <TextInput
             autoFocus
             autoCapitalize="none"

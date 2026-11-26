@@ -29,17 +29,22 @@ export function ListCard({ leading, title, badge, subtitle, meta, trailing, onOp
       <button type="button" onClick={onOpen} className="absolute inset-0 rounded-panel" aria-label={typeof title === 'string' ? title : undefined} />
       <div className="pointer-events-none">{leading}</div>
       <div className="pointer-events-none min-w-0 flex-1">
-        <div className="truncate text-body font-semibold leading-snug text-fg">{title}</div>
-        {subtitle && <div className="mt-0.5 truncate text-caption text-fg-muted">{subtitle}</div>}
+        <div className="truncate text-body font-semibold leading-5 tracking-tight text-fg">{title}</div>
+        {subtitle && <div className="mt-0.5 truncate text-caption leading-4 text-fg-muted">{subtitle}</div>}
         {(badge || meta) && (
-          <div className="mt-1 truncate text-xs text-fg-quiet tabular-nums">
+          <div className="mt-0.5 truncate text-[11px] font-medium leading-3.5 tracking-[0.04em] text-fg-quiet tabular-nums">
             {badge}
             {badge && meta && ' · '}
             {meta}
           </div>
         )}
       </div>
-      {trailing && <div className="relative flex items-center">{trailing}</div>}
+      {trailing && (
+        // NOTE: Touch screens have no hover, so actions stay visible there; an open menu keeps them shown.
+        <div className="relative flex items-center transition-opacity duration-150 pointer-fine:not-group-hover:not-focus-within:not-has-data-[state=open]:opacity-0">
+          {trailing}
+        </div>
+      )}
       <ChevronRight className="pointer-events-none mr-1.5 size-5 shrink-0 text-fg-faint transition-[translate,color] group-hover:translate-x-0.5 group-hover:text-score" />
     </div>
   );
@@ -50,10 +55,10 @@ export function ListCardSkeleton() {
   return (
     <div className="flex items-center gap-3.5 rounded-panel border border-border bg-surface py-3 pl-3 pr-4">
       <Skeleton className="size-12 rounded-card" />
-      <div className="min-w-0 flex-1 space-y-2">
+      <div className="min-w-0 flex-1">
         <Skeleton className="h-4 w-3/5" />
-        <Skeleton className="h-3 w-2/5" />
-        <Skeleton className="h-3 w-1/4" />
+        <Skeleton className="mt-1 h-3 w-2/5" />
+        <Skeleton className="mt-1 h-2.5 w-1/4" />
       </div>
     </div>
   );

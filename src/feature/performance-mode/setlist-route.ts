@@ -2,9 +2,9 @@ import type { PartView, ScoreSummary } from '@contract/api';
 
 export type StartPage = number | 'last';
 
-/** Keeps the musician on their own tag when moving to the next song, if that song has it. */
-export function preferredPart(score: ScoreSummary, currentPart?: Pick<PartView, 'tag'>) {
-  return (currentPart && score.parts.find(part => part.tag === currentPart.tag)) ?? score.parts[0];
+/** Keeps the musician on their own part when moving to the next song, if that song has it. */
+export function preferredPart(score: ScoreSummary, currentPart?: Pick<PartView, 'name'>) {
+  return (currentPart && score.parts.find(part => part.name === currentPart.name)) ?? score.parts[0];
 }
 
 export function viewerPath(partId: string, setlist?: { id: string; index: number }, startPage?: StartPage) {

@@ -1,8 +1,10 @@
 import { House, Library, Settings, UsersRound, type LucideIcon } from 'lucide-react';
-import { NavLink } from 'react-router';
+import { useLayoutEffect, useRef, type RefObject } from 'react';
+import { NavLink, useLocation } from 'react-router';
 import { UserCard } from '@/feature/auth/user-card';
 import { defineText, useText } from '@/shared/i18n/text';
 import { cn } from '@/shared/lib/class-name';
+import { useScrollActivity } from '@/shared/lib/use-scroll-activity';
 import { Wordmark } from '@/shared/ui/logo';
 import { PageOutlet } from '@/shared/ui/page-outlet';
 import { Sidebar, SidebarLink } from '@/shared/ui/sidebar';
@@ -10,7 +12,7 @@ import { Sidebar, SidebarLink } from '@/shared/ui/sidebar';
 type NavKey = 'home' | 'library' | 'team' | 'setting';
 
 const NAV_TEXT = defineText<Record<NavKey, string>>({
-  'zh-CN': { home: '首页', library: '曲库', team: 'Team', setting: '设置' },
+  'zh-CN': { home: '首页', library: '曲库', team: '团队', setting: '设置' },
   en: { home: 'Home', library: 'Library', team: 'Team', setting: 'Settings' },
 });
 
@@ -74,11 +76,42 @@ function BottomNav() {
   );
 }
 
+/**
+ * The content area outlives page changes, so each history entry keeps its own scroll offset:
+ * a new page opens at the top, and Back returns to where the list was left.
+ * Search-param changes (tabs, queries) stay on the same page and keep the offset.
+ */
+function useContentScrollRestoration(ref: RefObject<HTMLElement | null>) {
+  const { pathname, key } = useLocation();
+  const offsetByEntry = useRef(new Map<string, number>());
+  const entryKey = useRef(key);
+
+  // Declared first: on a page change the save below still sees the old entry, the restore the new one.
+  useLayoutEffect(() => {
+    entryKey.current = key;
+  }, [key]);
+
+  useLayoutEffect(() => {
+    const element = ref.current!;
+    element.scrollTop = offsetByEntry.current.get(entryKey.current) ?? 0;
+    return () => {
+      offsetByEntry.current.set(entryKey.current, element.scrollTop);
+    };
+  }, [ref, pathname]);
+}
+
 export function AppShell() {
+  const contentRef = useRef<HTMLElement>(null);
+  useScrollActivity(contentRef);
+  useContentScrollRestoration(contentRef);
   return (
-    <div className="min-h-full">
+    // Only the content area scrolls; the sidebar and bottom nav stay put and the page itself never moves.
+    <div className="h-dvh overflow-hidden">
       <SidebarNav />
-      <main className="overflow-x-clip pb-[calc(6rem+env(safe-area-inset-bottom))] md:pb-12 md:pl-64">
+      <main
+        ref={contentRef}
+        className="thin-scroll h-full overflow-y-auto overflow-x-clip overscroll-contain pb-[calc(6rem+env(safe-area-inset-bottom))] md:ml-64 md:pb-12"
+      >
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-10">
           <PageOutlet />
         </div>

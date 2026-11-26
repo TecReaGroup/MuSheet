@@ -17,7 +17,7 @@ const ERROR_TEXT = defineText<{ byCode: Record<string, string>; fallback: string
       hash_mismatch: '文件上传不完整，请重试',
       not_pdf: '不是有效的 PDF 文件',
       too_large: '文件太大',
-      duplicate_score: '曲目单中已有这首乐曲',
+      duplicate_score: '谱单中已有这份乐谱',
       invalid_request: '提交的内容不正确',
       network: '无法连接服务器',
       unauthorized: '登录已过期，请重新登录',

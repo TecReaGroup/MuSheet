@@ -24,12 +24,12 @@ import { EditScoreDialog } from './edit-score-dialog';
 
 const SCORE_DETAIL_TEXT = defineText({
   'zh-CN': {
-    notFound: '乐曲不存在',
-    deleteScore: '删除乐曲',
+    notFound: '乐谱不存在',
+    deleteScore: '删除乐谱',
     startReading: '开始阅读',
     addPart: '添加声部',
     noPartsTitle: '还没有声部',
-    noPartsDescription: '为这首乐曲添加一份 PDF 分谱。',
+    noPartsDescription: '为这份乐谱添加一份 PDF 分谱',
     deletePart: (part: string) => `删除${part}声部`,
     partDeleted: (part: string) => `已删除${part}声部`,
   },
@@ -48,7 +48,7 @@ const SCORE_DETAIL_TEXT = defineText({
 function removePartWithUndo(score: ScoreDetail, part: PartView) {
   const key = scoreKey.detail(score.id);
   runUndoable({
-    message: readText(SCORE_DETAIL_TEXT).partDeleted(part.tag),
+    message: readText(SCORE_DETAIL_TEXT).partDeleted(part.name),
     apply: () => queryClient.setQueryData<ScoreDetail>(key, { ...score, parts: score.parts.filter(item => item.id !== part.id) }),
     commit: async () => {
       await deletePart(part.id);
@@ -67,11 +67,11 @@ function PartRow({ score, part, dragHandle }: { score: ScoreDetail; part: PartVi
       <button type="button" onClick={() => navigate(`/view/${part.id}`)} className="flex min-w-0 flex-1 items-center gap-3 rounded-tag text-left">
         <PartThumbnail pdf={part} />
         <span className="min-w-0 flex-1">
-          <span className="block truncate text-body font-semibold text-fg">{part.tag}</span>
+          <span className="block truncate text-body font-semibold text-fg">{part.name}</span>
           <span className="mt-0.5 block text-xs text-fg-subtle tabular-nums">{commonText.pageCount(part.pageCount)}</span>
         </span>
       </button>
-      <IconButton label={text.deletePart(part.tag)} onClick={() => removePartWithUndo(score, part)}><Trash2 /></IconButton>
+      <IconButton label={text.deletePart(part.name)} variant="dangerGhost" onClick={() => removePartWithUndo(score, part)}><Trash2 /></IconButton>
     </SortableRowCard>
   );
 }
@@ -135,7 +135,7 @@ export function ScoreDetailPage() {
       <section>
         <SectionHeader
           icon={<Layers />}
-          title={commonText.tag}
+          title={commonText.part}
           action={<Button size="sm" variant="ghost" className="text-score hover:bg-score-soft hover:text-score" onClick={() => setIsAddingPart(true)}><FilePlus2 />{text.addPart}</Button>}
         />
         {score.parts.length === 0

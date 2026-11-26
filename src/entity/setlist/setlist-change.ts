@@ -9,8 +9,8 @@ import { deleteSetlist, replaceSetlistItems, setlistKey } from './setlist-api';
 
 const SETLIST_CHANGE_TEXT = defineText({
   'zh-CN': {
-    removed: (name: string) => `已删除曲目单「${name}」`,
-    scoreRemoved: (title: string) => `已从曲目单移除《${title}》`,
+    removed: (name: string) => `已删除谱单「${name}」`,
+    scoreRemoved: (title: string) => `已从谱单移除《${title}》`,
   },
   en: {
     removed: (name: string) => `Deleted setlist "${name}"`,

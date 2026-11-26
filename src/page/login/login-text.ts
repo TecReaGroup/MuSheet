@@ -3,7 +3,7 @@ import { defineText } from '@/shared/i18n/text';
 export const LOGIN_TEXT = defineText({
   'zh-CN': {
     title: '欢迎回来',
-    subtitle: '请登录账号以继续。',
+    subtitle: '请登录账号以继续',
     account: '账号',
     password: '密码',
     showPassword: '显示密码',

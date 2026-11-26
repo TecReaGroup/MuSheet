@@ -9,7 +9,7 @@ import { Field, Select, TextInput } from '@/shared/ui/form-field';
 
 const EDIT_SCORE_TEXT = defineText({
   'zh-CN': {
-    title: '编辑乐曲',
+    title: '编辑乐谱',
     tempo: (min: number, max: number) => `速度 (${min}–${max} BPM)`,
   },
   en: {
@@ -63,7 +63,7 @@ export function EditScoreDialog({ score, open, onOpenChange }: EditScoreDialogPr
       )}
     >
       <form className="space-y-4 pb-2" onSubmit={event => { event.preventDefault(); if (canSave) save(); }}>
-        <Field label={commonText.title}>
+        <Field label={commonText.title} required>
           <TextInput value={title} maxLength={120} onChange={event => setTitle(event.target.value)} />
         </Field>
         <Field label={commonText.composer}>

@@ -1,9 +1,7 @@
 import { Music } from 'lucide-react';
-import { useNavigate } from 'react-router';
-import { scoreOpenPath } from '@/entity/score/open-score';
-import { ScoreCard } from '@/entity/score/score-card';
-import { SetlistCard } from '@/entity/setlist/setlist-card';
-import { SpaceLabel } from '@/entity/space/space-label';
+import { scoreCollectionPath, setlistCollectionPath } from '@/entity/space/space-path';
+import { ScoreListItem } from '@/feature/library-item/score-list-item';
+import { SetlistListItem } from '@/feature/library-item/setlist-list-item';
 import { useText } from '@/shared/i18n/text';
 import { useSearchQuery } from '@/shared/lib/use-search-query';
 import { EmptyState } from '@/shared/ui/empty-state';
@@ -29,19 +27,18 @@ function LibraryStats() {
       <StatCard
         kind="score"
         count={scores.isPending ? undefined : scores.items.length}
-        to="/library"
+        to={scoreCollectionPath('personal')}
       />
       <StatCard
         kind="setlist"
         count={setlists.isPending ? undefined : setlists.items.length}
-        to="/library?tab=setlist"
+        to={setlistCollectionPath('personal')}
       />
     </div>
   );
 }
 
 function RecentContent() {
-  const navigate = useNavigate();
   const text = useText(HOME_TEXT);
   const scores = useScoresFromBothSpaces({ sort: 'opened', order: 'desc', limit: RECENT_SCORE_LIMIT }, byRecentlyOpened);
   const setlists = useSetlistsFromBothSpaces({ sort: 'opened', order: 'desc', limit: RECENT_SETLIST_LIMIT }, byRecentlyOpened);
@@ -50,7 +47,7 @@ function RecentContent() {
     return (
       <>
         <LibraryStats />
-        <RecentShelf title={text.recentScores} moreTo="/library">
+        <RecentShelf title={text.recentScores} moreTo={scoreCollectionPath('personal')}>
           <CardGridSkeleton count={RECENT_SCORE_LIMIT} />
         </RecentShelf>
       </>
@@ -76,15 +73,15 @@ function RecentContent() {
     <>
       <LibraryStats />
       {setlistItems.length > 0 && (
-        <RecentShelf title={text.recentSetlists} moreTo="/library?tab=setlist">
+        <RecentShelf title={text.recentSetlists} moreTo={setlistCollectionPath('personal')}>
           <CardGrid>
-            {setlistItems.map(setlist => <SetlistCard key={setlist.id} setlist={setlist} badge={<SpaceLabel space={setlist.space} />} onOpen={() => navigate(`/setlist/${setlist.id}`)} />)}
+            {setlistItems.map(setlist => <SetlistListItem key={setlist.id} setlist={setlist} />)}
           </CardGrid>
         </RecentShelf>
       )}
-      <RecentShelf title={text.recentScores} moreTo="/library">
+      <RecentShelf title={text.recentScores} moreTo={scoreCollectionPath('personal')}>
         <CardGrid>
-          {scoreItems.map(score => <ScoreCard key={score.id} score={score} badge={<SpaceLabel space={score.space} />} onOpen={() => navigate(scoreOpenPath(score))} />)}
+          {scoreItems.map(score => <ScoreListItem key={score.id} score={score} />)}
         </CardGrid>
       </RecentShelf>
     </>

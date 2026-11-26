@@ -61,7 +61,7 @@ export function AnnotationToolbar({ book, page, onDone }: AnnotationToolbarProps
         <div className="mx-1 h-6 w-px bg-border" />
         <IconButton label={commonText.undo} disabled={!book.canUndo(page)} onClick={() => book.undo(page)}><Undo2 /></IconButton>
         <IconButton label={text.redo} disabled={!book.canRedo(page)} onClick={() => book.redo(page)}><Redo2 /></IconButton>
-        <IconButton label={text.clearPage} disabled={book.strokesOf(page).length === 0} onClick={() => book.clearPage(page)}><Trash2 /></IconButton>
+        <IconButton label={text.clearPage} variant="dangerGhost" disabled={book.strokesOf(page).length === 0} onClick={() => book.clearPage(page)}><Trash2 /></IconButton>
         <Button variant="primary" size="sm" className="ml-auto rounded-full" onClick={onDone}>
           <Check />
           {text.done}
@@ -90,7 +90,7 @@ export function AnnotationToolbar({ book, page, onDone }: AnnotationToolbarProps
                 aria-label={text.width(level + 1)}
                 aria-pressed={level === widthLevel}
                 onClick={() => update({ widthLevel: level as WidthLevel })}
-                className={cn('flex size-8 items-center justify-center rounded-full', level === widthLevel ? 'bg-muted' : 'hover:bg-muted/60')}
+                className={cn('flex size-8 items-center justify-center rounded-tag', level === widthLevel ? 'bg-muted' : 'hover:bg-muted/60')}
               >
                 <span className="rounded-full bg-fg" style={{ width: 4 + level * 4, height: 4 + level * 4 }} />
               </button>

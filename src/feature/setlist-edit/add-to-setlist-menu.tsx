@@ -8,8 +8,8 @@ import { useCreateSetlistDialogStore } from './create-setlist-dialog';
 
 const ADD_TO_SETLIST_TEXT = defineText({
   'zh-CN': {
-    addToSetlist: '加入曲目单',
-    newSetlist: '新建曲目单…',
+    addToSetlist: '加入谱单',
+    newSetlist: '新建谱单…',
     added: (setlistName: string) => `已加入「${setlistName}」`,
   },
   en: {

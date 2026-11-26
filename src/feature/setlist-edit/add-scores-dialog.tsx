@@ -12,11 +12,11 @@ import { SearchField } from '@/shared/ui/search-field';
 
 const ADD_SCORES_TEXT = defineText({
   'zh-CN': {
-    title: '添加乐曲',
+    title: '添加乐谱',
     description: (setlistName: string) => `添加到「${setlistName}」末尾`,
     submitMany: (count: number) => `添加 ${count} 首`,
-    searchPlaceholder: '搜索乐曲或作曲',
-    noCandidates: '没有可添加的乐曲',
+    searchPlaceholder: '搜索乐谱或作曲',
+    noCandidates: '没有可添加的乐谱',
   },
   en: {
     title: 'Add scores',

@@ -46,7 +46,7 @@ export function ViewerTopBar({ score, part, visible, isSpreadAvailable, backFall
                   {score.parts.length > 1 && <ChevronDown className="size-4 shrink-0 text-fg-subtle" />}
                 </span>
                 <span className="block truncate text-xs text-fg-muted">
-                  {[score.composer, part.tag, setlistName].filter(Boolean).join(' · ')}
+                  {[score.composer, part.name, setlistName].filter(Boolean).join(' · ')}
                 </span>
               </button>
             </MenuTrigger>
@@ -54,7 +54,7 @@ export function ViewerTopBar({ score, part, visible, isSpreadAvailable, backFall
               <MenuLabel>{text.switchPart}</MenuLabel>
               {score.parts.map(candidate => (
                 <MenuCheckItem key={candidate.id} checked={candidate.id === part.id} onSelect={() => onSwitchPart(candidate)}>
-                  {candidate.tag}
+                  {candidate.name}
                 </MenuCheckItem>
               ))}
             </MenuContent>

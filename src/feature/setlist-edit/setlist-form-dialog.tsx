@@ -3,11 +3,11 @@ import { COMMON_TEXT } from '@/shared/i18n/common-text';
 import { defineText, useText } from '@/shared/i18n/text';
 import { Button } from '@/shared/ui/button';
 import { Dialog } from '@/shared/ui/dialog';
-import { Field, TextArea, TextInput } from '@/shared/ui/form-field';
+import { Field, TextInput } from '@/shared/ui/form-field';
 
 const SETLIST_FORM_TEXT = defineText({
-  'zh-CN': { name: '名称', namePlaceholder: '如：周六婚礼演出', description: '描述' },
-  en: { name: 'Name', namePlaceholder: 'e.g. Saturday wedding gig', description: 'Description' },
+  'zh-CN': { name: '名称', namePlaceholder: '圣诞音乐会', description: '描述', descriptionPlaceholder: '演出时间、地点，或给乐手的备注' },
+  en: { name: 'Name', namePlaceholder: 'Christmas concert', description: 'Description', descriptionPlaceholder: 'Date, venue, or notes for the band' },
 });
 
 export interface SetlistFormValues {
@@ -53,11 +53,11 @@ export function SetlistFormDialog({ open, onOpenChange, title, submitLabel, init
       )}
     >
       <form className="space-y-4 pb-2" onSubmit={event => { event.preventDefault(); submit(); }}>
-        <Field label={text.name}>
+        <Field label={text.name} required>
           <TextInput autoFocus value={values.name} maxLength={120} placeholder={text.namePlaceholder} onChange={event => setValues({ ...values, name: event.target.value })} />
         </Field>
         <Field label={text.description}>
-          <TextArea value={values.description} maxLength={500} placeholder={commonText.optional} onChange={event => setValues({ ...values, description: event.target.value })} />
+          <TextInput value={values.description} maxLength={500} placeholder={text.descriptionPlaceholder} onChange={event => setValues({ ...values, description: event.target.value })} />
         </Field>
       </form>
     </Dialog>

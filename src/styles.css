@@ -43,6 +43,9 @@
   --fg-faint: #d1d5db;
   --danger: #dc2626;
   --danger-soft: #fef2f2;
+  /* Required-field marks and "new value" badges: draws the eye without reading as an error. */
+  --notice: #ea8a0c;
+  --notice-soft: #fff7e6;
   --overlay: rgb(0 0 0 / 0.5);
   --shimmer: rgb(255 255 255 / 0.55);
   /* Toasts and the reader's page chip: dark in both themes, so they read as transient overlays. */
@@ -85,6 +88,8 @@
   --fg-faint: #3f3f46;
   --danger: #f87171;
   --danger-soft: #450a0a;
+  --notice: #fbbf24;
+  --notice-soft: #3b2405;
   --overlay: rgb(0 0 0 / 0.6);
   --shimmer: rgb(255 255 255 / 0.04);
   color-scheme: dark;
@@ -128,6 +133,8 @@
   --color-fg-faint: var(--fg-faint);
   --color-danger: var(--danger);
   --color-danger-soft: var(--danger-soft);
+  --color-notice: var(--notice);
+  --color-notice-soft: var(--notice-soft);
   --color-overlay: var(--overlay);
   --color-inverse: var(--inverse);
   --color-on-inverse: var(--on-inverse);
@@ -221,6 +228,10 @@
 }
 
 @layer base {
+  :where(.thin-scroll) > * {
+    color: var(--fg);
+  }
+
   html,
   body,
   #root {
@@ -262,6 +273,55 @@
   background-repeat: no-repeat;
   background-attachment: fixed;
   animation: var(--animate-shimmer);
+}
+
+/*
+ * Slim neutral scrollbar (content area, dropdown panels): faint at rest, firmer on hover, darker while
+ * scrolling (`data-scrolling`, see useScrollActivity). No arrow buttons; the track is inset 8px at both ends
+ * so the thumb never runs into rounded corners. The thumb paints with currentColor so the colour can
+ * transition; direct children reset `color` (base layer above) so text never inherits it.
+ */
+@utility thin-scroll {
+  scrollbar-gutter: stable;
+  color: var(--border);
+  transition: color 0.5s ease;
+  &:hover {
+    color: var(--fg-faint);
+  }
+  &[data-scrolling] {
+    color: var(--fg-subtle);
+    transition-duration: 0.12s;
+  }
+  &::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  &::-webkit-scrollbar-button {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+  &::-webkit-scrollbar-track,
+  &::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-track {
+    margin: 8px;
+  }
+  &::-webkit-scrollbar-thumb {
+    border: 2px solid transparent;
+    border-radius: 999px;
+    background-clip: padding-box;
+    box-shadow: inset 0 0 0 8px;
+  }
+}
+
+/* Firefox has no ::-webkit-scrollbar; fall back to the standard properties there. */
+@supports not selector(::-webkit-scrollbar) {
+  .thin-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: var(--fg-faint) transparent;
+  }
 }
 
 @utility scrollbar-none {

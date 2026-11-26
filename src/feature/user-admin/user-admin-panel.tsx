@@ -63,10 +63,10 @@ function CreateUserDialog({ open, onOpenChange }: { open: boolean; onOpenChange:
       )}
     >
       <form className="space-y-4 pb-2" onSubmit={event => { event.preventDefault(); create(); }}>
-        <Field label={text.username}>
+        <Field label={text.username} required>
           <TextInput autoFocus autoCapitalize="none" spellCheck={false} autoComplete="off" maxLength={ACCOUNT_MAX_LENGTH} value={account} onChange={event => setAccount(event.target.value)} />
         </Field>
-        <Field label={text.password}>
+        <Field label={text.password} required>
           <TextInput type="password" autoComplete="new-password" maxLength={PASSWORD_MAX_LENGTH} value={password} onChange={event => setPassword(event.target.value)} />
         </Field>
         <p className="text-caption text-fg-quiet">{text.passwordHint}</p>
@@ -107,7 +107,7 @@ function ResetPasswordDialog({ user, onClose }: { user: ManagedUserView | null; 
       )}
     >
       <form className="space-y-2 pb-2" onSubmit={event => { event.preventDefault(); save(); }}>
-        <Field label={text.newPassword}>
+        <Field label={text.newPassword} required>
           <TextInput autoFocus type="password" autoComplete="new-password" maxLength={PASSWORD_MAX_LENGTH} value={password} onChange={event => setPassword(event.target.value)} />
         </Field>
         <p className="text-caption text-fg-quiet">{text.passwordHint}</p>

@@ -9,7 +9,7 @@ import { loadScoreSummary } from '../score/score-view';
 import type { VisibleSpaceKeys } from '../space/space-key';
 
 export interface PartSelection {
-  tag: string;
+  partName: string;
   pdfSha256: string;
 }
 
@@ -21,7 +21,7 @@ export async function insertPart(executor: DbExecutor, scoreId: string, selectio
     .from(part)
     .where(eq(part.scoreId, scoreId));
   const [row] = await executor.insert(part)
-    .values({ scoreId, position: nextPosition, tag: selection.tag, pdfSha256: selection.pdfSha256 })
+    .values({ scoreId, position: nextPosition, name: selection.partName, pdfSha256: selection.pdfSha256 })
     .returning({ id: part.id });
   return row!.id;
 }

@@ -39,7 +39,7 @@ export function Dialog({ open, onOpenChange, title, description, children, foote
                 ? <DialogPrimitive.Description className="mt-1 text-sm text-fg-muted">{description}</DialogPrimitive.Description>
                 : <DialogPrimitive.Description className="sr-only">{title}</DialogPrimitive.Description>}
             </div>
-            <DialogPrimitive.Close className="-mr-2 rounded-full p-2 text-fg-subtle hover:bg-muted hover:text-fg" aria-label={text.close}>
+            <DialogPrimitive.Close className="-mr-2 rounded-card p-2 text-fg-subtle hover:bg-muted hover:text-fg" aria-label={text.close}>
               <X className="size-5" />
             </DialogPrimitive.Close>
           </div>

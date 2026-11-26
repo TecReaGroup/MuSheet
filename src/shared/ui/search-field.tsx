@@ -29,7 +29,7 @@ export function SearchField({ value, onChange, placeholder, ref, hint, className
       />
       {value
         ? (
-            <button type="button" onClick={() => onChange('')} aria-label={text.clearSearch} className="mr-2 rounded-full p-1 text-fg-subtle hover:bg-muted hover:text-fg">
+            <button type="button" onClick={() => onChange('')} aria-label={text.clearSearch} className="mr-2 rounded-tag p-1 text-fg-subtle hover:bg-muted hover:text-fg">
               <X className="size-4" />
             </button>
           )

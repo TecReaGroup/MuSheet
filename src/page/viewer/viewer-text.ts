@@ -4,8 +4,8 @@ export const VIEWER_TEXT = defineText({
   'zh-CN': {
     loadFailed: '乐谱加载失败',
     notFound: '乐谱不存在或已被删除',
-    lastInSetlist: '已是曲目单最后一首',
-    firstInSetlist: '已是曲目单第一首',
+    lastInSetlist: '已是谱单最后一首',
+    firstInSetlist: '已是谱单第一首',
     upNext: (title: string) => `下一首：${title}`,
     annotate: '标注',
     previousPage: '上一页',

@@ -2,7 +2,7 @@ import type { Space } from '@contract/api';
 import { defineText, useText } from '@/shared/i18n/text';
 
 export const SPACE_TEXT = defineText<Record<Space, string>>({
-  'zh-CN': { personal: '个人', team: 'Team' },
+  'zh-CN': { personal: '私有', team: '共享' },
   en: { personal: 'Personal', team: 'Team' },
 });
 

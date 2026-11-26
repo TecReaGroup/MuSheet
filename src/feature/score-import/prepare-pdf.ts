@@ -26,11 +26,6 @@ export type ImportSource =
   | { kind: 'pdf'; file: File }
   | { kind: 'images'; images: File[] };
 
-export interface PreparedPdf {
-  sha256: string;
-  pageCount: number;
-}
-
 async function findUploadedPdf(hash: string): Promise<PdfFileView | null> {
   try {
     return await requestJson<PdfFileView>('GET', `/api/pdf/${hash}`);
@@ -74,11 +69,12 @@ export function isImportableFile(file: File) {
 
 const compareFileNames = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' }).compare;
 
-/** Each PDF stays its own source; all images merge into one source, ordered naturally by name (page2 < page10). */
-export function groupImportSources(files: File[]): ImportSource[] {
-  const pdfSources = files.filter(isPdfFile).map((file): ImportSource => ({ kind: 'pdf', file }));
-  const images = files.filter(file => !isPdfFile(file) && isImageFile(file)).sort((a, b) => compareFileNames(a.name, b.name));
-  return images.length > 0 ? [...pdfSources, { kind: 'images', images }] : pdfSources;
+/** One score holds one PDF: the first PDF wins, otherwise all images merge, ordered naturally by name (page2 < page10). */
+export function pickImportSource(files: File[]): ImportSource | undefined {
+  const pdf = files.find(isPdfFile);
+  if (pdf) return { kind: 'pdf', file: pdf };
+  const images = files.filter(isImageFile).sort((a, b) => compareFileNames(a.name, b.name));
+  return images.length > 0 ? { kind: 'images', images } : undefined;
 }
 
 export function importSourceName(source: ImportSource) {
@@ -101,24 +97,26 @@ async function toPdfBlob(source: ImportSource): Promise<Blob> {
  * Hashes, inspects and uploads a PDF (images are converted first) so it can be attached to a score.
  * Identical files are detected by SHA-256 and never uploaded twice.
  */
-export async function preparePdf(source: ImportSource): Promise<PreparedPdf> {
+export async function preparePdf(source: ImportSource): Promise<PdfFileView> {
   const pdf = await toPdfBlob(source);
   const bytes = new Uint8Array(await pdf.arrayBuffer());
   // Pure-JS hash: crypto.subtle is missing outside secure contexts, e.g. a tablet on http://<LAN IP>.
   const hash = bytesToHex(sha256(bytes));
 
   const existing = await findUploadedPdf(hash);
-  if (existing) return { sha256: hash, pageCount: existing.pageCount };
+  if (existing) return existing;
 
   const { pageCount, thumbnail } = await inspectPdf(bytes);
   await uploadBlob(`/api/pdf/${hash}?pageCount=${pageCount}`, pdf, 'application/pdf');
-  if (thumbnail) {
-    await uploadBlob(`/api/pdf/${hash}/thumbnail`, thumbnail, 'image/jpeg').catch(error => {
+  const hasThumbnail = thumbnail !== null && await uploadBlob(`/api/pdf/${hash}/thumbnail`, thumbnail, 'image/jpeg').then(
+    () => true,
+    error => {
       log('warn', 'Import', 'Thumbnail upload failed', serializeError(error));
-    });
-  }
+      return false;
+    },
+  );
   log('info', 'Import', 'PDF uploaded', { pageCount, size: pdf.size, source: source.kind });
-  return { sha256: hash, pageCount };
+  return { sha256: hash, pageCount, hasThumbnail };
 }
 
 export function titleFromImportSource(source: ImportSource) {

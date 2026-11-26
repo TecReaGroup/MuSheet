@@ -60,9 +60,9 @@ export function ChangePasswordDialog({ open, onOpenChange }: { open: boolean; on
       )}
     >
       <form className="space-y-4 pb-2" onSubmit={event => { event.preventDefault(); save(); }}>
-        <Field label={text.currentPassword}>{passwordInput('currentPassword', 'current-password')}</Field>
-        <Field label={text.newPassword}>{passwordInput('newPassword', 'new-password')}</Field>
-        <Field label={text.confirmPassword}>{passwordInput('confirmPassword', 'new-password')}</Field>
+        <Field label={text.currentPassword} required>{passwordInput('currentPassword', 'current-password')}</Field>
+        <Field label={text.newPassword} required>{passwordInput('newPassword', 'new-password')}</Field>
+        <Field label={text.confirmPassword} required>{passwordInput('confirmPassword', 'new-password')}</Field>
         <p className={isMismatch ? 'text-caption text-danger' : 'text-caption text-fg-quiet'}>
           {isMismatch ? text.passwordMismatch : text.passwordHint}
         </p>

@@ -11,11 +11,12 @@ import { registerAnnotationRoutes } from './module/annotation/annotation-route';
 import { registerAccountRoutes } from './module/account/account-route';
 import { installSessionGuard, registerAuthRoutes } from './module/auth/auth-route';
 import { registerClientLogRoutes } from './module/client-log/client-log-route';
+import { registerLibraryStatRoutes } from './module/library-stat/library-stat-route';
+import { registerPartNameRoutes } from './module/part/part-name-route';
 import { registerPartRoutes } from './module/part/part-route';
 import { registerPdfRoutes } from './module/pdf/pdf-route';
 import { registerScoreRoutes } from './module/score/score-route';
 import { registerSetlistRoutes } from './module/setlist/setlist-route';
-import { registerTagRoutes } from './module/tag/tag-route';
 import { registerUserRoutes } from './module/user/user-route';
 
 // Annotation pages with many dense strokes exceed Fastify's 1MB default.
@@ -54,7 +55,8 @@ export async function buildApp() {
   await app.register(registerPdfRoutes);
   await app.register(registerAnnotationRoutes);
   await app.register(registerSetlistRoutes);
-  await app.register(registerTagRoutes);
+  await app.register(registerPartNameRoutes);
+  await app.register(registerLibraryStatRoutes);
   await app.register(registerClientLogRoutes);
 
   // Stored files are content-addressed by SHA-256, so they can be cached forever.

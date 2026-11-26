@@ -5,7 +5,7 @@ import { useText } from '@/shared/i18n/text';
 import { cn } from '@/shared/lib/class-name';
 import { PageOutlet } from '@/shared/ui/page-outlet';
 import { Sidebar, SidebarLink } from '@/shared/ui/sidebar';
-import { SETTING_SECTIONS } from './setting-section';
+import { SETTING_SECTIONS, useVisibleSettingSections } from './setting-section';
 import { SETTING_TEXT, type SettingSectionKey } from './setting-text';
 
 const SETTING_ROOT = '/setting';
@@ -23,6 +23,7 @@ function ExitLink() {
 
 function SettingSidebar() {
   const text = useText(SETTING_TEXT);
+  const sections = useVisibleSettingSections();
   return (
     <Sidebar>
       <div className="flex items-center gap-2">
@@ -31,7 +32,7 @@ function SettingSidebar() {
         <h1 className="px-2 text-body font-semibold text-fg-title">{text.setting}</h1>
       </div>
       <nav className="mt-6 flex flex-col gap-1">
-        {SETTING_SECTIONS.map(({ key, icon }) => <SidebarLink key={key} to={`${SETTING_ROOT}/${key}`} label={text.section[key]} icon={icon} />)}
+        {sections.map(({ key, icon }) => <SidebarLink key={key} to={`${SETTING_ROOT}/${key}`} label={text.section[key]} icon={icon} />)}
       </nav>
     </Sidebar>
   );
@@ -39,16 +40,17 @@ function SettingSidebar() {
 
 function SettingTopBar() {
   const text = useText(SETTING_TEXT);
+  const sections = useVisibleSettingSections();
   return (
     <div className="sticky top-0 z-30 border-b border-border bg-canvas/85 pt-safe backdrop-blur-lg md:hidden">
       <div className="px-2 pt-2"><ExitLink /></div>
       <nav className="flex gap-1.5 overflow-x-auto px-4 pb-3 pt-2 [scrollbar-width:none]">
-        {SETTING_SECTIONS.map(({ key }) => (
+        {sections.map(({ key }) => (
           <NavLink
             key={key}
             to={`${SETTING_ROOT}/${key}`}
             className={({ isActive }) => cn(
-              'shrink-0 rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors',
+              'shrink-0 rounded-tag px-3.5 py-1.5 text-sm font-medium transition-colors',
               isActive ? 'bg-score-soft text-score' : 'text-fg-muted hover:bg-muted hover:text-fg',
             )}
           >
