@@ -1,7 +1,6 @@
 import { createHash } from 'node:crypto';
 import { Readable } from 'node:stream';
 import { and, inArray } from 'drizzle-orm';
-import { TIME_SIGNATURES } from '../contract/api';
 import { db, sqlClient } from '../backend/src/db/client';
 import { applyMigrations } from '../backend/src/db/migrate';
 import { score } from '../backend/src/db/schema';
@@ -100,10 +99,7 @@ async function seedScores(spaceKey: string): Promise<string[]> {
       const imported = await importScore(spaceKey, { ...sample, partName, pdfSha256 });
       scoreId = imported.score.id;
     }
-    await updateScore(scoreId, spacesFor(spaceKey), {
-      bpm: 60 + index * 7,
-      timeSignature: TIME_SIGNATURES[index % TIME_SIGNATURES.length],
-    });
+    await updateScore(scoreId, spacesFor(spaceKey), { bpm: 60 + index * 7 });
     scoreIds.push(scoreId);
   }
   log('info', 'Seed', 'Seeded scores', { space: spaceKey, count: scoreIds.length });

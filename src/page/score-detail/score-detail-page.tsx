@@ -1,15 +1,13 @@
-import type { PartView, ScoreDetail } from '@contract/api';
-import { Ellipsis, FilePlus2, Layers, ListMusic, Pencil, Play, Trash2 } from 'lucide-react';
+import type { PartView, ScoreSummary } from '@contract/api';
+import { FilePlus2, Layers, ListMusic, Pencil, Play, Trash2 } from 'lucide-react';
 import { useState, type ReactNode } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { deletePart, useReorderParts } from '@/entity/part/part-api';
 import { PartThumbnail } from '@/entity/part/part-thumbnail';
-import { removeScoreWithUndo } from '@/entity/score/remove-score';
 import { scoreKey, useScoreDetail } from '@/entity/score/score-api';
 import { useDeclareActiveSpace } from '@/entity/space/active-space';
 import { scoreCollectionPath } from '@/entity/space/space-path';
 import { AddPartDialog } from '@/feature/score-import/add-part-dialog';
-import { AddToSetlistMenu } from '@/feature/setlist-edit/add-to-setlist-menu';
 import { invalidateLibrary, queryClient } from '@/shared/api/query-client';
 import { COMMON_TEXT } from '@/shared/i18n/common-text';
 import { defineText, readText, useText } from '@/shared/i18n/text';
@@ -17,7 +15,6 @@ import { runUndoable } from '@/shared/lib/undoable';
 import { Button, IconButton } from '@/shared/ui/button';
 import { EmptyState } from '@/shared/ui/empty-state';
 import { EntityHeader, EntityPageSkeleton } from '@/shared/ui/entity-header';
-import { Menu, MenuContent, MenuItem, MenuSeparator, MenuTrigger } from '@/shared/ui/menu';
 import { SectionHeader } from '@/shared/ui/section-header';
 import { SortableList, SortableRowCard } from '@/shared/ui/sortable-list';
 import { EditScoreDialog } from './edit-score-dialog';
@@ -25,8 +22,6 @@ import { EditScoreDialog } from './edit-score-dialog';
 const SCORE_DETAIL_TEXT = defineText({
   'zh-CN': {
     notFound: '乐谱不存在',
-    deleteScore: '删除乐谱',
-    startReading: '开始阅读',
     addPart: '添加声部',
     noPartsTitle: '还没有声部',
     noPartsDescription: '为这份乐谱添加一份 PDF 分谱',
@@ -35,8 +30,6 @@ const SCORE_DETAIL_TEXT = defineText({
   },
   en: {
     notFound: 'Score not found',
-    deleteScore: 'Delete score',
-    startReading: 'Start reading',
     addPart: 'Add part',
     noPartsTitle: 'No parts yet',
     noPartsDescription: 'Add a PDF part to this score.',
@@ -45,20 +38,20 @@ const SCORE_DETAIL_TEXT = defineText({
   },
 });
 
-function removePartWithUndo(score: ScoreDetail, part: PartView) {
+function removePartWithUndo(score: ScoreSummary, part: PartView) {
   const key = scoreKey.detail(score.id);
   runUndoable({
     message: readText(SCORE_DETAIL_TEXT).partDeleted(part.name),
-    apply: () => queryClient.setQueryData<ScoreDetail>(key, { ...score, parts: score.parts.filter(item => item.id !== part.id) }),
+    apply: () => queryClient.setQueryData<ScoreSummary>(key, { ...score, parts: score.parts.filter(item => item.id !== part.id) }),
     commit: async () => {
       await deletePart(part.id);
       await invalidateLibrary();
     },
-    revert: () => queryClient.setQueryData<ScoreDetail>(key, score),
+    revert: () => queryClient.setQueryData<ScoreSummary>(key, score),
   });
 }
 
-function PartRow({ score, part, dragHandle }: { score: ScoreDetail; part: PartView; dragHandle: ReactNode }) {
+function PartRow({ score, part, dragHandle }: { score: ScoreSummary; part: PartView; dragHandle: ReactNode }) {
   const navigate = useNavigate();
   const text = useText(SCORE_DETAIL_TEXT);
   const commonText = useText(COMMON_TEXT);
@@ -91,13 +84,8 @@ export function ScoreDetailPage() {
   if (isError || !score) return <EmptyState icon={<ListMusic />} title={text.notFound} action={<Button onClick={() => navigate('/library')}>{commonText.backToLibrary}</Button>} />;
 
   const reorder = (parts: PartView[]) => {
-    queryClient.setQueryData<ScoreDetail>(scoreKey.detail(score.id), { ...score, parts });
+    queryClient.setQueryData<ScoreSummary>(scoreKey.detail(score.id), { ...score, parts });
     reorderParts.mutate(parts.map(part => part.id));
-  };
-
-  const deleteScore = () => {
-    navigate(scoreCollectionPath(score.space), { replace: true });
-    removeScoreWithUndo(score);
   };
 
   return (
@@ -107,28 +95,14 @@ export function ScoreDetailPage() {
         backTo={scoreCollectionPath(score.space)}
         title={score.title}
         subtitle={score.composer || commonText.noComposer}
-        meta={[`${score.bpm} BPM`, score.timeSignature, commonText.partCount(score.parts.length)].join(' · ')}
-        actions={(
-          <>
-            <IconButton label={commonText.edit} onClick={() => setIsEditing(true)}><Pencil /></IconButton>
-            <Menu>
-              <MenuTrigger asChild>
-                <IconButton label={commonText.moreActions}><Ellipsis /></IconButton>
-              </MenuTrigger>
-              <MenuContent>
-                <AddToSetlistMenu score={score} excludeSetlistIds={score.setlists.map(setlist => setlist.id)} />
-                <MenuSeparator />
-                <MenuItem icon={<Trash2 />} tone="danger" onSelect={deleteScore}>{text.deleteScore}</MenuItem>
-              </MenuContent>
-            </Menu>
-          </>
-        )}
+        meta={[`${score.bpm} BPM`, commonText.partCount(score.parts.length)].join(' · ')}
+        actions={<IconButton label={commonText.edit} onClick={() => setIsEditing(true)}><Pencil /></IconButton>}
       />
 
       {score.parts[0] && (
         <Button variant="primary" size="lg" className="mb-10 w-full sm:w-auto sm:min-w-48" onClick={() => navigate(`/view/${score.parts[0]!.id}`)}>
           <Play fill="currentColor" />
-          {text.startReading}
+          {commonText.play}
         </Button>
       )}
 

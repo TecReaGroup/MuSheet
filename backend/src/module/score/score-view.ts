@@ -36,7 +36,6 @@ export async function toScoreSummaries(executor: DbExecutor, rows: ScoreRow[]): 
     title: row.title,
     composer: row.composer,
     bpm: row.bpm,
-    timeSignature: row.timeSignature,
     createdAt: row.createdAt.toISOString(),
     lastOpenedAt: row.lastOpenedAt?.toISOString() ?? null,
     parts: partsByScore.get(row.id) ?? [],

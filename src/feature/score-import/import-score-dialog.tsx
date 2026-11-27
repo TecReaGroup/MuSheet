@@ -2,6 +2,7 @@ import type { ScoreSummary } from '@contract/api';
 import { useEffect, useMemo, useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
+import { useComposerSuggestions } from '@/entity/score/composer-suggestion';
 import { importScore, useScoreList } from '@/entity/score/score-api';
 import { describeError } from '@/shared/api/http-client';
 import { invalidateLibrary } from '@/shared/api/query-client';
@@ -59,17 +60,6 @@ function useTitleSuggestions(scores: ScoreSummary[]): Suggestion[] {
       value: score.title,
       meta: [score.composer, commonText.partCount(score.parts.length)].filter(Boolean).join(' · '),
     }));
-  }, [scores, commonText]);
-}
-
-function useComposerSuggestions(scores: ScoreSummary[]): Suggestion[] {
-  const commonText = useText(COMMON_TEXT);
-  return useMemo(() => {
-    const countByComposer = new Map<string, number>();
-    for (const { composer } of scores) {
-      if (composer) countByComposer.set(composer, (countByComposer.get(composer) ?? 0) + 1);
-    }
-    return [...countByComposer].map(([composer, count]) => ({ value: composer, meta: commonText.scoreCount(count) }));
   }, [scores, commonText]);
 }
 

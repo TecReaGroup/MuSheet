@@ -1,11 +1,11 @@
 import type { ScoreSummary, SetlistDetail } from '@contract/api';
-import { Ellipsis, ListMusic, Pencil, Play, Plus, Trash2, X } from 'lucide-react';
+import { ListMusic, Music, Pencil, Play, Plus, X } from 'lucide-react';
 import { useEffect, useState, type ReactNode } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { PartThumbnail } from '@/entity/part/part-thumbnail';
 import { describeParts } from '@/entity/score/score-card';
 import { markSetlistOpened, useSetlistDetail, useUpdateSetlist } from '@/entity/setlist/setlist-api';
-import { removeFromSetlistWithUndo, removeSetlistWithUndo, saveSetlistOrder } from '@/entity/setlist/setlist-change';
+import { removeFromSetlistWithUndo, saveSetlistOrder } from '@/entity/setlist/setlist-change';
 import { useDeclareActiveSpace } from '@/entity/space/active-space';
 import { setlistCollectionPath } from '@/entity/space/space-path';
 import { findPlayableIndex, viewerPath } from '@/feature/performance-mode/setlist-route';
@@ -17,15 +17,13 @@ import { log } from '@/shared/lib/logger';
 import { Button, IconButton } from '@/shared/ui/button';
 import { EmptyState } from '@/shared/ui/empty-state';
 import { EntityHeader, EntityPageSkeleton } from '@/shared/ui/entity-header';
-import { Menu, MenuContent, MenuItem, MenuSeparator, MenuTrigger } from '@/shared/ui/menu';
+import { SectionHeader } from '@/shared/ui/section-header';
 import { SortableList, SortableRowCard } from '@/shared/ui/sortable-list';
 
 const SETLIST_DETAIL_TEXT = defineText({
   'zh-CN': {
     notFound: '谱单不存在',
     addScores: '添加乐谱',
-    deleteSetlist: '删除谱单',
-    startPerformance: '开始演奏',
     emptyTitle: '谱单是空的',
     emptyDescription: '添加乐谱并拖动排序，演奏时翻过最后一页会自动进入下一首',
     editSetlist: '编辑谱单',
@@ -34,8 +32,6 @@ const SETLIST_DETAIL_TEXT = defineText({
   en: {
     notFound: 'Setlist not found',
     addScores: 'Add scores',
-    deleteSetlist: 'Delete setlist',
-    startPerformance: 'Start performance',
     emptyTitle: 'This setlist is empty',
     emptyDescription: 'Add scores and drag to reorder; turning past the last page moves on to the next score.',
     editSetlist: 'Edit setlist',
@@ -101,11 +97,6 @@ export function SetlistDetailPage() {
     if (part) navigate(viewerPath(part.id, { id: setlist.id, index: firstPlayable }, 1));
   };
 
-  const deleteSetlist = () => {
-    navigate(setlistCollectionPath(setlist.space), { replace: true });
-    removeSetlistWithUndo(setlist);
-  };
-
   return (
     <div className="animate-fade-in">
       <EntityHeader
@@ -114,41 +105,33 @@ export function SetlistDetailPage() {
         title={setlist.name}
         subtitle={setlist.description || undefined}
         meta={commonText.scoreCount(setlist.scores.length)}
-        actions={(
-          <>
-            <IconButton label={commonText.edit} onClick={() => setIsEditing(true)}><Pencil /></IconButton>
-            <Menu>
-              <MenuTrigger asChild>
-                <IconButton label={commonText.moreActions}><Ellipsis /></IconButton>
-              </MenuTrigger>
-              <MenuContent>
-                <MenuItem icon={<Plus />} onSelect={() => setIsAdding(true)}>{text.addScores}</MenuItem>
-                <MenuSeparator />
-                <MenuItem icon={<Trash2 />} tone="danger" onSelect={deleteSetlist}>{text.deleteSetlist}</MenuItem>
-              </MenuContent>
-            </Menu>
-          </>
-        )}
+        actions={<IconButton label={commonText.edit} onClick={() => setIsEditing(true)}><Pencil /></IconButton>}
       />
 
-      <div className="mb-8 flex gap-3">
-        <Button variant="setlist" size="lg" disabled={firstPlayable < 0} onClick={startPerformance} className="flex-1 sm:min-w-48 sm:flex-none">
+      {firstPlayable >= 0 && (
+        <Button variant="setlist" size="lg" className="mb-10 w-full sm:w-auto sm:min-w-48" onClick={startPerformance}>
           <Play fill="currentColor" />
-          {text.startPerformance}
+          {commonText.play}
         </Button>
-        <Button size="lg" onClick={() => setIsAdding(true)}><Plus />{text.addScores}</Button>
-      </div>
+      )}
 
-      {setlist.scores.length === 0
-        ? <EmptyState icon={<ListMusic />} title={text.emptyTitle} description={text.emptyDescription} />
-        : (
-          <SortableList
-            items={setlist.scores}
-            getId={score => score.id}
-            onReorder={scores => void saveSetlistOrder(setlist, scores)}
-            renderItem={(score, index, handle) => <SetlistRow setlist={setlist} score={score} index={index} dragHandle={handle} />}
-          />
-        )}
+      <section>
+        <SectionHeader
+          icon={<Music />}
+          title={commonText.score}
+          action={<Button size="sm" variant="ghost" className="text-setlist hover:bg-setlist-soft hover:text-setlist" onClick={() => setIsAdding(true)}><Plus />{text.addScores}</Button>}
+        />
+        {setlist.scores.length === 0
+          ? <EmptyState className="py-8" icon={<ListMusic />} title={text.emptyTitle} description={text.emptyDescription} action={<Button variant="setlist" onClick={() => setIsAdding(true)}>{text.addScores}</Button>} />
+          : (
+            <SortableList
+              items={setlist.scores}
+              getId={score => score.id}
+              onReorder={scores => void saveSetlistOrder(setlist, scores)}
+              renderItem={(score, index, handle) => <SetlistRow setlist={setlist} score={score} index={index} dragHandle={handle} />}
+            />
+          )}
+      </section>
 
       <SetlistFormDialog
         open={isEditing}

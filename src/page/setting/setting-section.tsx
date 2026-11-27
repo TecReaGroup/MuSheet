@@ -3,7 +3,7 @@ import type { ComponentType } from 'react';
 import { Navigate } from 'react-router';
 import { useSession } from '@/feature/auth/session-api';
 import { LibraryStatPanel } from '@/feature/library-stat/library-stat-panel';
-import { LocaleMenu } from '@/feature/preference/locale-menu';
+import { LocaleSwitch } from '@/feature/preference/locale-switch';
 import { usePreferenceStore, type ThemePreference } from '@/feature/preference/preference-store';
 import { useText } from '@/shared/i18n/text';
 import { cn } from '@/shared/lib/class-name';
@@ -50,7 +50,7 @@ function GeneralSection() {
   return (
     <>
       <SettingGroup>
-        <SettingRow icon={<Languages />} title={text.interfaceLanguage} control={<LocaleMenu />} />
+        <SettingRow icon={<Languages />} title={text.interfaceLanguage} control={<LocaleSwitch label={text.interfaceLanguage} />} />
       </SettingGroup>
       <PartNameGroup />
     </>

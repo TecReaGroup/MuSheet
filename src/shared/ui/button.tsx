@@ -7,8 +7,8 @@ export const buttonStyle = cva(
   {
     variants: {
       variant: {
-        primary: 'bg-score text-on-accent hover:bg-score-strong',
-        setlist: 'bg-setlist text-on-accent hover:bg-setlist-strong',
+        primary: 'bg-score-fill text-on-accent hover:bg-score-fill-strong',
+        setlist: 'bg-setlist-fill text-on-accent hover:bg-setlist-fill-strong',
         secondary: 'border border-border bg-surface text-fg hover:bg-muted',
         ghost: 'text-fg-muted hover:bg-muted hover:text-fg',
         danger: 'bg-danger-soft text-danger hover:brightness-95',

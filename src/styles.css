@@ -12,10 +12,15 @@
 :root {
   --score: #2563eb;
   --score-strong: #1d4ed8;
+  /* Solid button fill: a step lighter than --score, which stays dark enough for text on white. */
+  --score-fill: #3b82f6;
+  --score-fill-strong: #2563eb;
   --score-soft: #eff6ff;
   --score-soft-2: #dbeafe;
   --setlist: #059669;
   --setlist-strong: #047857;
+  --setlist-fill: #10b981;
+  --setlist-fill-strong: #059669;
   --setlist-soft: #ecfdf5;
   --setlist-soft-2: #d1fae5;
   --score-icon: #2f72f0;
@@ -57,10 +62,14 @@
 .dark {
   --score: #60a5fa;
   --score-strong: #93c5fd;
+  --score-fill: #60a5fa;
+  --score-fill-strong: #93c5fd;
   --score-soft: #172554;
   --score-soft-2: #1e3a8a;
   --setlist: #34d399;
   --setlist-strong: #6ee7b7;
+  --setlist-fill: #34d399;
+  --setlist-fill-strong: #6ee7b7;
   --setlist-soft: #022c22;
   --setlist-soft-2: #064e3b;
   --score-icon: #60a5fa;
@@ -102,10 +111,14 @@
 
   --color-score: var(--score);
   --color-score-strong: var(--score-strong);
+  --color-score-fill: var(--score-fill);
+  --color-score-fill-strong: var(--score-fill-strong);
   --color-score-soft: var(--score-soft);
   --color-score-soft-2: var(--score-soft-2);
   --color-setlist: var(--setlist);
   --color-setlist-strong: var(--setlist-strong);
+  --color-setlist-fill: var(--setlist-fill);
+  --color-setlist-fill-strong: var(--setlist-fill-strong);
   --color-setlist-soft: var(--setlist-soft);
   --color-setlist-soft-2: var(--setlist-soft-2);
   --color-score-icon: var(--score-icon);

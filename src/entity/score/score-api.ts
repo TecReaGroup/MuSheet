@@ -1,4 +1,4 @@
-import type { ListQuery, ScoreDetail, ScoreImportRequest, ScoreImportResponse, ScoreSummary, ScoreUpdateRequest } from '@contract/api';
+import type { ListQuery, ScoreImportRequest, ScoreImportResponse, ScoreSummary, ScoreUpdateRequest } from '@contract/api';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { requestJson, toSearchParams } from '@/shared/api/http-client';
 import { queryClient } from '@/shared/api/query-client';
@@ -19,7 +19,7 @@ export function useScoreList(query: ListQuery) {
 export function useScoreDetail(scoreId: string | undefined) {
   return useQuery({
     queryKey: scoreKey.detail(scoreId ?? ''),
-    queryFn: () => requestJson<ScoreDetail>('GET', `/api/score/${scoreId}`),
+    queryFn: () => requestJson<ScoreSummary>('GET', `/api/score/${scoreId}`),
     enabled: Boolean(scoreId),
   });
 }

@@ -1,5 +1,5 @@
 import { boolean, integer, jsonb, pgTable, primaryKey, text, timestamp, uuid } from 'drizzle-orm/pg-core';
-import type { AvatarPreset, Stroke, TimeSignature } from '../../../contract/api';
+import type { AvatarPreset, Stroke } from '../../../contract/api';
 
 // Mirrors db/migration/*.sql, which is the source of truth for constraints and indexes.
 
@@ -19,7 +19,6 @@ export const score = pgTable('score', {
   title: text('title').notNull(),
   composer: text('composer').notNull().default(''),
   bpm: integer('bpm').notNull().default(120),
-  timeSignature: text('time_signature').$type<TimeSignature>().notNull().default('4/4'),
   createdAt: timestamptz('created_at').notNull().defaultNow(),
   updatedAt: timestamptz('updated_at').notNull().defaultNow(),
   lastOpenedAt: timestamptz('last_opened_at'),

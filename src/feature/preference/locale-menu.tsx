@@ -3,7 +3,7 @@ import { Menu, MenuCheckItem, MenuContent, MenuTrigger } from '@/shared/ui/menu'
 import { LOCALES, useLocaleStore, type Locale } from '@/shared/i18n/locale-store';
 
 // Each label is written in its own language so a user who can't read the current UI still finds theirs.
-const LOCALE_LABEL: Record<Locale, string> = {
+export const LOCALE_LABEL: Record<Locale, string> = {
   'zh-CN': '简体中文',
   en: 'English',
 };

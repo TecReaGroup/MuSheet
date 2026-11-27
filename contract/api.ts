@@ -1,6 +1,5 @@
 import { z } from 'zod';
 
-export const TIME_SIGNATURES = ['2/4', '3/4', '4/4', '5/4', '6/8', '7/8', '9/8', '12/8'] as const;
 export const SORT_KEYS = ['created', 'title', 'opened'] as const;
 export const SORT_ORDERS = ['asc', 'desc'] as const;
 export const ANNOTATION_TOOLS = ['pen', 'highlighter'] as const;
@@ -20,7 +19,6 @@ export const AVATAR_IMAGE_MAX_BYTES = 1024 * 1024;
 export const PART_NAME_MAX_LENGTH = 40;
 export const PART_NAME_LIST_MAX_SIZE = 100;
 
-export type TimeSignature = (typeof TIME_SIGNATURES)[number];
 export type SortKey = (typeof SORT_KEYS)[number];
 export type SortOrder = (typeof SORT_ORDERS)[number];
 export type AvatarPreset = (typeof AVATAR_PRESETS)[number];
@@ -68,7 +66,6 @@ export const scoreUpdateRequestSchema = z.object({
   title: titleSchema,
   composer: composerSchema,
   bpm: z.number().int().min(BPM_MIN).max(BPM_MAX),
-  timeSignature: z.enum(TIME_SIGNATURES),
 }).partial();
 export type ScoreUpdateRequest = z.input<typeof scoreUpdateRequestSchema>;
 
@@ -221,19 +218,9 @@ export interface ScoreSummary {
   title: string;
   composer: string;
   bpm: number;
-  timeSignature: TimeSignature;
   createdAt: string;
   lastOpenedAt: string | null;
   parts: PartView[];
-}
-
-export interface SetlistReference {
-  id: string;
-  name: string;
-}
-
-export interface ScoreDetail extends ScoreSummary {
-  setlists: SetlistReference[];
 }
 
 export interface ScoreImportResponse {
@@ -242,7 +229,9 @@ export interface ScoreImportResponse {
   joinedExistingScore: boolean;
 }
 
-export interface SetlistSummary extends SetlistReference {
+export interface SetlistSummary {
+  id: string;
+  name: string;
   space: Space;
   description: string;
   createdAt: string;

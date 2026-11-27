@@ -21,23 +21,21 @@ const ADD_TO_SETLIST_TEXT = defineText({
 
 interface AddToSetlistMenuProps {
   score: Pick<ScoreSummary, 'id' | 'space'>;
-  excludeSetlistIds?: string[];
 }
 
 /** Submenu for any score menu: append to an existing setlist or start a new one with this score. */
-export function AddToSetlistMenu({ score, excludeSetlistIds = [] }: AddToSetlistMenuProps) {
+export function AddToSetlistMenu({ score }: AddToSetlistMenuProps) {
   // Setlists only hold scores from their own library.
   const { data: setlists = [] } = useSetlistList({ space: score.space, sort: 'opened', order: 'desc' });
   const appendToSetlist = useAppendToSetlist();
   const text = useText(ADD_TO_SETLIST_TEXT);
   const openCreateDialog = useCreateSetlistDialogStore(state => state.open);
-  const candidates = setlists.filter(setlist => !excludeSetlistIds.includes(setlist.id));
 
   return (
     <MenuSub>
       <MenuSubTrigger icon={<ListPlus />}>{text.addToSetlist}</MenuSubTrigger>
       <MenuSubContent>
-        {candidates.map(setlist => (
+        {setlists.map(setlist => (
           <MenuItem
             key={setlist.id}
             icon={<ListMusic />}
@@ -48,7 +46,7 @@ export function AddToSetlistMenu({ score, excludeSetlistIds = [] }: AddToSetlist
             <span className="truncate">{setlist.name}</span>
           </MenuItem>
         ))}
-        {candidates.length > 0 && <MenuSeparator />}
+        {setlists.length > 0 && <MenuSeparator />}
         <MenuItem icon={<Plus />} onSelect={() => openCreateDialog(score.space, score.id)}>{text.newSetlist}</MenuItem>
       </MenuSubContent>
     </MenuSub>

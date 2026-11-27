@@ -3,14 +3,13 @@ import type { z } from 'zod';
 import type {
   listQuerySchema,
   scoreImportRequestSchema,
-  ScoreDetail,
   ScoreImportResponse,
   ScoreSummary,
   scoreUpdateRequestSchema,
 } from '../../../../contract/api';
 import { db, type DbExecutor } from '../../db/client';
 import { containsPattern, listOrdering } from '../../db/list-query';
-import { part, score, setlist, setlistItem } from '../../db/schema';
+import { part, score, setlist } from '../../db/schema';
 import { notFound } from '../../http/http-error';
 import { insertPart } from '../part/part-repository';
 import { withPdfRelease } from '../pdf/pdf-repository';
@@ -34,15 +33,9 @@ export async function listScores(spaceKey: string, query: ListQuery): Promise<Sc
   return toScoreSummaries(db, rows);
 }
 
-export async function getScoreDetail(scoreId: string, spaces: VisibleSpaceKeys): Promise<ScoreDetail> {
+export async function getScoreDetail(scoreId: string, spaces: VisibleSpaceKeys): Promise<ScoreSummary> {
   await requireScoreSpace(db, scoreId, spaces);
-  const summary = (await loadScoreSummary(db, scoreId))!;
-  const setlists = await db.select({ id: setlist.id, name: setlist.name })
-    .from(setlistItem)
-    .innerJoin(setlist, eq(setlist.id, setlistItem.setlistId))
-    .where(eq(setlistItem.scoreId, scoreId))
-    .orderBy(asc(setlist.name));
-  return { ...summary, setlists };
+  return (await loadScoreSummary(db, scoreId))!;
 }
 
 /** A PDF whose title and composer match a score in the same space (case-insensitive) joins it as a new part. */
@@ -93,7 +86,6 @@ export async function copyScoresIntoTeam(transaction: DbExecutor, personalSpaceK
       title: source.title,
       composer: source.composer,
       bpm: source.bpm,
-      timeSignature: source.timeSignature,
     }).returning();
     const parts = sourceParts.filter(candidate => candidate.scoreId === source.id);
     if (parts.length > 0) {
